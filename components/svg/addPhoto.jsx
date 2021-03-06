@@ -1,0 +1,15 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+
+import { jsx } from 'theme-ui'
+
+const addPhoto = ({ hover, psx }) => {
+  const fillColor = hover ? 'royalblue' : 'black'
+  return (
+    <svg sx={{ ...psx }} viewBox="0 0 72 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path sx={{ transition: 'fill 0.5s', fill: fillColor }} d="M26 0L21 10H7C3.122 10 0 13.122 0 17V53C0 56.878 3.122 60 7 60H65C68.878 60 72 56.878 72 53V17C72 13.122 68.878 10 65 10H51L46 0H26V0ZM36 18C45.3533 18 53 25.6467 53 35C53 44.3533 45.3533 52 36 52C26.6468 52 19 44.3533 19 35C19 25.6467 26.6468 18 36 18V18ZM36 24C29.8896 24 25 28.8894 25 35C25 41.1106 29.8896 46 36 46C42.1107 46 47 41.1106 47 35C47 28.8894 42.1107 24 36 24Z" />
+    </svg>
+  )
+}
+
+export default addPhoto

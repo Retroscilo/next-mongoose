@@ -1,0 +1,34 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+/* eslint-disable react/jsx-indent, react/prop-types, react/react-in-jsx-scope */
+import { ThemeProvider, jsx } from 'theme-ui'
+import theme from '../theme'
+import { SWRConfig } from 'swr'
+import fetch from '../lib/fetchJson'
+import Header from '../components/Header'
+import Head from 'next/head'
+
+function MyApp ({ Component, pageProps }) {
+  return (
+    <SWRConfig
+      value={{
+        fetcher: fetch,
+        onError: err => console.log(err),
+      }}
+    >
+      <ThemeProvider theme={ theme } component={ Component }>
+        <div>
+          <Head>
+            <title>PixMe</title>
+            <link rel="preconnect" href="https://fonts.gstatic.com" />
+            <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
+          </Head>
+          <Header />
+          <Component {...pageProps} />
+        </div>
+      </ThemeProvider>
+    </SWRConfig>
+  )
+}
+
+export default MyApp

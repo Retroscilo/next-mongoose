@@ -22,6 +22,7 @@ const theme = {
   },
   colors: {
     text: '#000',
+    textLight: '#565656',
     background: '#fff',
     primary: '#FFC837',
     accent: '#FF4D4D',
@@ -33,6 +34,17 @@ const theme = {
       fontWeight: 'heading',
       letterSpacing: 'heading',
     },
+    body: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+      letterSpacing: 'body',
+    },
+    light: {
+      fontFamily: 'body',
+      lineHeight: 'body',
+      letterSpacing: 'body',
+      color: 'textLight',
+    },
   },
   styles: {
     root: {
@@ -41,29 +53,20 @@ const theme = {
       fontWeight: 'body',
       letterSpacing: 'body',
     },
-    h1: {
-      variant: 'text.heading',
-      fontSize: 7,
-    },
-    h2: {
-      variant: 'text.heading',
+  },
+  Input: { // Editable text field
+    h: {
       fontSize: 4,
+      mt: 2,
+      mb: 2,
     },
-    h3: {
-      variant: 'text.heading',
-      fontSize: 3,
-    },
-    h4: {
-      variant: 'text.heading',
+    regular: {
+      variant: 'text.body',
       fontSize: 2,
     },
-    h5: {
-      variant: 'text.heading',
-      fontSize: 1,
-    },
-    h6: {
-      variant: 'text.heading',
-      fontSize: 0,
+    light: {
+      variant: 'text.light',
+      fontsize: 2,
     },
   },
   Card: {
@@ -82,25 +85,12 @@ const theme = {
     '&:first-of-type': {
       pt: '50px',
     },
-    catName: {
-      variant: 'Input.default',
-      fontSize: '30px',
-      fontWeight: 'bold',
-      bg: '#f4f5f5',
-      m: 2,
-    },
-    catDescription: {
-      variant: 'Input.default',
-      fontsize: '24px',
-      bg: '#f4f5f5',
-      m: 2,
-    },
   },
   Product: {
     mobile: {
       borderTop: '1px solid lightgrey',
       boxSizing: 'border-box',
-      height: '100px',
+      height: 'fit-content',
       width: '100vw',
       bg: 'background',
       overflow: 'hidden',
@@ -109,31 +99,15 @@ const theme = {
       justifyContent: 'space-between',
       padding: 2,
     },
-    prodName: {
-      variant: 'Input.default',
-      fontsize: '16px',
-    },
-    prodDescription: {
-      variant: 'Input.default',
-      fontsize: '14px',
-      color: 'accent',
-    },
-    prodPrice: {
-      variant: 'Input.default',
-      fontsize: '16px',
-    },
+    desktop: {
+
+    }
   },
   SampleCards: {
     width: '100px',
     height: '100px',
     background: 'gold',
     borderRadius: '5px',
-  },
-  Input: { // Editable text field
-    default: {
-      border: 'none',
-      fontFamily: 'Ubuntu, sans-serif',
-    },
   },
   Add: { // New category & Product CTA
     product: {

@@ -7,9 +7,14 @@ import PropTypes from 'prop-types'
 import fetchJson from '../lib/fetchJson'
 import Input from '../components/Input'
 import { AnimatePresence } from 'framer-motion'
+import { useViewport } from '../lib/hooks/useViewport'
 
 const Category = ({ cardId, infoSet, refresh }) => {
   const { _id: catId, catName, catDescription, products } = infoSet
+  const { width } = useViewport()
+
+  const breakpoint = 640
+  if (width < breakpoint) console.log('break')
 
   const addProduct = async () => {
     const body = { cardId, catId }
@@ -43,17 +48,17 @@ const Category = ({ cardId, infoSet, refresh }) => {
 
   return (
     <div sx={{ variant: 'Category' }}>
-      <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column' }}>
+      <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', p: 2 }}>
         <Input
           defaultValue={catName}
           update={updateCategory}
-          variant="Category.catName"
+          variant="h"
           field={'catName'}
         />
         <Input
           defaultValue={catDescription}
           update={updateCategory}
-          variant="Category.catDescription"
+          variant="light"
           field={'catDescription'}
         />
         <div

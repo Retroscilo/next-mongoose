@@ -7,6 +7,7 @@ import { SWRConfig } from 'swr'
 import fetch from '../lib/fetchJson'
 import Header from '../components/Header'
 import Head from 'next/head'
+import { ViewportProvider } from '../lib/hooks/useViewport'
 
 function MyApp ({ Component, pageProps }) {
   return (
@@ -24,7 +25,9 @@ function MyApp ({ Component, pageProps }) {
             <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
           </Head>
           <Header />
-          <Component {...pageProps} />
+          <ViewportProvider>
+            <Component {...pageProps} />
+          </ViewportProvider>
         </div>
       </ThemeProvider>
     </SWRConfig>

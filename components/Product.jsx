@@ -80,24 +80,25 @@ const Product = ({ cardId, catId, infoSet, refresh, animate }) => {
         <Input
           defaultValue={prodName}
           update={updateProduct}
-          variant="Product.prodName"
+          variant="regular"
           field={'prodName'}
         />
         <Input
           defaultValue={prodDescription}
           update={updateProduct}
-          variant="Product.prodDescription"
+          variant="light"
           field={'prodDescription'}
         />
         <Input
           defaultValue={prodPrice}
           update={updateProduct}
-          variant="Product.prodPrice"
+          variant="light"
           field={'prodPrice'}
         />
         <DragDrop
           infoSet={{ imgSrc, cardId, prodId }}
           update={updateProduct}
+          variant="Product.photo"
         />
       </motion.div>
     </motion.div>

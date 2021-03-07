@@ -15,7 +15,7 @@ const Input = ({ defaultValue, update, variant, field }) => {
 
   return (
     <input
-      sx={{ variant }}
+      sx={{ variant: `Input.${ variant }`, border: 'none', bg: 'inherit', width: 'fit-content', '&:focus': { outline: 'none' } }}
       type="text"
       onBlur={handleBlur}
       value={value}
@@ -28,7 +28,7 @@ export default Input
 
 Input.propTypes = {
   defaultValue: PropTypes.string,
-  field: PropTypes.field,
+  field: PropTypes.string,
   update: PropTypes.func,
   variant: PropTypes.string,
 }

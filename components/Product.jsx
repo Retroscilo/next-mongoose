@@ -9,9 +9,10 @@ import DragDrop from '../components/DragDrop'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 import { useClickOutside } from '../lib/hooks/useClickOutside'
 
-const Product = ({ cardId, catId, infoSet, refresh, animate }) => {
+const Product = ({ cardId, catId, infoSet, refresh }) => {
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc } = infoSet
   const productRef = useRef(null) // used for clicked outside
+  const animationPadding = useRef(null)
   const controls = useAnimation() // hidden * visible * deleting
 
   function onDragEnd (e, info) { // auto close or discover delete button /!\ refine to be more accurate than just velocity
@@ -29,17 +30,18 @@ const Product = ({ cardId, catId, infoSet, refresh, animate }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    refresh()
+    await refresh()
   }
 
   const deleteProduct = async () => {
+    animationPadding.current.style.padding = 0 // issue with framer not animating padding
     await fetchJson('/api/product', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cardId, catId, prodId }),
     })
     await controls.start('deleting')
-    refresh()
+    await refresh()
   }
 
   const x = useMotionValue(0)
@@ -61,10 +63,10 @@ const Product = ({ cardId, catId, infoSet, refresh, animate }) => {
       />
       <motion.div // PRODUCT ELEMENT
         sx={{ variant: 'Product.mobile', position: 'relative', zIndex: 2 }}
+        ref={animationPadding}
         drag={'x'}
         initial="hidden"
         variants={{
-          expand: { height: [ 0, 100 ] },
           hidden: { x: 0, height: 100 },
           visible: { x: -75, height: 100 },
           deleting: { x: -1000, height: 0 },
@@ -108,7 +110,6 @@ const Product = ({ cardId, catId, infoSet, refresh, animate }) => {
 export default Product
 
 Product.propTypes = {
-  animate: PropTypes.bool,
   cardId: PropTypes.string,
   catId: PropTypes.string,
   infoSet: PropTypes.object,

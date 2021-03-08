@@ -11,9 +11,9 @@ const Header = () => {
   const { user, mutateUser } = useUser()
   const router = useRouter()
   return (
-    <header sx={{ width: '100vw', background: 'white', height: '70px', boxSizing: 'content-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)', position: 'sticky', top: '0', zIndex: '60' }}>
+    <header sx={{ width: '100vw', background: 'white', height: '70px', boxSizing: 'content-box', display: 'flex', justifyContent: 'space-between', boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)', position: 'sticky', top: '0', zIndex: '60' }}>
       <nav>
-        <ul sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <ul sx={{ display: 'flex', justifyContent: 'space-between', width: '100vw', p: 2 }}>
           <li>
             <Link href="/">
               <a>PixMe</a>
@@ -39,6 +39,8 @@ const Header = () => {
                 <Link href="/cards">
                   <a>Mes cartes</a>
                 </Link>
+              </li>
+              <li>
                 <a
                   href="/"
                   onClick={async e => {

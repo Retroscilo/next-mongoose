@@ -1,8 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 // @refresh reset
-import { jsx } from 'theme-ui'
+import { jsx, Grid } from 'theme-ui'
 import Product from './Product'
+import ProductDesktop from './ProductDesktop'
 import PropTypes from 'prop-types'
 import fetchJson from '../lib/fetchJson'
 import Input from '../components/Input'
@@ -14,7 +15,6 @@ const Category = ({ cardId, infoSet, refresh }) => {
   const { width } = useViewport()
 
   const breakpoint = 640
-  if (width < breakpoint) console.log('break')
 
   const addProduct = async () => {
     const body = { cardId, catId }
@@ -23,7 +23,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    refresh()
+    await refresh()
   }
 
   const updateCategory = async (field, value) => {
@@ -47,8 +47,8 @@ const Category = ({ cardId, infoSet, refresh }) => {
   }
 
   return (
-    <div sx={{ variant: 'Category' }}>
-      <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', p: 2 }}>
+    <div sx={{ variant: 'Category', p: (width >= breakpoint ? 3 : 0) }}>
+      <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column' }}>
         <Input
           defaultValue={catName}
           update={updateCategory}
@@ -81,20 +81,37 @@ const Category = ({ cardId, infoSet, refresh }) => {
         />
       </div>
       <AnimatePresence initial={false} >
-        { products && products.map((product, i) => (
-          <Product
-            key={product._id}
-            cardId={cardId}
-            catId={catId}
-            infoSet={product}
-            refresh={refresh}
-          />
-        ))}
+        { (products && width < breakpoint)
+        && <div>
+          {products.map(product => (
+            <Product
+              key={product._id}
+              cardId={cardId}
+              catId={catId}
+              infoSet={product}
+              refresh={refresh}
+            />
+          ))}
+          <div sx={{ variant: 'Add.product.mobile' }} onClick={addProduct} />
+        </div>
+        }
+        { (products && width >= breakpoint)
+        && <Grid columns={2}>
+          {products.map(product => (
+            <ProductDesktop
+              key={product._id}
+              cardId={cardId}
+              catId={catId}
+              infoSet={product}
+              refresh={refresh}
+            />
+          ))}
+          <div sx={{ height: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '75px' }}>
+            <div sx={{ variant: 'Add.product.desktop' }} onClick={addProduct}> Ajouter un produit </div>
+          </div>
+        </Grid>
+        }
       </AnimatePresence>
-      <div
-        sx={{ variant: 'Add.product' }}
-        onClick={addProduct}
-      />
     </div>
   )
 }

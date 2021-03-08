@@ -12,6 +12,10 @@ const theme = {
   breakpoints: [ '40em', '52em', '64em' ],
   space: [ 0, 4, 8, 16, 32, 64, 128, 256, 512 ],
   fontSizes: [ 12, 14, 16, 20, 24, 32, 48, 64, 96 ],
+  shadows: {
+    low: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    hover: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+  },
   lineHeights: {
     body: 1.5,
     heading: 1.125,
@@ -23,7 +27,7 @@ const theme = {
   colors: {
     text: '#000',
     textLight: '#565656',
-    background: '#fff',
+    background: '#f4f5f5',
     primary: '#FFC837',
     accent: '#FF4D4D',
   },
@@ -48,6 +52,7 @@ const theme = {
   },
   styles: {
     root: {
+      backgroundColor: 'background',
       fontFamily: 'body',
       lineHeight: 'body',
       fontWeight: 'body',
@@ -77,7 +82,6 @@ const theme = {
   },
   Category: {
     position: 'relative',
-    boxSizing: 'content-box',
     width: '100%',
     bg: '#f4f5f5',
     pb: '50px',
@@ -89,10 +93,9 @@ const theme = {
   Product: {
     mobile: {
       borderTop: '1px solid lightgrey',
-      boxSizing: 'border-box',
-      height: 'fit-content',
+      height: '100px',
       width: '100vw',
-      bg: 'background',
+      bg: '#fff',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
@@ -100,8 +103,15 @@ const theme = {
       padding: 2,
     },
     desktop: {
-
-    }
+      borderRadius: '3px',
+      height: '100px',
+      bg: '#fff',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      padding: 2,
+    },
   },
   SampleCards: {
     width: '100px',
@@ -111,23 +121,39 @@ const theme = {
   },
   Add: { // New category & Product CTA
     product: {
-      position: 'absolute',
-      zIndex: '2',
-      left: 'calc(50% - 25px)',
-      bottom: '-15px',
-      width: '50px',
-      height: '50px',
-      borderRadius: '100px',
-      bg: 'primary',
-      backgroundImage: 'url("/+.svg")',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundSize: '50%',
-      boxShadow: '0px 0px 7px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.12)',
-      cursor: 'pointer',
-      transition: 'all 0.2s',
-      '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.18), 0 2px 5px rgba(0,0,0,0.18)' },
-      '&:active': { boxShadow: '0 2px 8px rgba(0,0,0,0.18), 0 2px 5px rgba(0,0,0,0.18)' },
+      mobile: {
+        position: 'absolute',
+        zIndex: '2',
+        left: 'calc(50% - 25px)',
+        bottom: '-15px',
+        width: '50px',
+        height: '50px',
+        borderRadius: '100px',
+        bg: 'primary',
+        backgroundImage: 'url("/+.svg")',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '50%',
+        boxShadow: '0px 0px 7px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.12)',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.18), 0 2px 5px rgba(0,0,0,0.18)' },
+        '&:active': { boxShadow: '0 2px 8px rgba(0,0,0,0.18), 0 2px 5px rgba(0,0,0,0.18)' },
+      },
+      desktop: {
+        variant: 'Product.desktop',
+        bg: 'primary',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        cursor: 'pointer',
+        fontSize: 3,
+        fontWeight: 'heading',
+        width: '220px',
+        height: '50px',
+        m: '0 auto',
+      },
     },
     category: {
       background: 'white url("/+.svg") no-repeat center',

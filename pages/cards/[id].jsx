@@ -25,11 +25,11 @@ const Card = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    updateCard()
+    await updateCard()
   }
 
   return (
-    <div sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    <div sx={{ maxWidth: '1120px', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       {!categories && <h1>Loading</h1>}
       {categories && categories.map((category, i) => (
         <Category

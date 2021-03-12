@@ -82,7 +82,15 @@ const DragDrop = ({ infoSet, update }) => {
   return (
     <motion.div 
       ref={dropRef} 
-      sx={{ width: '84px', height: '84px', position: 'absolute', right: 2, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }} 
+      sx={{ 
+        width: '84px',
+        height: '84px',
+        right: 2,
+        gridArea: 'photo',
+        cursor: 'pointer',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center' }} 
       onClick={onClickHandler} 
       onHoverStart={() => setFillColor(theme.colors.primary)}
       onHoverEnd={() => setFillColor('black')}>

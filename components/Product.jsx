@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Input from '../components/Input'
 import fetchJson from '../lib/fetchJson'
@@ -9,11 +9,13 @@ import DragDrop from '../components/DragDrop'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 import { useClickOutside } from '../lib/hooks/useClickOutside'
 
-const Product = ({ cardId, catId, infoSet, refresh }) => {
+const Product = ({ cardId, catId, infoSet, refresh, index }) => {
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc } = infoSet
   const productRef = useRef(null) // used for clicked outside
   const animationPadding = useRef(null)
   const controls = useAnimation() // hidden * visible * deleting
+  const [ order, setOrder ] = useState(index)
+  useEffect(() => setOrder(index), [ index ])
 
   function onDragEnd (e, info) { // auto close or discover delete button /!\ refine to be more accurate than just velocity
     const shouldClose = info.velocity.x > 0
@@ -51,10 +53,11 @@ const Product = ({ cardId, catId, infoSet, refresh }) => {
 
   return (
     <motion.div // WRAPPER
-      sx={{ position: 'relative', overflow: 'hidden' }}
+      sx={{ position: 'relative', overflow: 'hidden', order }}
       ref={productRef}
       initial={{ height: 0 }}
       animate={{ height: 'fit-content' }}
+      
     >
       <motion.div // DELETE
         style={{ width, height }}
@@ -62,7 +65,16 @@ const Product = ({ cardId, catId, infoSet, refresh }) => {
         onClick={deleteProduct}
       />
       <motion.div // PRODUCT ELEMENT
-        sx={{ variant: 'Product.mobile', position: 'relative', zIndex: 2 }}
+        sx={{
+          variant: 'Product.mobile',
+          position: 'relative',
+          zIndex: 2,
+          display: 'grid',
+          gridTemplateColumns: '50px calc(100% - 134px) 84px',
+          gridTemplateRows: '1fr 1fr 1fr',
+          alignItems: 'center',
+          gridTemplateAreas: '"prodName prodName photo" "prodDescription prodDescription photo" "prodPrice empty photo"',
+        }}
         ref={animationPadding}
         drag={'x'}
         initial="hidden"

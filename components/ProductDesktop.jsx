@@ -1,15 +1,18 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import { useRef } from 'react'
+import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Input from '../components/Input'
 import fetchJson from '../lib/fetchJson'
 import DragDrop from '../components/DragDrop'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 
-const ProductDesktop = ({ cardId, catId, infoSet, refresh }) => {
+const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc } = infoSet
+  const [ order, setOrder ] = useState(index)
+  useEffect(() => setOrder(index), [ index ])
+  const [ isHover, setIsHover ] = useState(false)
 
   const updateProduct = async (field, value) => {
     const body = { cardId, catId, prodId, field, value }
@@ -27,17 +30,42 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cardId, catId, prodId }),
     })
+    setIsHover(false)
     await refresh()
   }
 
   return (
-    <motion.div // WRAPPER
-      sx={{ variant: 'Product.desktop', position: 'relative', overflow: 'hidden' }}
+    <motion.div
+      sx={{
+        variant: 'Product.desktop',
+        position: 'relative',
+        overflow: 'initial',
+        transform: 'scale(1)',
+        display: 'grid',
+        gridTemplateColumns: '50px calc(100% - 134px) 84px',
+        gridTemplateRows: '1fr 1fr 1fr',
+        alignItems: 'center',
+        gridTemplateAreas: '"prodName prodName photo" "prodDescription prodDescription photo" "prodPrice empty photo"',
+        order,
+      }}
       initial={{ transform: 'scale(0)' }}
-      animate={{ transform: 'scale(1)' }}
+      animate={'visible'}
+      exit={'deleted'}
+      variants={{
+        visible: { transform: 'scale(1)' },
+        deleted: { opacity: 0, transform: 'scale(0)' },
+      }}
+      transition={{ opacity: { duration: 0.2 } }}
+      onHoverStart={() => setIsHover(true)}
+      onHoverEnd={() => setIsHover(false)}
     >
       <motion.div // DELETE
-        sx={{ height: '100px', position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '0', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/dustbin.svg)', zIndex: 1 }}
+        sx={{ height: '25px', width: '25px', borderRadius: '100px', position: 'absolute', top: '-10px', left: '-10px', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/x.svg)', zIndex: 1, boxShadow: 'low' }}
+        variants={{
+          hidden: { scale: 0 },
+          visible: { scale: 1 },
+        }}
+        animate={ isHover ? 'visible' : 'hidden' }
         onClick={deleteProduct}
       />
       <Input
@@ -73,5 +101,6 @@ ProductDesktop.propTypes = {
   cardId: PropTypes.string,
   catId: PropTypes.string,
   infoSet: PropTypes.object,
+  order: PropTypes.number,
   refresh: PropTypes.func,
 }

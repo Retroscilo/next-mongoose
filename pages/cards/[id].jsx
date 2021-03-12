@@ -40,7 +40,7 @@ const Card = () => {
           refresh={updateCard} // method to call after each update in db (post/put)
         />
       ))}
-      <div sx={{ variant: 'Add.category' }} onClick={addCategory} />
+      <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>
     </div>
   )
 }

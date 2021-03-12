@@ -807,6 +807,11 @@
   "resolved" "https://registry.npmjs.org/astral-regex/-/astral-regex-2.0.0.tgz"
   "version" "2.0.0"
 
+"autosize@^4.0.2":
+  "integrity" "sha512-jnSyH2d+qdfPGpWlcuhGiHmqBJ6g3X+8T+iRwFrHPLVcdoGJE/x6Qicm6aDHfTsbgZKxyV8UU/YB2p4cjKDRRA=="
+  "resolved" "https://registry.npmjs.org/autosize/-/autosize-4.0.2.tgz"
+  "version" "4.0.2"
+
 "aws-sdk@^2.855.0":
   "integrity" "sha512-u1lO75V82E4REeu0Pt3RE1Kg2CdtUoMgMnyR02cUxdWnoTBpdSlwvz2X2U0VEGW2oYzeJJYp0N0H1sgSRnv8vg=="
   "resolved" "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.855.0.tgz"

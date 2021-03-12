@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'

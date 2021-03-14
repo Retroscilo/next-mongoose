@@ -27,12 +27,13 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
 
   const updateProduct = async (field, value) => {
     const body = { cardId, catId, prodId, field, value }
-    await fetchJson('/api/product', {
+    const res = await fetchJson('/api/product', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
     await refresh()
+    return res
   }
 
   const deleteProduct = async () => {
@@ -57,7 +58,6 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
       ref={productRef}
       initial={{ height: 0 }}
       animate={{ height: 'fit-content' }}
-      
     >
       <motion.div // DELETE
         style={{ width, height }}
@@ -96,18 +96,21 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
           update={updateProduct}
           variant="regular"
           field={'prodName'}
+          max={30}
         />
         <Input
           defaultValue={prodDescription}
           update={updateProduct}
           variant="light"
           field={'prodDescription'}
+          max={80}
         />
         <Input
           defaultValue={prodPrice}
           update={updateProduct}
           variant="light"
           field={'prodPrice'}
+          max={6}
         />
         <DragDrop
           infoSet={{ imgSrc, cardId, prodId }}

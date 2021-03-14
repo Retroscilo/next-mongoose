@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /** @jsxRuntime classic */
 /** @jsx jsx */
 /* eslint-disable react/jsx-indent, react/prop-types, react/react-in-jsx-scope */
@@ -6,8 +7,10 @@ import theme from '../theme'
 import { SWRConfig } from 'swr'
 import fetch from '../lib/fetchJson'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import Head from 'next/head'
 import { ViewportProvider } from '../lib/hooks/useViewport'
+import { Global } from '@emotion/core'
 
 function MyApp ({ Component, pageProps }) {
   return (
@@ -19,6 +22,7 @@ function MyApp ({ Component, pageProps }) {
     >
       <ThemeProvider theme={ theme } component={ Component }>
         <div>
+          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' } })} />
           <Head>
             <title>PixMe</title>
             <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -28,6 +32,7 @@ function MyApp ({ Component, pageProps }) {
           <ViewportProvider>
             <Component {...pageProps} />
           </ViewportProvider>
+          <Footer />
         </div>
       </ThemeProvider>
     </SWRConfig>

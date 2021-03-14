@@ -32,7 +32,6 @@ const handler = nc()
 
       res.status(200).json(updatedProduct)
     } catch (e) {
-      console.log(e)
       res.status(401).json({ error: e.message })
     }
   })

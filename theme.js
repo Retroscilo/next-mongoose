@@ -1,5 +1,9 @@
 const theme = {
   useBorderBox: true,
+  useSmoothScroll: true,
+  sizes: {
+    body: 1120,
+  },
   fonts: {
     body: 'Ubuntu, sans-serif',
     heading: 'Ubuntu, sans-serif',
@@ -53,6 +57,7 @@ const theme = {
   },
   styles: {
     root: {
+      listStyle: 'none',
       backgroundColor: 'background',
       fontFamily: 'body',
       lineHeight: 'body',
@@ -136,14 +141,13 @@ const theme = {
       },
     },
     category: {
-      position: 'absolute',
-      bottom: 20,
+      my: 3,
       bg: 'primary',
       color: '#fff',
       width: '185px',
       height: '30px',
       borderRadius: 0,
-      m: '0 auto',
+      mx: 'auto',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',

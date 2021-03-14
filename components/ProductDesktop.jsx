@@ -16,12 +16,17 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
 
   const updateProduct = async (field, value) => {
     const body = { cardId, catId, prodId, field, value }
-    await fetchJson('/api/product', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await refresh()
+    try {
+      const res = await fetchJson('/api/product', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      await refresh()
+      return res
+    } catch (e) {
+      throw new Error(e.data)
+    }
   }
 
   const deleteProduct = async () => {
@@ -42,10 +47,11 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
         overflow: 'initial',
         transform: 'scale(1)',
         display: 'grid',
-        gridTemplateColumns: '50px calc(100% - 134px) 84px',
+        gridTemplateColumns: '90px calc(100% - 188px) 84px',
         gridTemplateRows: '1fr 1fr 1fr',
         alignItems: 'center',
         gridTemplateAreas: '"prodName prodName photo" "prodDescription prodDescription photo" "prodPrice empty photo"',
+        maxWidth: '550px',
         order,
       }}
       initial={{ transform: 'scale(0)' }}
@@ -73,18 +79,21 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
         update={updateProduct}
         variant="regular"
         field={'prodName'}
+        max={30}
       />
       <Input
         defaultValue={prodDescription}
         update={updateProduct}
         variant="light"
         field={'prodDescription'}
+        max={80}
       />
       <Input
         defaultValue={prodPrice}
         update={updateProduct}
         variant="light"
         field={'prodPrice'}
+        max={6}
       />
       <DragDrop
         infoSet={{ imgSrc, cardId, prodId }}

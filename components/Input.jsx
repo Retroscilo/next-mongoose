@@ -1,46 +1,132 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { motion } from 'framer-motion'
+import { motion, useAnimation } from 'framer-motion'
 import theme from '../theme'
 
-const Input = ({ defaultValue, update, variant, field, width='100%' }) => {
-  const [ value, setValue ] = useState(defaultValue)
-  useEffect(() => setValue(defaultValue), [ defaultValue ])
-
-  const handleBlur = e => {
-    if (e.target.innerHTML.trim() === '') { e.target.innerHTML = defaultValue; return }
-    if (e.target.innerHTML !== defaultValue) update(field, e.target.innerHTML)
-  }
-  
+const ErrorInfo = ({ error }) => {
   return (
     <motion.div
-    contentEditable="true"
-    suppressContentEditableWarning={true}
-    sx={{ 
-      position: 'relative',
-      variant: `Input.${ variant }`,
-      gridArea: field,
-      display: 'block',
-      width,
-      border: 'none',
-      borderRadius: '3px',
-      bg: 'inherit',
-      '&:focus': { outline: 'none' },
-      pl: field == 'prodPrice' ? '12px' : 0,
-      lineHeight: 1.2,
-      '&::before': (field == 'prodPrice' ? { content: "'€'", variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' } : '')
-    }}
-    name="price"
-    type="text"
-    onBlur={handleBlur}
-    value={value}
-    whileHover={{ boxShadow: '0 0 0 1px rgb(212, 212, 212)' }}
-    whileFocus={{ boxShadow: `0 0 2px .5px ${theme.colors.primary}` }}
-    transition={{ boxShadow: { duration: 0.2, ease: 'linear' }, outline: { duration: 0.2, ease: 'linear' } }}
-    >{defaultValue}</motion.div>
+      animate={{ y: 22, opacity: 1 }}
+      sx={{
+        opacity: 0,
+        fontSize: 1,
+        position: 'absolute',
+        transformOrigin: 'top',
+        bg: 'white',
+        boxShadow: 'low',
+        borderRadius: '3px',
+        p: '1px',
+        pl: 1,
+        pr: 1,
+        zIndex: 20,
+        width: 'fit-content',
+        maxWidth: '400px',
+        minWidth: '200px',
+        textAlign: 'center',
+        bottom: '0',
+        '&::before': { 
+          content: "'!'",
+          display: 'inline-flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'accent',
+          color: 'white',
+          width: '11.5px',
+          height: '12px',
+          textAlign: 'center',
+          mr: 1,
+          borderRadius: '100px',
+          pl: '.5px',
+        }
+      }}
+    >
+      {error}
+    </motion.div>
+  )
+}
+
+const Input = ({ defaultValue, update, variant, field, width='100%', max }) => {
+  const [ error, setError ] = useState(false)
+  const pulseControls = useAnimation()
+  const handleError = message => {
+    pulseControls.start([ null, 'red' ])
+    setError(message)
+  }
+
+  // prevent new line if user press enter / prevent user to type letters in price input
+  const handleKeyPress = e => {
+    e.key === "Enter" && e.preventDefault()
+    if (field === "prodPrice" && String.fromCharCode(e.which).match(/[^0-9.,f]/)) e.preventDefault()
+  }
+
+  // maxChar error
+  const handleKeyUp = e => {
+    if(e.target.innerText.length > max) return handleError(`${max} charactères maximum (${e.target.innerText.length}/${max})`)
+    else setError(false)
+    if (e.key === "Enter") e.target.blur()
+  }
+
+  // empty field Error
+  const handleBlur = async e => {
+    if (field != 'catDescription' && field != 'prodDescription' && e.target.innerText.length == 0) return handleError("Il n'y a rien la-dedans ?!")
+    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= max && error === false) {
+      try {
+        await update(field, e.target.innerText)
+        pulseControls.start([ null, 'green' ])
+        setError(false)
+      } catch (err) {
+        handleError("Oups, quelque chose s'est passé de travers. Essayez de recharger la page ?")
+      }
+    } else if (e.target.innerHTML === defaultValue) setError(false)
+  }
+
+  return (
+    <span sx={{ position: 'relative', gridArea: field, cursor: 'default'}}>
+    <motion.div
+      contentEditable="true"
+      suppressContentEditableWarning={true}
+      variants={{ 
+        green: {
+          boxShadow: [ '0 0 0 1px rgb(212, 212, 212)', '0 0 0 1.5px rgb(119, 219, 123)', '0 0 0 0px rgb(212, 212, 212)' ],
+          transition: { duration: 0.6, times: [ 0, 0.1, 1 ] }
+        },
+        red: {
+          boxShadow: [ null, '0 0 0 1.5px rgb(255, 77, 77)' ],
+          transition: { duration: 0.4 }
+        }
+      }}
+      sx={{ 
+        position: 'relative',
+        variant: `Input.${ variant }`,
+        display: 'block',
+        width,
+        maxHeight: '313px',
+        overflow: 'scroll',
+        maxHeight: '38px',
+        border: 'none',
+        borderRadius: '3px',
+        bg: 'inherit',
+        '&:focus': { outline: 'none' },
+        pl: field == 'prodPrice' ? '12px' : 0,
+        lineHeight: 1.2,
+
+        '&::before': (field == 'prodPrice' ? { content: "'€'", variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' } : '')
+      }}
+      onBlur={handleBlur}
+      onKeyUp={handleKeyUp}
+      onKeyPress={handleKeyPress}
+      animate={pulseControls}
+      whileHover={ !error && { boxShadow: '0 0 0 1px rgb(212, 212, 212)' }}
+      whileFocus={ !error && { boxShadow: `0 0 2px .5px ${theme.colors.primary}` }}
+      transition={{ boxShadow: { duration: 0.2, ease: 'linear' }, outline: { duration: 0.2, ease: 'linear' } }}
+    >
+      {defaultValue}
+    </motion.div>
+    {error && <ErrorInfo error={error} />}
+    </span>
   )
 }
 

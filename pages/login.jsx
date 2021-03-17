@@ -19,8 +19,8 @@ const Login = () => {
     e.preventDefault()
 
     const body = {
-      email: e.currentTarget.email.value,
-      password: e.currentTarget.password.value,
+      email: e.currentTarget.Email.value,
+      password: e.currentTarget["Mot de passe"].value,
     }
 
     try {
@@ -41,9 +41,16 @@ const Login = () => {
     <div>
       <div className="login">
         <Form
-          isLogin errorMessage={errorMsg}
+          errorMessage={errorMsg}
           onSubmit={handleSubmit}
-        />
+          title={'Connection'}
+          fields={[
+            { type:"email", name:"Email" },
+            { type:"text", name:"Mot de passe" },
+          ]}
+        >
+          <button type="submit" sx={{ variant: 'Button.primary', alignSelf: 'flex-start' }}>Connection</button>
+        </Form>
       </div>
       <style jsx>{`
         .login {

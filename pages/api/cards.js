@@ -7,6 +7,7 @@ const handler = nc()
   .post(withSession(async (req, res) => {
     await connect()
     const user = req.session.get('user')
+
     try {
       const card = await Card.create(
         {

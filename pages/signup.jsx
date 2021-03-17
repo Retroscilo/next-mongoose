@@ -1,25 +1,27 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx } from 'theme-ui'
+import { jsx, Spinner} from 'theme-ui'
+import theme from '../theme'
 import fetchJson from '../lib/fetchJson'
 import useUser from '../lib/useUser'
 import Form from '../components/form'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 
 const SignUp = () => {
-  const { mutateUser } = useUser({
-    redirectTo: '/',
-    redirectIfFound: true,
-  })
-
+  const { mutateUser } = useUser()
+  const router = useRouter()
+  const [ isSignedUp, setIsSignedUp ] = useState(false)
+  const [ isLoading, setIsLoading ] = useState(false)
   const [ errorMsg, setErrorMsg ] = useState('')
 
-  async function handleSubmit (e) {
+  async function signUp (e) {
     e.preventDefault()
+    setIsLoading(true)
 
     const body = {
-      email: e.currentTarget.email.value,
-      password: e.currentTarget.password.value,
+      email: e.currentTarget.Email.value,
+      password: e.currentTarget['Mot de passe'].value,
     }
 
     try {
@@ -30,29 +32,66 @@ const SignUp = () => {
           body: JSON.stringify(body),
         }),
       )
+      setIsSignedUp(true)
     } catch (error) {
-      console.error('An unexpected error happened:', error)
-      setErrorMsg(error.data.message)
+      switch(error.data.error.code) {
+        case 11000: setErrorMsg('Ce mail est déjà utilisé'); break;
+        default: setErrorMsg("Nous rencontrons des difficultées. Essayez de recharger la page.")
+      }
+    }
+    setIsLoading(false)
+  }
+
+  async function addRestaurant (e) {
+    e.preventDefault()
+    setIsLoading(true)
+    const body = { restaurantName: e.target['Nom de votre restaurant'].value }
+
+    try {
+      await fetchJson('/api/restaurant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      router.push('/cards')
+    } catch (err) {
+      setErrorMsg("Nous rencontrons des difficultées. Essayez de recharger la page.")
     }
   }
 
+  const checkMail = value => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value)
+  const checkPassword = value => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)
+
   return (
-    <div>
-      <div className="signup">
+    <div sx={{ display: 'grid', gridTemplateColumns: ['1fr', '20rem 1fr'], height: `calc(100vh - ${theme.sizes.header + theme.sizes.footer}px)`, justifyItems: 'center', alignItems: 'center' }}>
+      <div
+        sx={{ display: ['none', 'initial'], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
+      >Créez votre carte digitale en 5 minutes</div>
+      {!isSignedUp &&
         <Form
-          isLogin errorMessage={ errorMsg }
-          onSubmit={ handleSubmit }
-        />
-      </div>
-      <style jsx>{`
-        .signup {
-          max-width: 21rem;
-          margin: 0 auto;
-          padding: 1rem;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }`}
-      </style>
+          onSubmit={signUp}
+          title={'Créer un compte Pixme'}
+          errorMessage={errorMsg}
+          fields={[
+            { type: 'text', name: 'Email', check: checkMail, error: 'Vérifiez votre email !' },
+            { type: 'text', name: 'Mot de passe', check: checkPassword, error: 'Mot de passe invalide !', legend: '8 charactères minimum, au moins un chiffre et une lettre' },
+          ]}
+        >
+          <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
+        </Form>
+      }
+      {isSignedUp &&
+      <Form 
+        onSubmit={addRestaurant}
+        title={'Quel est le nom de votre restaurant ?'}
+        subTitle={'(Vous pourrez le modifier plus tard dans vos réglages)'}
+        fields={[
+          { type: 'text', name: 'Nom de votre restaurant', check: value => value.length > 0}
+        ]}
+      >
+        <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
+      </Form>
+      }
     </div>
   )
 }

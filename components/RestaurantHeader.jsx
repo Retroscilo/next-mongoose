@@ -4,7 +4,7 @@ import { jsx } from 'theme-ui'
 import { useViewport } from '../lib/hooks/useViewport'
 import { useState } from 'react'
 
-const CardHeader = ({ restaurantName, categories }) => {
+const RestaurantHeader = ({ restaurantName }) => {
   const { width } = useViewport()
   const mobile = width < 832
 
@@ -17,4 +17,4 @@ const CardHeader = ({ restaurantName, categories }) => {
   )
 }
 
-export default CardHeader
+export default RestaurantHeader

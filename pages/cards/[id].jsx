@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
 import Category from '../../components/Category'
 import useCard from '../../lib/hooks/useCard'
-import CardHeader from '../../components/CardHeader'
+import CardHeader from '../../components/RestaurantHeader'
 import React from 'react'
 
 const Card = () => {

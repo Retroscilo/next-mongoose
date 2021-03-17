@@ -21,8 +21,8 @@ function MyApp ({ Component, pageProps }) {
       }}
     >
       <ThemeProvider theme={ theme } component={ Component }>
-        <div>
-          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' } })} />
+        <div sx={{ minHeight: `calc(100vh - ${theme.sizes.footer}px)` }}>
+          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, 'a': { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
             <title>PixMe</title>
             <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -32,8 +32,8 @@ function MyApp ({ Component, pageProps }) {
           <ViewportProvider>
             <Component {...pageProps} />
           </ViewportProvider>
-          <Footer />
         </div>
+        <Footer />
       </ThemeProvider>
     </SWRConfig>
   )

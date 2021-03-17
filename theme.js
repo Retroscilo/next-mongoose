@@ -3,6 +3,8 @@ const theme = {
   useSmoothScroll: true,
   sizes: {
     body: 1120,
+    header: 70,
+    footer: 100,
   },
   fonts: {
     body: 'Ubuntu, sans-serif',
@@ -33,7 +35,7 @@ const theme = {
     text: '#000',
     textLight: '#565656',
     background: '#f4f5f5',
-    primary: 'rgb(2555, 200, 55)',
+    primary: 'rgb(255, 200, 55)',
     accent: '#FF4D4D',
   },
   text: {
@@ -63,6 +65,38 @@ const theme = {
       lineHeight: 'body',
       fontWeight: 'body',
       letterSpacing: 'body',
+    },
+  },
+  Form: {
+    default: {
+      maxWidth: '30rem',
+      mx: 'auto',
+      padding: '1rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '& form': {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      },
+    },
+  },
+  Button: {
+    primary: {
+      width: 'fit-content',
+      height: '30px',
+      lineheight: '50px',
+      textAlign: 'center',
+      cursor: 'pointer',
+      color: 'white',
+      bg: 'primary',
+      borderRadius: '2px',
+      border: 'none',
+      px: 3,
+      fontSize: 2,
+      '&:focus': { outline: 'none' },
     },
   },
   Input: { // Editable text field

@@ -5,7 +5,7 @@ import { jsx } from 'theme-ui'
 
 const Footer = () => {
   return (
-    <div sx={{ height: '300px', bg: 'darkgrey', width: '100vw' }}> Footer </div>
+    <div sx={{ height: 'footer', bg: 'darkgrey', width: '100vw' }}> Footer </div>
   )
 }
 

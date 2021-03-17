@@ -36,5 +36,6 @@ module.exports = {
     'react/jsx-no-bind': 'off',
     'sort-imports': 'off',
     'react/jsx-pascal-case': 'off',
+    'operator-linebreak': 'off',
   },
 }

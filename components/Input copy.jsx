@@ -26,7 +26,7 @@ const ErrorInfo = ({ error }) => {
         maxWidth: '400px',
         minWidth: '200px',
         textAlign: 'center',
-        top: 0,
+        bottom: '0',
         '&::before': { 
           content: "'!'",
           display: 'inline-flex',
@@ -48,7 +48,7 @@ const ErrorInfo = ({ error }) => {
   )
 }
 
-const Input = ({ defaultValue, update, variant, field, options }) => {
+const Input = ({ defaultValue, update, variant, field, width='100%', max }) => {
   const [ error, setError ] = useState(false)
   const pulseControls = useAnimation()
   const handleError = message => {
@@ -59,21 +59,20 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
   // prevent new line if user press enter / prevent user to type letters in price input
   const handleKeyPress = e => {
     e.key === "Enter" && e.preventDefault()
-    if (options?.inputMatch && String.fromCharCode(e.which).match(options.inputMatch)) e.preventDefault()
+    if (field === "prodPrice" && String.fromCharCode(e.which).match(/[^0-9.,]/)) e.preventDefault()
   }
 
   // maxChar error
   const handleKeyUp = e => {
-    if(e.target.innerText.length > (options?.max || 999)) return handleError(`${options?.max} charactères maximum (${e.target.innerText.length}/${options?.max})`)
+    if(e.target.innerText.length > max) return handleError(`${max} charactères maximum (${e.target.innerText.length}/${max})`)
     else setError(false)
-    e.key === "Enter" && e.target.blur()
+    if (e.key === "Enter") e.target.blur()
   }
 
   // empty field Error
   const handleBlur = async e => {
-    if (options?.empty?.prevent && e.target.innerText.length == 0) return handleError(options?.empty?.err || 'Vous devez remplir ce champ !')
-    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= options.max && error === false) {
-      if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err)
+    if (field != 'catDescription' && field != 'prodDescription' && e.target.innerText.length == 0) return handleError("Vous devez choisir un nom pour votre produit !")
+    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= max && error === false) {
       try {
         await update(field, e.target.innerText)
         pulseControls.start([ null, 'green' ])
@@ -89,7 +88,6 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
     <motion.div
       contentEditable="true"
       suppressContentEditableWarning={true}
-      suppressErrors={true}
       variants={{ 
         green: {
           boxShadow: [ '0 0 0 1px rgb(212, 212, 212)', '0 0 0 1.5px rgb(119, 219, 123)', '0 0 0 0px rgb(212, 212, 212)' ],
@@ -104,7 +102,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
         position: 'relative',
         variant: `Input.${ variant }`,
         display: 'block',
-        width: options?.width || '100%',
+        width,
         maxHeight: '313px',
         overflow: 'scroll',
         maxHeight: '38px',
@@ -112,9 +110,9 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
         borderRadius: '3px',
         bg: 'inherit',
         '&:focus': { outline: 'none' },
-        pl: options?.label ? '12px' : 0,
+        pl: field == 'prodPrice' ? '12px' : 0,
         lineHeight: 1.2,
-        '&::before': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' }
+        '&::before': (field == 'prodPrice' ? { content: "'€'", variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' } : '')
       }}
       onBlur={handleBlur}
       onKeyUp={handleKeyUp}

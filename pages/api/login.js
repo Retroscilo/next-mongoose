@@ -16,9 +16,6 @@ export default withSession(async (req, res) => {
     const match = await user.checkPassword(password)
     if (!match) throw new Error('invalid email/password')
 
-    const userInfo = { isLoggedIn: true, email, _id: user.id }
-    req.session.set('user', userInfo)
-    await req.session.save()
     res.json(user)
   } catch (error) {
     const { response: fetchResponse } = error

@@ -55,7 +55,7 @@ const Cards = () => {
   const update = () => mutate('/api/cards')
 
   return (
-    <div sx={{ display: 'flex', flexWrap: 'wrap' }}>
+    <div sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', maxWidth: '800px', mx: 'auto', my: 3, gridGap: 2, justifyItems: 'center', alignItems: 'center' }}>
       {!cards && <h1>Loading</h1>}
       {cards && cards.map((card, i) => (
         <Card

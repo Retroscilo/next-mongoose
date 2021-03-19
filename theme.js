@@ -20,8 +20,9 @@ const theme = {
   space: [ 0, 4, 8, 16, 32, 64, 128, 256, 512 ],
   fontSizes: [ 12, 14, 16, 20, 24, 32, 48, 64, 96 ],
   shadows: {
-    low: '0px 0px 7px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.12)',
+    low: '0 0 0 1px rgb(136 152 170 / 10%), 0 10px 20px 0 rgb(49 49 93 / 8%), 0 3px 10px 0 rgb(0 0 0 / 5%)',
     hover: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
+    high: '0 0 0 1px rgb(136 152 170 / 10%), 0 15px 35px 0 rgb(49 49 93 / 10%), 0 5px 15px 0 rgb(0 0 0 / 8%)',
   },
   lineHeights: {
     body: 1.2,
@@ -35,7 +36,7 @@ const theme = {
     text: '#000',
     textLight: '#565656',
     background: '#f4f5f5',
-    primary: 'rgb(255, 200, 55)',
+    primary: 'rgb(89, 130, 235)',
     accent: '#FF4D4D',
   },
   text: {
@@ -112,12 +113,40 @@ const theme = {
       variant: 'text.light',
       fontsize: 2,
     },
+    bold: {
+      variant: 'text.body',
+      fontWeight: '600',
+      fontsize: 2,
+    },
   },
   Card: {
-    width: 250,
-    border: '1px solid black',
-    m: '10px',
-    position: 'relative',
+    default: {
+      width: 250,
+      height: 320,
+      boxShadow: 'low',
+      bg: 'white',
+      display: 'flex',
+      border: '1px solid lightgrey',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: '3px',
+      cursor: 'pointer',
+      position: 'relative',
+      transition: 'box-shadow 0.3s ease-in-out',
+      '&:hover': { boxShadow: 'high' },
+    },
+    active: {
+      variant: 'Card.default',
+      '&::after': {
+        content: '"active"',
+        width: '100%',
+        bg: 'primary',
+        color: 'white',
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: 0,
+      },
+    },
   },
   Product: {
     //! Category height calculated on product height. If you have to change, DON'T FORGET to change the equation in Category. Bitch.

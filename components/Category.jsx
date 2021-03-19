@@ -68,16 +68,24 @@ const Category = ({ cardId, infoSet, refresh }) => {
             update={updateCategory}
             variant="h"
             field={'catName'}
-            width={560}
-            max={40}
+            options={{
+              width: 560,
+              max: 40,
+              empty: {
+                prevent: true,
+                err: 'Votre catégorie doit avoir un nom !'
+              }
+            }}
           />
           <Input
             defaultValue={catDescription}
             update={updateCategory}
             variant="light"
             field={'catDescription'}
-            width={500}
-            max={80}
+            options={{
+              width: 500,
+              max: 80
+            }}
           />
           <div
             sx={{

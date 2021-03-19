@@ -34,7 +34,7 @@ const Card = ({ name, description, id, update }) => {
 
   return (
     <div
-      ref={wrapperRef} sx={{ variant: 'Card' }}
+      ref={wrapperRef} sx={{ variant: 'Card.active' }}
       onClick={() => router.push(`/cards/${ id }`)}
     >
       <div

@@ -112,6 +112,6 @@ Form.propTypes = {
   onSubmit: PropTypes.func,
 }
 
-Input.prototype = {
+Input.propType = {
   field: PropTypes.object,
 }

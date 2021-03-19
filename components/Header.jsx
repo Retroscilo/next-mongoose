@@ -50,10 +50,10 @@ const Header = () => {
               <li
                 ref={accountOptions}
                 onClick={() => setDAO(!displayAccountOptions)}
-                sx={{ cursor: 'pointer', position: 'relative', '&::after': { content: displayAccountOptions && '""', width: '80%', height: '2px', bg: 'lightgrey', position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)' } }}
+                sx={{ cursor: 'pointer', position: 'relative' }}
               >
                 Mon compte
-                {displayAccountOptions && <ul sx={{ bg: 'white', position: 'absolute', right: 0, top: 5, width: 'fit-content', fontSize: 1, m: 0, p: 0, display: 'flex', flexDirection: 'column', borderRadius: '3px', border: '1px solid lightgrey', '& li': { px: 3, py: 3, ml: 0 }, '& li:hover': { bg: '#EDEDED' } }}>
+                {displayAccountOptions && <ul sx={{ bg: 'white', minWidth: '10rem', position: 'absolute', right: 0, top: 5, width: 'fit-content', fontSize: 1, m: 0, p: 0, display: 'flex', flexDirection: 'column', borderRadius: '3px', border: '1px solid lightgrey', boxShadow: 'high', '& li': { px: 3, py: 3, ml: 0 }, '& li:hover': { bg: '#EDEDED' } }}>
                   <li sx={{ bg: '#EDEDED', cursor: 'default' }}>{user.email}</li>
                   <li
                     sx={{ bg: 'white', cursor: 'pointer' }}

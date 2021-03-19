@@ -96,21 +96,35 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
           update={updateProduct}
           variant="regular"
           field={'prodName'}
-          max={30}
+          options={{
+            max: 30,
+            empty: {
+              prevent: true,
+              err: 'Vous devez choisir un nom pour votre produit !',
+            },
+          }}
         />
         <Input
           defaultValue={prodDescription}
           update={updateProduct}
           variant="light"
           field={'prodDescription'}
-          max={80}
+          options={{ max: 80 }}
         />
         <Input
           defaultValue={prodPrice}
           update={updateProduct}
           variant="light"
           field={'prodPrice'}
-          max={6}
+          options={{
+            max: 6,
+            inputMatch: /[^0-9.,]/,
+            empty: {
+              prevent: true,
+              err: 'Vous devez entrer un prix pour votre produit !',
+            },
+            label: '€',
+          }}
         />
         <DragDrop
           infoSet={{ imgSrc, cardId, prodId }}

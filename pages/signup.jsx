@@ -3,7 +3,7 @@
 import { jsx, Spinner} from 'theme-ui'
 import theme from '../theme'
 import fetchJson from '../lib/fetchJson'
-import useUser from '../lib/useUser'
+import useUser from '../lib/hooks/useUser'
 import Form from '../components/form'
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'

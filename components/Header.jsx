@@ -4,7 +4,7 @@
 import { jsx } from 'theme-ui'
 import React, { useState, useRef } from 'react'
 import Link from 'next/link'
-import useUser from '../lib/useUser'
+import useUser from '../lib/hooks/useUser'
 import { useRouter } from 'next/router'
 import fetchJson from '../lib/fetchJson'
 import { useClickOutside } from '../lib/hooks/useClickOutside'

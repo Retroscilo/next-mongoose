@@ -3,7 +3,7 @@
 /* import { Formik, Form, Field, ErrorMessage } from 'formik' */
 import { jsx } from 'theme-ui'
 import fetchJson from '../lib/fetchJson'
-import useUser from '../lib/useUser'
+import useUser from '../lib/hooks/useUser'
 import Form from '../components/form'
 import { useState } from 'react'
 

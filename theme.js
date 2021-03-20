@@ -121,11 +121,11 @@ const theme = {
   },
   Card: {
     default: {
+      display: 'flex',
+      flexDirection: 'column',
       width: 250,
       height: 320,
-      boxShadow: 'low',
       bg: 'white',
-      display: 'flex',
       border: '1px solid lightgrey',
       justifyContent: 'center',
       alignItems: 'center',
@@ -137,6 +137,9 @@ const theme = {
     },
     active: {
       variant: 'Card.default',
+      border: '2px solid',
+      borderColor: 'primary',
+      boxShadow: 'low',
       '&::after': {
         content: '"active"',
         width: '100%',

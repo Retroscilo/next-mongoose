@@ -3,7 +3,7 @@
 import { jsx, Spinner} from 'theme-ui'
 import theme from '../theme'
 import React, { useState } from 'react'
-import useUser from '../lib/useUser'
+import useUser from '../lib/hooks/useUser'
 import Input from '../components/Input'
 
 const OptionSection = ({title, children}) => (
@@ -15,7 +15,7 @@ const OptionSection = ({title, children}) => (
 
 const Account = () => {
   const { user } = useUser()
-  console.log(user.restaurants)
+  console.log(user?.restaurants)
   return (
     <div
       sx={{ 
@@ -35,7 +35,7 @@ const Account = () => {
             Général
             <ul sx={{ variant: 'text.light', pl: 3, mt: 3, '& > li': { mt: 2 }, '& > li:last-child': { mb: 2 } }}>
               <li>Utilisateur</li>
-              <li>Restaurant</li>
+              <li>Restaurants</li>
               <li>QR Code</li>
             </ul>
           </li>
@@ -67,15 +67,17 @@ const Account = () => {
           <div>Changer mon mot de passe</div>
           <div sx={{ color: 'crimson' }}>Supprimer mon compte</div>
         </OptionSection>
-        <OptionSection title={'Restaurant'}>
-          <div>Ces informations s'afficheront sur votre carte</div>
-          <div className="Account--input">Nom : <Input defaultValue={user.restaurant} /></div>
-          <div className="Account--input">Description : <Input defaultValue={user.restaurant} /></div>
-          <div className="Account--input">Adresse : <Input defaultValue={user.restaurant} /></div>
+        <OptionSection title={'Restaurants'}>
+          {user && user?.restaurants.map((restaurant, i) => (
+            <React.Fragment key={i}>
+              <div>Ces informations s'afficheront sur votre carte</div>
+              <div className="Account--input">Nom : <Input defaultValue={restaurant.name} /></div>
+              <div className="Account--input">Description : <Input defaultValue={restaurant.name} /></div>
+              <div className="Account--input">Adresse : <Input defaultValue={restaurant.name} /></div>
+            </React.Fragment>
+          ))}
         </OptionSection>
-        <OptionSection title={'QR Code'}>
-
-        </OptionSection>
+        <h1>QR codes</h1>
       </section>}
       <style jsx>{`
         .Account--input {

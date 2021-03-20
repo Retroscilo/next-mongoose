@@ -1,19 +1,21 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import fetchJson from '../lib/fetchJson'
 import { useClickOutside } from '../lib/hooks/useClickOutside'
+import { motion, useAnimation } from 'framer-motion'
 
-const Card = ({ name, description, id, update }) => {
+const Card = ({ name, description, id, update, active }) => {
   const router = useRouter()
   const [ options, setDisplayOptions ] = useState(false)
   const wrapperRef = useRef(null)
-
   // close options on outside click
   useClickOutside(wrapperRef, setDisplayOptions)
+  const [ isHover, setIsHover ] = useState(false)
+  const optionsControl = useAnimation()
 
   function displayOptions (e) {
     e.stopPropagation()
@@ -33,9 +35,12 @@ const Card = ({ name, description, id, update }) => {
   }
 
   return (
-    <div
-      ref={wrapperRef} sx={{ variant: 'Card.active' }}
+    <motion.div
+      ref={wrapperRef} sx={{ variant: active ? 'Card.active' : 'Card.default' }}
       onClick={() => router.push(`/cards/${ id }`)}
+      id={id}
+      onHoverStart={() => setIsHover(true)}
+      onHoverEnd={() => setIsHover(false)}
     >
       <div
         onClick={displayOptions}
@@ -50,7 +55,21 @@ const Card = ({ name, description, id, update }) => {
         }}
       />
       <h1>{name}</h1>
-      <p>{description}</p>
+      <motion.div
+        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+        animate={isHover ? 'extended' : 'closed'}
+        variants={{
+          closed: { height: 0, opacity: 0 },
+          extended: { height: 'fit-content', opacity: 1 },
+        }}
+        transition={{ opacity: { duration: 0.2 }, height: { duration: 0.2 } }}
+        initial="closed"
+      >
+        {!active &&
+        <div sx={{ bg: 'primary', color: 'white', p: '5px 12px', borderRadius: '3px' }}>Définir comme actif</div>}
+        <div sx={{ mt: 2 }}>Modifier</div>
+        <div sx={{ color: 'crimson', mt: 2 }}>Supprimer</div>
+      </motion.div>
       {options && (
         <div sx={{ bg: 'white', width: '100%', height: '100%', position: 'absolute', top: '0' }} onClick={e => e.stopPropagation()}>
           <ul>
@@ -59,13 +78,14 @@ const Card = ({ name, description, id, update }) => {
           </ul>
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
 
 export default Card
 
 Card.propTypes = {
+  active: PropTypes.bool,
   description: PropTypes.string,
   id: PropTypes.string,
   name: PropTypes.string,

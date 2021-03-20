@@ -3,7 +3,7 @@
 /** @jsx jsx */
 // @refresh reset
 import { jsx } from 'theme-ui'
-import useUser from '../../lib/useUser'
+import useUser from '../../lib/hooks/useUser'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
 import Category from '../../components/Category'

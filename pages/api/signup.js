@@ -9,7 +9,7 @@ export default withSession(async (req, res) => {
 
   try {
     const newUser = await User.create({ email, password })
-    req.session.set('user', { isLoggedIn: true, email, _id: newUser.id })
+    req.session.set('user', { isLoggedIn: true, email, userId: newUser._id })
     await req.session.save()
 
     res.status(201).send(newUser)

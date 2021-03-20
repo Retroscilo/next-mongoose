@@ -1,19 +1,21 @@
 import Card from '../../lib/models/card.model'
+import Restaurant from '../../lib/models/restaurant.model'
+import User from '../../lib/models/user.model'
 import nc from 'next-connect'
 import withSession from '../../lib/session'
-import connect from '../../lib/connectDB'
+import connect from '../../lib/middlewares/mongodb'
 
 const handler = nc()
   .post(withSession(async (req, res) => {
-    await connect()
-    const user = req.session.get('user')
-
     try {
+      const session = req.session.get('user')
+      const user = await User.findById(session.userId)
+
+      const { restaurantId, name } = req.body
+
       const card = await Card.create(
         {
-          name: req.body.name,
-          description: req.body.description,
-          createdBy: user._id,
+          restaurant: restaurantId,
           categories:
           [
             {
@@ -30,6 +32,13 @@ const handler = nc()
           ],
         },
       )
+
+      const restaurant = await Restaurant.findById(restaurantId)
+
+      restaurant.cards.push({ cardId: card._id, name })
+      await restaurant.save()
+      await card.save()
+
       res.status(200).json(card)
     } catch (e) {
       console.log(e)
@@ -37,8 +46,8 @@ const handler = nc()
     }
   }))
   .get(withSession(async (req, res) => {
-    await connect()
     const user = req.session.get('user')
+
     try {
       const cards = await Card
         .find({ createdBy: user._id })
@@ -52,7 +61,6 @@ const handler = nc()
     }
   }))
   .delete(async (req, res) => {
-    await connect()
     try {
       const deleted = await Card.findOneAndRemove({ _id: req.body.id })
       res.status(200).json(deleted)
@@ -62,4 +70,4 @@ const handler = nc()
     }
   })
 
-export default handler
+export default connect(handler)

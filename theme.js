@@ -86,6 +86,9 @@ const theme = {
   },
   Button: {
     primary: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       width: 'fit-content',
       height: '30px',
       lineheight: '50px',
@@ -101,9 +104,16 @@ const theme = {
     },
   },
   Input: { // Editable text field
+    hBold: {
+      variant: 'text.body',
+      fontSize: 4,
+      fontWeight: 'bold',
+      my: 3,
+    },
     h: {
       variant: 'text.body',
       fontSize: 4,
+      py: 1,
     },
     regular: {
       variant: 'text.body',
@@ -149,6 +159,12 @@ const theme = {
         position: 'absolute',
         bottom: 0,
       },
+    },
+    empty: {
+      variant: 'Card.default',
+      border: '2px solid',
+      borderColor: 'primary',
+      bg: 'transparent',
     },
   },
   Product: {

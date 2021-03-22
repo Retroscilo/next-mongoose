@@ -1,89 +1,124 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
+import withSession from '../../lib/session'
+import connect from '../../lib/middlewares/mongodb'
 import { jsx, Button } from 'theme-ui'
 import useUser from '../../lib/hooks/useUser'
-import useRestaurant from '../../lib/hooks/useRestaurant'
-import fetchJson from '../../lib/fetchJson'
-import useSwr, { mutate } from 'swr'
+import useSWR from 'swr'
+import User from '../../lib/models/user.model'
+import Restaurant from '../../lib/models/restaurant.model'
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/Card'
-import Modal from '../../components/Modal'
+import fetchJSON from '../../lib/fetchJson'
 
-const ModalForm = ({ display, id, handleClose, update }) => {
-  const { user, mutateUser } = useUser()
-  const handleSubmit = async e => {
-    e.preventDefault()
-    const req = {
-      name: e.currentTarget.name.value,
-      restaurantId: id,
-    }
-    //! Immediate revalidation to implement
-    // Post new card to DB
-    await update(req)
-    handleClose()
+/** Futur implements:
+ * -> micro-animation when a card is set as activeCard
+ * -> micro-animation when adding a card
+ */
+
+const Cards = ({ restaurants }) => {
+  useUser({ redirectTo: '/login', redirectIfFound: false })
+
+  // use first restaurant in list (data already here with ssr)
+  const [ restaurant, setRestaurant ] = useState(restaurants[0])
+
+  // then subscribe to given restaurant data (e.g. first in list on request)
+  const { data: freshRestaurant, mutate } = useSWR(`/api/restaurant/${ restaurant._id }`, fetchJSON)
+
+  // update stale data with SWR
+  useEffect(() => freshRestaurant && setRestaurant(freshRestaurant), [ freshRestaurant ])
+
+  const addCart = async () => {
+    // pre-populate data
+    const date = new Date()
+    setRestaurant({ ...restaurant, cards: [ ...restaurant.cards, { cardId: 'prefetched', name: 'Menu ' + date.getFullYear() } ] })
+
+    // then do a post request
+    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    // finally re-validate cached data
+    mutate()
   }
-  if (!display) return null
-  return (
-    <div className="modal" sx={{ width: '100vw', height: '100vh', bg: 'rgba(196, 196, 196, 0.5)', position: 'absolute', display: 'flex', justifyContent: 'center', alignItems: 'center', top: '0' }}>
-      <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
-        <input type="text" name="name" required />
-        <textarea name="description" id="" cols="30" rows="10" />
-        <button
-          type="submit"
-        >Créer ma nouvelle carte</button>
-      </form>
-    </div>
-  )
-}
 
-const Cards = () => {
-  const { user, mutateUser } = useUser({
-    redirectTo: '/login',
-    redirectIfFound: false,
-  })
-  const { restaurants, updateRestaurants } = useRestaurant()
-  const [ restaurantId, setRestaurantId ] = useState(null)
-  const [ activeCard, setActiveCard ] = useState(null)
-  useEffect(() => {
-    if (restaurants) {
-      setRestaurantId(restaurants[0]._id)
-      setActiveCard(restaurants[0].activeCard)
-    }
-  }, [ restaurants ])
+  const setActive = async cardId => {
+    setRestaurant({ ...restaurant, activeCard: cardId })
+    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+      method: 'PUT',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify(cardId),
+    })
+    mutate()
+  }
 
-  // new card modal
-  const [ modal, setModal ] = useState(false)
-  // gather cards
-  const { data: cards } = useSwr('/api/cards')
-  // update component when adding or deleting Cards
-  const update = () => mutateUser('/api/user')
+  const updateCardName = async (cardId, newName) => {
+    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+      method: 'PATCH',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({ cardId, newName }),
+    })
+    mutate()
+  }
+
+  const deleteCard = async cardId => {
+    const cardIndex = restaurant.cards.findIndex(card => card.cardId === cardId)
+
+    restaurant.cards.splice(cardIndex, 1)
+    setRestaurant({ ...restaurant })
+
+    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+      method: 'DELETE',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify(cardId),
+    })
+    mutate()
+  }
 
   return (
     <>
-      <ul sx={{ display: 'flex', width: '100%' }}>
-        {restaurants && restaurants.map(restaurant => <li key={restaurant._id}>{restaurant.restaurantName}</li>)}
+      <ul sx={{ display: 'flex', width: '100%', bg: 'white', my: 0, height: '50px', alignItems: 'center' }}>
+        {restaurants && restaurants.map(restaurant => (
+          <li
+            key={restaurant._id}
+            onClick={() => setRestaurant(restaurant)}
+          >
+            {restaurant.restaurantName}
+          </li>))}
       </ul>
       <div sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', maxWidth: '800px', mx: 'auto', my: 3, gridGap: 2, justifyItems: 'center', alignItems: 'center' }}>
-        {!cards && <h1>Loading</h1>}
-        {restaurants && restaurants.find(restaurant => restaurant._id === restaurantId)?.cards.map(card => (
+        {!restaurants && <h1>Loading</h1>}
+        {restaurants && restaurant.cards.map(card => (
           <Card
             key={card.cardId}
             id={card.cardId}
             name={card.name}
-            update={update}
-            active={card.cardId === activeCard}
+            setActive={setActive}
+            updateName={updateCardName}
+            deleteCard={deleteCard}
+            active={card.cardId === restaurant.activeCard}
           />
         ))}
-        <ModalForm display={modal} handleClose={setModal} id={restaurantId} update={updateRestaurants} />
-        {/* <Modal>
-          {() => (<div sx={{ bg: 'white', width: '100px', height: '100px' }}>ezfzef</div>)}
-        </Modal> */}
-        <Button onClick={setModal}>
-          Ajouter une carte
-        </Button>
+        <div
+          onClick={addCart}
+          sx={{ variant: 'Card.empty' }}
+        >
+          <div sx={{ variant: 'Add.product.desktop', position: 'initial', '&:hover': { boxShadow: 'low' } }} />
+        </div>
       </div>
     </>
   )
 }
+
+export const getServerSideProps = connect(withSession(async ({ req, res }) => {
+  const session = req.session.get('user')
+  const user = await User.findById(session.userId)
+  const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
+
+  return {
+    props: { restaurants: JSON.parse(JSON.stringify(restaurants)) },
+  }
+}))
 
 export default Cards

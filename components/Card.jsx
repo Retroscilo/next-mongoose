@@ -7,8 +7,9 @@ import { useRouter } from 'next/router'
 import fetchJson from '../lib/fetchJson'
 import { useClickOutside } from '../lib/hooks/useClickOutside'
 import { motion, useAnimation } from 'framer-motion'
+import Input from './Input'
 
-const Card = ({ name, description, id, update, active }) => {
+const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) => {
   const router = useRouter()
   const [ options, setDisplayOptions ] = useState(false)
   const wrapperRef = useRef(null)
@@ -54,9 +55,21 @@ const Card = ({ name, description, id, update, active }) => {
           right: '10px',
         }}
       />
-      <h1>{name}</h1>
+      <Input
+        defaultValue={name}
+        variant={'hBold'}
+        update={updateName}
+        field={id}
+        options={{
+          empty: {
+            prevent: true,
+            err: 'Vous devez nous donner un nom pour votre carte !',
+          },
+          after: isHover ? 'url(/editAlt.svg)' : '',
+        }}
+      />
       <motion.div
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 3 }}
         animate={isHover ? 'extended' : 'closed'}
         variants={{
           closed: { height: 0, opacity: 0 },
@@ -66,18 +79,24 @@ const Card = ({ name, description, id, update, active }) => {
         initial="closed"
       >
         {!active &&
-        <div sx={{ bg: 'primary', color: 'white', p: '5px 12px', borderRadius: '3px' }}>Définir comme actif</div>}
+        <div
+          sx={{ bg: 'primary', color: 'white', p: '5px 12px', borderRadius: '3px' }}
+          onClick={e => {
+            e.stopPropagation()
+            setActive(id)
+          }}
+        >
+          Définir comme actif
+        </div>}
         <div sx={{ mt: 2 }}>Modifier</div>
-        <div sx={{ color: 'crimson', mt: 2 }}>Supprimer</div>
+        <div
+          sx={{ color: 'crimson', mt: 2 }}
+          onClick={e => {
+            e.stopPropagation()
+            deleteCard(id)
+          }}
+        >Supprimer</div>
       </motion.div>
-      {options && (
-        <div sx={{ bg: 'white', width: '100%', height: '100%', position: 'absolute', top: '0' }} onClick={e => e.stopPropagation()}>
-          <ul>
-            <li onClick={() => console.log('test')}>modifier</li>
-            <li onClick={handleDelete}>supprimer</li>
-          </ul>
-        </div>
-      )}
     </motion.div>
   )
 }

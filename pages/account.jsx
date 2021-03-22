@@ -2,9 +2,15 @@
 /** @jsx jsx */
 import { jsx, Spinner} from 'theme-ui'
 import theme from '../theme'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useUser from '../lib/hooks/useUser'
 import Input from '../components/Input'
+import withSession from '../lib/session'
+import connect from '../lib/middlewares/mongodb'
+import User from '../lib/models/user.model'
+import Restaurant from '../lib/models/restaurant.model'
+import fetchJSON from '../lib/fetchJson'
+import useSWR from 'swr'
 
 const OptionSection = ({title, children}) => (
   <>
@@ -13,9 +19,20 @@ const OptionSection = ({title, children}) => (
   </>
 )
 
-const Account = () => {
+const Account = ({ SSRrestaurants }) => {
   const { user } = useUser()
-  console.log(user?.restaurants)
+  const [ restaurants, setRestaurants ] = useState(SSRrestaurants)
+  const { data: freshRestaurants, mutate } = useSWR('/api/restaurant')
+  useEffect(() => freshRestaurants && setRestaurants(freshRestaurants), [ freshRestaurants ])
+
+  async function addRestaurant () {
+    await fetchJSON('/api/restaurant', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+    })
+    mutate()
+  }
+
   return (
     <div
       sx={{ 
@@ -43,7 +60,7 @@ const Account = () => {
         </ul>
       </nav>
       {!user && <Spinner />}
-      {user && <section sx={{ px: 3 }}>
+      {user && <section sx={{ px: 3, height: `calc(100vh - ${ theme.sizes.footer + theme.sizes.header }px)`, overflow: 'scroll' }}>
         <h1>Général</h1>
         <OptionSection title={'Utilisateur'}>
           <div className="Account--input">
@@ -61,6 +78,7 @@ const Account = () => {
                   match: value => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value),
                   err: 'Verifiez votre adresse mail !',
                 },
+                after: 'url(/editAlt.svg)'
               }}
             />
           </div>
@@ -68,15 +86,58 @@ const Account = () => {
           <div sx={{ color: 'crimson' }}>Supprimer mon compte</div>
         </OptionSection>
         <OptionSection title={'Restaurants'}>
-          {user && user?.restaurants.map((restaurant, i) => (
+          <div>Ces informations s'afficheront sur votre carte</div>
+          {user && restaurants.map((restaurant, i) => (
             <React.Fragment key={i}>
-              <div>Ces informations s'afficheront sur votre carte</div>
-              <div className="Account--input">Nom : <Input defaultValue={restaurant.name} /></div>
-              <div className="Account--input">Description : <Input defaultValue={restaurant.name} /></div>
-              <div className="Account--input">Adresse : <Input defaultValue={restaurant.name} /></div>
+              <div className="Account--input">
+                Nom : 
+                <Input 
+                  defaultValue={restaurant.restaurantName}
+                  options={{
+                    empty: {
+                      prevent: true,
+                      err: "Vous devez nommer votre restaurant !"
+                    },
+                    max: 30,
+                    after: 'url(/editAlt.svg)'
+                  }} 
+                />
+              </div>
+              <div className="Account--input">
+                Description : 
+                <Input 
+                  defaultValue={restaurant.restaurantName}
+                  options={{
+                    empty: {
+                      prevent: true,
+                      err: "Vous devez nommer votre restaurant !"
+                    },
+                    max: 30,
+                    after: 'url(/editAlt.svg)'
+                  }} 
+                />
+              </div>
+              <div className="Account--input">
+                Adresse : 
+                <Input 
+                  defaultValue={restaurant.restaurantName}
+                  options={{
+                    empty: {
+                      prevent: true,
+                      err: "Vous devez nommer votre restaurant !"
+                    },
+                    max: 30,
+                    after: 'url(/editAlt.svg)'
+                  }} 
+                />
+              </div>
             </React.Fragment>
           ))}
         </OptionSection>
+        <div sx={{ width: '30rem', my:3 }}>
+          <div sx={{ variant: 'Button.primary', mx: 'auto' }}onClick={addRestaurant}>Ajouter un restaurant</div>
+        </div>
+        
         <h1>QR codes</h1>
       </section>}
       <style jsx>{`
@@ -88,5 +149,15 @@ const Account = () => {
     </div>
   )
 }
+
+export const getServerSideProps = connect(withSession(async ({ req, res }) => {
+  const session = req.session.get('user')
+  const user = await User.findById(session.userId)
+  const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
+
+  return {
+    props: { SSRrestaurants: JSON.parse(JSON.stringify(restaurants)) },
+  }
+}))
 
 export default Account

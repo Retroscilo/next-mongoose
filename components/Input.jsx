@@ -72,8 +72,8 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
   // empty field Error
   const handleBlur = async e => {
     if (options?.empty?.prevent && e.target.innerText.length == 0) return handleError(options?.empty?.err || 'Vous devez remplir ce champ !')
-    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= options.max && error === false) {
-      if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err)
+    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= (options?.max || 999) && error === false) {
+      if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err || 'Vérifiez votre saisie !')
       try {
         await update(field, e.target.innerText)
         pulseControls.start([ null, 'green' ])
@@ -112,10 +112,20 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
         borderRadius: '3px',
         bg: 'inherit',
         '&:focus': { outline: 'none' },
-        pl: options?.label ? '12px' : 0,
+        pl: options?.label ? '12px' : 1,
+        pr: options?.after ? '18px' : 1,
         lineHeight: 1.2,
-        '&::before': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' }
+        '&::before': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' },
+        '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, }
       }}
+      onFocus={e => {
+        e.preventDefault()
+        e.stopPropagation()
+        setTimeout(() => {
+          document.execCommand('selectAll',false,null)
+        }, 150);
+      }}
+      onClick={e => e.stopPropagation()}
       onBlur={handleBlur}
       onKeyUp={handleKeyUp}
       onKeyPress={handleKeyPress}

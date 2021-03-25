@@ -20,7 +20,7 @@ const Cards = ({ restaurants }) => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
 
   // use first restaurant in list (data already here with ssr)
-  const [ restaurant, setRestaurant ] = useState(restaurants[0])
+  const [ restaurant, setRestaurant ] = useState(restaurants[0] || false)
 
   // then subscribe to given restaurant data (e.g. first in list on request)
   const { data: freshRestaurant, mutate } = useSWR(`/api/restaurant/${ restaurant._id }`, fetchJSON)
@@ -34,7 +34,7 @@ const Cards = ({ restaurants }) => {
     setRestaurant({ ...restaurant, cards: [ ...restaurant.cards, { cardId: 'prefetched', name: 'Menu ' + date.getFullYear() } ] })
 
     // then do a post request
-    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+    await fetchJSON(`/api/card/${ restaurant._id }`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -54,7 +54,7 @@ const Cards = ({ restaurants }) => {
   }
 
   const updateCardName = async (cardId, newName) => {
-    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+    await fetchJSON(`/api/card/${ restaurant._id }`, {
       method: 'PATCH',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify({ cardId, newName }),
@@ -68,7 +68,7 @@ const Cards = ({ restaurants }) => {
     restaurant.cards.splice(cardIndex, 1)
     setRestaurant({ ...restaurant })
 
-    await fetchJSON(`/api/restaurant/${ restaurant._id }`, {
+    await fetchJSON(`/api/card/${ restaurant._id }`, {
       method: 'DELETE',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(cardId),
@@ -78,18 +78,19 @@ const Cards = ({ restaurants }) => {
 
   return (
     <>
+      {restaurant &&
       <ul sx={{ display: 'flex', width: '100%', bg: 'white', my: 0, height: '50px', alignItems: 'center' }}>
-        {restaurants && restaurants.map(restaurant => (
+        {restaurants.map(restaurant => (
           <li
             key={restaurant._id}
             onClick={() => setRestaurant(restaurant)}
           >
             {restaurant.restaurantName}
           </li>))}
-      </ul>
+      </ul>}
       <div sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', maxWidth: '800px', mx: 'auto', my: 3, gridGap: 2, justifyItems: 'center', alignItems: 'center' }}>
-        {!restaurants && <h1>Loading</h1>}
-        {restaurants && restaurant.cards.map(card => (
+        {!restaurant && <div>Oups, vous n'avez pas de restaurants enregistré ! Rendez-vous ici pour créer un restaurant</div>}
+        {restaurant && restaurant.cards.map(card => (
           <Card
             key={card.cardId}
             id={card.cardId}
@@ -100,12 +101,13 @@ const Cards = ({ restaurants }) => {
             active={card.cardId === restaurant.activeCard}
           />
         ))}
+        {restaurant &&
         <div
           onClick={addCart}
           sx={{ variant: 'Card.empty' }}
         >
           <div sx={{ variant: 'Add.product.desktop', position: 'initial', '&:hover': { boxShadow: 'low' } }} />
-        </div>
+        </div>}
       </div>
     </>
   )

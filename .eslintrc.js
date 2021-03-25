@@ -37,5 +37,6 @@ module.exports = {
     'sort-imports': 'off',
     'react/jsx-pascal-case': 'off',
     'operator-linebreak': 'off',
+    'no-useless-escape': 'off',
   },
 }

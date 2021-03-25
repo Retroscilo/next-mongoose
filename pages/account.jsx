@@ -12,10 +12,9 @@ import Restaurant from '../lib/models/restaurant.model'
 import fetchJSON from '../lib/fetchJson'
 import useSWR from 'swr'
 
-const OptionSection = ({title, children}) => (
+const OptionCard = ({title, children, subtitle}) => (
   <>
-    <h2 sx={{ variant: 'text.body', fontSize: 3, fontWeight: 'normal' }}>{title}</h2>
-    <div sx={{ bg: 'white', p: 3, pb: 3, px: 3, maxWidth: '30rem', '& > *:not(:first-of-type)': { mt: 3 } }}>{children}</div>
+    <div sx={{ bg: 'white', p: 3, pb: 3, px: 3, maxWidth: '30rem', my: 3, '& > *:not(:first-of-type)': { mt: 4 } }}>{children}</div>
   </>
 )
 
@@ -24,7 +23,7 @@ const Account = ({ SSRrestaurants }) => {
   const [ restaurants, setRestaurants ] = useState(SSRrestaurants)
   const { data: freshRestaurants, mutate } = useSWR('/api/restaurant')
   useEffect(() => freshRestaurants && setRestaurants(freshRestaurants), [ freshRestaurants ])
-
+  console.log(restaurants)
   async function addRestaurant () {
     await fetchJSON('/api/restaurant', {
       method: 'POST',
@@ -33,19 +32,38 @@ const Account = ({ SSRrestaurants }) => {
     mutate()
   }
 
+  async function modifyRestaurant (restaurantId, body) {
+    console.log('reached')
+    await fetchJSON(`/api/restaurant/${ restaurantId }`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    mutate()
+  }
+
+  async function deleteRestaurant (restaurantId) {
+    await fetchJSON(`/api/restaurant/${ restaurantId }`, {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+    })
+    mutate()
+  }
+
   return (
     <div
-      sx={{ 
+      sx={{
         display: 'grid',
         gridTemplateColumns: '250px 1fr',
-        minHeight: `calc(100vh - ${ theme.sizes.footer + theme.sizes.header }px)`
       }}
     >
       <nav
-        sx={{ 
+        sx={{
           bg: 'white',
-          borderRight: '1px solid lightgrey', p: 0, m: 0
-         }}
+          borderRight: '1px solid lightgrey',
+          p: 0,
+          m: 0,
+        }}
       >
         <ul>
           <li>
@@ -60,84 +78,86 @@ const Account = ({ SSRrestaurants }) => {
         </ul>
       </nav>
       {!user && <Spinner />}
-      {user && <section sx={{ px: 3, height: `calc(100vh - ${ theme.sizes.footer + theme.sizes.header }px)`, overflow: 'scroll' }}>
+      {user && <section sx={{ px: 3, height: 'min', overflow: 'auto' }}>
         <h1>Général</h1>
-        <OptionSection title={'Utilisateur'}>
+        <h2 sx={{ variant: 'text.body', fontSize: 3, fontWeight: 'normal' }}>Utilisateur</h2>
+        <OptionCard title={'Utilisateur'}>
           <div className="Account--input">
-            Email : 
-            <Input 
+            Email :
+            <Input
               defaultValue={user.email}
-              variant={'bold'} 
-              options={{ 
+              variant={'bold'}
+              options={{
                 max: 40,
-                empty: { 
+                empty: {
                   prevent: true,
-                  err: 'Vous devez entrez votre email !' 
+                  err: 'Vous devez entrez votre email !',
                 },
-                validator: { 
+                validator: {
                   match: value => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value),
                   err: 'Verifiez votre adresse mail !',
                 },
-                after: 'url(/editAlt.svg)'
+                after: 'url(/editAlt.svg)',
               }}
             />
           </div>
           <div>Changer mon mot de passe</div>
           <div sx={{ color: 'crimson' }}>Supprimer mon compte</div>
-        </OptionSection>
-        <OptionSection title={'Restaurants'}>
-          <div>Ces informations s'afficheront sur votre carte</div>
-          {user && restaurants.map((restaurant, i) => (
-            <React.Fragment key={i}>
-              <div className="Account--input">
-                Nom : 
-                <Input 
-                  defaultValue={restaurant.restaurantName}
-                  options={{
-                    empty: {
-                      prevent: true,
-                      err: "Vous devez nommer votre restaurant !"
-                    },
-                    max: 30,
-                    after: 'url(/editAlt.svg)'
-                  }} 
-                />
-              </div>
-              <div className="Account--input">
-                Description : 
-                <Input 
-                  defaultValue={restaurant.restaurantName}
-                  options={{
-                    empty: {
-                      prevent: true,
-                      err: "Vous devez nommer votre restaurant !"
-                    },
-                    max: 30,
-                    after: 'url(/editAlt.svg)'
-                  }} 
-                />
-              </div>
-              <div className="Account--input">
-                Adresse : 
-                <Input 
-                  defaultValue={restaurant.restaurantName}
-                  options={{
-                    empty: {
-                      prevent: true,
-                      err: "Vous devez nommer votre restaurant !"
-                    },
-                    max: 30,
-                    after: 'url(/editAlt.svg)'
-                  }} 
-                />
-              </div>
-            </React.Fragment>
-          ))}
-        </OptionSection>
-        <div sx={{ width: '30rem', my:3 }}>
-          <div sx={{ variant: 'Button.primary', mx: 'auto' }}onClick={addRestaurant}>Ajouter un restaurant</div>
-        </div>
-        
+        </OptionCard>
+        <h2 sx={{ variant: 'text.body', fontSize: 3, fontWeight: 'normal' }}>Restaurants</h2>
+        <h3 sx={{ variant: 'text.light', fontSize: 2, fontWeight: 'normal' }} >Ces informations s'afficheront sur votre carte</h3>
+        {(user && restaurants.length === 0) &&
+          <div>Vous n'avez pas encore de restaurants</div>
+        }
+        {user && restaurants.map(restaurant => (
+          <OptionCard
+            key={restaurant._id}
+            title={'Restaurants'}
+            subtitle={"Ces informations s'afficheront sur votre carte"}
+          >
+            <div className="Account--input">
+              Nom :
+              <Input
+                defaultValue={restaurant.restaurantName}
+                field={'restaurantName'}
+                update={(field, newValue) => modifyRestaurant(restaurant._id, { field, newValue })}
+                options={{
+                  empty: {
+                    prevent: true,
+                    err: 'Vous devez nommer votre restaurant !',
+                  },
+                  max: 30,
+                  after: 'url(/editAlt.svg)',
+                }}
+              />
+            </div>
+            <div className="Account--input">
+              Description :
+              <Input
+                defaultValue={restaurant.restaurantDescription || 'Ajouter une description'}
+                variant={!restaurant.restaurantDescription ? 'light' : ''}
+                options={{ max: 50, after: 'url(/editAlt.svg)' }}
+              />
+            </div>
+            <div className="Account--input">
+              Adresse :
+              <Input
+                defaultValue={restaurant.location || 'Ajouter une adresse'}
+                variant={!restaurant.location ? 'light' : ''}
+                options={{ max: 50, after: 'url(/editAlt.svg)' }}
+              />
+            </div>
+            <div
+              sx={{ color: 'crimson' }}
+              onClick={() => deleteRestaurant(restaurant._id)}
+            >Supprimer ce restaurant</div>
+          </OptionCard>
+        ))}
+        {(user && restaurants.length < 3) &&
+          <div sx={{ width: '30rem', my: 3 }}>
+            <div sx={{ variant: 'Button.primary', mx: 'auto' }}onClick={addRestaurant}>Ajouter un restaurant</div>
+          </div>
+        }
         <h1>QR codes</h1>
       </section>}
       <style jsx>{`

@@ -26,8 +26,7 @@ const handler = nc({ attachParams: true })
       const user = await User.findById(userId)
       const newRestaurant = await Restaurant.create({ restaurantName: restaurantName || 'Nouveau restaurant', owner: user._id })
 
-      // Prescience... this will be the line your looking for resolving restaurant problem o.o
-      /* if (user.restaurants.length > 0) return res.status(401).json({ err: 'Vous avez déjà un restaurant' }) */
+      if (user.restaurants.length > 2) return res.status(401).json({ err: 'Vous ne pouvez pas enregistrer plus de 3 restaurants !' })
 
       user.restaurants.push(newRestaurant._id)
       await user.save()

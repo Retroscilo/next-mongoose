@@ -18,9 +18,9 @@ const Header = () => {
   const accountOptions = useRef(null)
   useClickOutside(accountOptions, () => setDAO(false))
   return (
-    <header sx={{ width: '100vw', background: 'white', height: 'header', boxSizing: 'content-box', display: 'inline-block', borderBottom: '1px solid darkgrey', position: 'sticky', top: '0', zIndex: '600' }}>
+    <header sx={{ background: 'white', height: 'header', boxSizing: 'content-box', display: 'inline-block', borderBottom: '1px solid darkgrey', position: 'sticky', top: '0', zIndex: '600', width: '100%' }}>
       <nav>
-        <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100vw', height: 'header', px: 3, m: 0, '& li': { ml: 3 } }}>
+        <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: 'header', px: 3, m: 0, '& li': { ml: 3 } }}>
           <li sx={{ position: 'absolute', left: 0 }}>
             <Link href="/">
               <a>PixMe</a>

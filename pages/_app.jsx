@@ -21,7 +21,7 @@ function MyApp ({ Component, pageProps }) {
       }}
     >
       <ThemeProvider theme={ theme } component={ Component }>
-        <div sx={{ minHeight: `calc(100vh - ${theme.sizes.footer}px)` }}>
+        <div sx={{ minHeight: 'minGlobal' }}>
           <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, 'a': { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
             <title>PixMe</title>

@@ -106,7 +106,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
         display: 'block',
         width: options?.width || '100%',
         maxHeight: '313px',
-        overflow: 'scroll',
+        overflow: 'auto',
         maxHeight: '38px',
         border: 'none',
         borderRadius: '3px',

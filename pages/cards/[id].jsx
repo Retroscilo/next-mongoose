@@ -32,12 +32,12 @@ const Card = () => {
   }
 
   return (
-    <div sx={{ width: '100vw', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       {!categories && <h1>Loading</h1>}
       {categories
         && <>
           <CardHeader />
-          <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100vw', zIndex: 60 }}>
+          <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
             <ul sx={{ display: 'flex', justifyContent: 'space-between', maxWidth: 'body', mx: 'auto', px: 3 }}>
               {categories.map(category => (
                 <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>

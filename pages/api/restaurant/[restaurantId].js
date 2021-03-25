@@ -7,30 +7,28 @@ import Card from '../../../lib/models/card.model'
 
 const handler = nc({ attachParams: true })
   .get(async (req, res) => {
+    // Get restaurant informations & cards (SWR used in /cards)
     try {
-      const restaurant = await Restaurant.findById(req.query.restaurantId)
+      const restaurantId = req.query.restaurantId
+      // l'utilisateur n'a pas de restaurant
+      if (restaurantId === 'undefined') return res.status(404).json({ err: 'Aucun restaurant défini' })
+      const restaurant = await Restaurant.findById(restaurantId)
       return res.status(200).json(restaurant)
     } catch (err) {
       console.log(err)
       return res.status(404).send('restaurants not found')
     }
   })
-  .post(async (req, res) => {
-    // Create new card 
+  .patch(async (req, res) => {
+    // Change restaurant informations
     try {
-      const { restaurantId } = req.query
-      const card = await Card.create({ restaurantId })
-      const restaurant = await Restaurant.findById(restaurantId)
-      const date = new Date()
-      restaurant.cards.push({ cardId: card._id, name: 'Menu ' + date.getFullYear() })
-
-      await card.save()
-      await restaurant.save()
-
-      return res.status(200).json(restaurant)
+      const restaurantId = req.query.restaurantId
+      const { field, newField } = req.body
+      console.log(req.body)
+      res.status(200).end()
     } catch (err) {
       console.log(err)
-      return res.status(400).send(err)
+      res.status(400).send({ err })
     }
   })
   .put(async (req, res) => {
@@ -50,47 +48,30 @@ const handler = nc({ attachParams: true })
       return res.status(400).send(err)
     }
   })
-  .patch(async (req, res) => {
-    // Change card name
-    try {
-      const { restaurantId } = req.query
-      const { cardId, newName } = req.body
-      const updatedCard = { cardId, name: newName }
-
-      const restaurant = await Restaurant.findById(restaurantId)
-
-      const cardIndex = restaurant.cards.findIndex(card => card.cardId.toString() === cardId)
-      if (cardIndex === -1) return res.status(404).send('Il semble y avoir un problème avec vos cartes')
-      restaurant.cards[cardIndex] = updatedCard
-
-      await restaurant.save()
-
-      return res.status(200).send(restaurant)
-    } catch (err) {
-      console.log(err)
-      res.status(400).send(err)
-    }
-  })
   .delete(async (req, res) => {
-    // Delete card
+    // Delete restaurant (account)
     try {
       const { restaurantId } = req.query
-      const cardId = req.body
+      const { userId } = req.session.get('user')
 
-      const restaurant = await Restaurant.findById(restaurantId)
-      const cardIndex = restaurant.cards.findIndex(card => card.cardId.toString() === cardId)
-      if (cardIndex === -1) return res.status(404).send('Il y a eu un problème avec votre carte !')
-      restaurant.cards.splice(cardIndex, 1)
+      // clean restaurant in user's list
+      const user = await User.findById(userId)
+      const restaurantIndex = user.restaurants.indexOf(restaurantId)
+      if (restaurantIndex === -1) return res.status(404).send('Il y a eu un problème lors de la suppression du restaurant: il ne vous appartient pas')
+      user.restaurants.splice(restaurantIndex, 1)
+      await user.save()
 
-      await restaurant.save()
+      // Clean all cards relative to restaurant
+      await Card.deleteMany({ restaurantId })
 
-      await Card.findByIdAndDelete(cardId)
+      // clean restaurant
+      await Restaurant.findByIdAndDelete(restaurantId)
 
-      return res.status(200).json(restaurant)
+      return res.status(200).json(user)
     } catch (err) {
       console.log(err)
       return res.status(400).send(err)
     }
   })
 
-export default connect(handler)
+export default withSession(connect(handler))

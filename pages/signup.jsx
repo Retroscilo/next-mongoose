@@ -63,7 +63,7 @@ const SignUp = () => {
   const checkPassword = value => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)
 
   return (
-    <div sx={{ display: 'grid', gridTemplateColumns: ['1fr', '20rem 1fr'], height: `calc(100vh - ${theme.sizes.header + theme.sizes.footer}px)`, justifyItems: 'center', alignItems: 'center' }}>
+    <div sx={{ display: 'grid', gridTemplateColumns: ['1fr', '20rem 1fr'], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
       <div
         sx={{ display: ['none', 'initial'], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
       >Créez votre carte digitale en 5 minutes</div>

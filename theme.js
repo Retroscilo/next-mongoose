@@ -5,6 +5,8 @@ const theme = {
     body: 1120,
     header: 70,
     footer: 100,
+    minGlobal: 'calc(100vh - 101px)',
+    min: 'calc(100vh - 171px)',
   },
   fonts: {
     body: 'Ubuntu, sans-serif',

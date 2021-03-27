@@ -23,9 +23,12 @@ const handler = nc({ attachParams: true })
     // Change restaurant informations
     try {
       const restaurantId = req.query.restaurantId
-      const { field, newField } = req.body
-      console.log(req.body)
-      res.status(200).end()
+      const { field, newValue } = req.body
+      const restaurant = await Restaurant.findById(restaurantId)
+      restaurant[field] = newValue
+      await restaurant.save()
+
+      res.status(200).send(restaurant)
     } catch (err) {
       console.log(err)
       res.status(400).send({ err })

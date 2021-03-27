@@ -34,9 +34,9 @@ const SignUp = () => {
       )
       setIsSignedUp(true)
     } catch (error) {
-      switch(error.data.error.code) {
-        case 11000: setErrorMsg('Ce mail est déjà utilisé'); break;
-        default: setErrorMsg("Nous rencontrons des difficultées. Essayez de recharger la page.")
+      switch (error.data.error.code) {
+      case 11000: setErrorMsg('Ce mail est déjà utilisé'); break
+      default: setErrorMsg('Nous rencontrons des difficultées. Essayez de recharger la page.')
       }
     }
     setIsLoading(false)
@@ -55,7 +55,7 @@ const SignUp = () => {
       })
       router.push('/cards')
     } catch (err) {
-      setErrorMsg("Nous rencontrons des difficultées. Essayez de recharger la page.")
+      setErrorMsg('Nous rencontrons des difficultées. Essayez de recharger la page.')
     }
   }
 
@@ -63,9 +63,9 @@ const SignUp = () => {
   const checkPassword = value => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)
 
   return (
-    <div sx={{ display: 'grid', gridTemplateColumns: ['1fr', '20rem 1fr'], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
+    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '20rem 1fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
       <div
-        sx={{ display: ['none', 'initial'], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
+        sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
       >Créez votre carte digitale en 5 minutes</div>
       {!isSignedUp &&
         <Form
@@ -81,12 +81,12 @@ const SignUp = () => {
         </Form>
       }
       {isSignedUp &&
-      <Form 
+      <Form
         onSubmit={addRestaurant}
         title={'Quel est le nom de votre restaurant ?'}
         subTitle={'(Vous pourrez le modifier plus tard dans vos réglages)'}
         fields={[
-          { type: 'text', name: 'Nom de votre restaurant', check: value => value.length > 0}
+          { type: 'text', name: 'Nom de votre restaurant', check: value => value.length > 0 },
         ]}
       >
         <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>

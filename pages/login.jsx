@@ -9,7 +9,7 @@ import { useState } from 'react'
 
 const Login = () => {
   const { mutateUser } = useUser({
-    redirectTo: '/',
+    redirectTo: '/cards',
     redirectIfFound: true,
   })
 

@@ -115,6 +115,7 @@ const Cards = ({ restaurants }) => {
 
 export const getServerSideProps = connect(withSession(async ({ req, res }) => {
   const session = req.session.get('user')
+  if (!session) return { props: { restaurants: [] } }
   const user = await User.findById(session.userId)
   const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
 

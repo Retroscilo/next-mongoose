@@ -35,7 +35,7 @@ const theme = {
     heading: -0.5,
   },
   colors: {
-    text: '#000',
+    text: 'rgb(2, 0, 75)',
     textLight: '#565656',
     background: '#f4f5f5',
     primary: 'rgb(89, 130, 235)',
@@ -88,6 +88,7 @@ const theme = {
   },
   Button: {
     primary: {
+      variant: 'text.body',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -103,6 +104,33 @@ const theme = {
       px: 3,
       fontSize: 2,
       '&:focus': { outline: 'none' },
+    },
+    primaryAlternate: {
+      variant: 'Button.primary',
+      bg: 'text',
+      borderRadius: '50px',
+      fontSize: 2,
+      position: 'relative',
+      pr: '25px',
+      '&:hover': { filter: 'brightness(90%)' },
+      '&::after': {
+        height: '10px',
+        content: 'url(/rightArrayCTA.svg)',
+        position: 'absolute',
+        right: '10px',
+        top: 'calc(50% - 8.5px)',
+        transition: 'transform 0.1s ease',
+      },
+      '&:hover::after': { transform: 'translateX(5px)' },
+      '&:hover::before': {
+        content: 'url(/rightArrayCTA--dash.svg)',
+        height: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'absolute',
+        right: '8px',
+        top: 'calc(50% - 8.5px)',
+      },
     },
   },
   Input: { // Editable text field

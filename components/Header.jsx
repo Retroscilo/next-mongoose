@@ -11,7 +11,7 @@ import { useClickOutside } from '../lib/hooks/useClickOutside'
 import theme from '../theme'
 
 const Header = () => {
-  const { user, mutateUser } = useUser()
+  const { user, mutateUser } = useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
   const [ displayAccountOptions, setDAO ] = useState(false)
 
@@ -19,7 +19,7 @@ const Header = () => {
   useClickOutside(accountOptions, () => setDAO(false))
   return (
     <header sx={{ background: 'white', height: 'header', boxSizing: 'content-box', display: 'inline-block', borderBottom: '1px solid darkgrey', position: 'sticky', top: '0', zIndex: '600', width: '100%' }}>
-      <nav>
+      <nav onClick={() => mutateUser(fetchJson('/api/user'))}>
         <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: 'header', px: 3, m: 0, '& li': { ml: 3 } }}>
           <li sx={{ position: 'absolute', left: 0 }}>
             <Link href="/">
@@ -69,7 +69,7 @@ const Header = () => {
                     sx={{ bg: 'white', borderBottomLeftRadius: '3px' }}
                     onClick={async e => {
                       e.preventDefault()
-                      await mutateUser(fetchJson('/api/logout'))
+                      await mutateUser(fetchJson('/api/logout', { method: 'POST' }))
                       setDAO(false)
                       router.push('/login')
                     }}

@@ -102,6 +102,7 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
               prevent: true,
               err: 'Vous devez choisir un nom pour votre produit !',
             },
+            gridArea: 'prodName',
           }}
         />
         <Input
@@ -109,7 +110,7 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
           update={updateProduct}
           variant="light"
           field={'prodDescription'}
-          options={{ max: 80 }}
+          options={{ max: 80, gridArea: 'prodDescription' }}
         />
         <Input
           defaultValue={prodPrice}
@@ -124,6 +125,7 @@ const Product = ({ cardId, catId, infoSet, refresh, index }) => {
               err: 'Vous devez entrer un prix pour votre produit !',
             },
             label: '€',
+            gridArea: 'prodPrice',
           }}
         />
         <DragDrop

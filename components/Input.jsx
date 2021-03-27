@@ -79,13 +79,14 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
         pulseControls.start([ null, 'green' ])
         setError(false)
       } catch (err) {
-        handleError("Oups, quelque chose s'est passé de travers. Essayez de recharger la page ?")
+        console.log(err.data.body)
+        typeof err.data.body === 'string' ? handleError(err.data.body) : handleError('Something went wrong')
       }
     } else if (e.target.innerHTML === defaultValue) setError(false)
   }
 
   return (
-    <span sx={{ position: 'relative', gridArea: field, cursor: 'default'}}>
+    <span sx={{ position: 'relative', gridArea: options?.gridArea || '', cursor: 'default'}}>
     <motion.div
       contentEditable="true"
       suppressContentEditableWarning={true}

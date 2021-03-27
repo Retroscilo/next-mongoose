@@ -8,7 +8,6 @@ const handler = nc()
     const { email, password } = await req.body
 
     try {
-      // regex here ?
       if (!email || !password) return res.status(400).send({ message: 'invalid email or password' })
 
       const user = await User.findOne({ email }).exec()
@@ -27,4 +26,3 @@ const handler = nc()
   }))
 
 export default connect(handler)
-

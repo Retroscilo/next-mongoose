@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
 import Input from '../Input'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import fetchJson from '../../lib/fetchJson'
 
 const UserCard = ({ user, mutateUser }) => {
@@ -14,7 +14,6 @@ const UserCard = ({ user, mutateUser }) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newValue),
     })
-
     mutateUser(fetchJson('/api/user'))
   }
 
@@ -28,7 +27,24 @@ const UserCard = ({ user, mutateUser }) => {
 
   return (
     <div sx={{ bg: 'white', p: 3, pb: 3, px: 3, maxWidth: '30rem', my: 3, '& > *:not(:first-of-type)': { mt: 4 } }}>
-      <div className="Account--input">
+      <div
+        className="Account--input"
+        sx={{
+          position: 'relative',
+          '&::after': {
+            content: user.verified ? '"Verifié"' : '"Non vérifié"',
+            position: 'absolute',
+            right: '-150px',
+            top: '-50%',
+            border: '2px solid',
+            color: user.verified ? '' : 'crimson',
+            borderColor: user.verified ? 'primary' : 'crimson',
+            borderRadius: '3px',
+            px: 2,
+            py: 1,
+          },
+        }}
+      >
         Email :
         <Input
           defaultValue={user.email}
@@ -48,7 +64,11 @@ const UserCard = ({ user, mutateUser }) => {
           }}
         />
       </div>
-      { !oldPassPrompt && <div onClick={() => setOldPassPrompt(true)}>Changer mon mot de passe</div>}
+      { !user.verified &&
+        <>
+          Vous n'avez pas reçu de mail ? <span onClick={() => fetchJson('/api/action/verifyMail')} >Renvoyer un mail de confirmation</span>
+        </> }
+      { !oldPassPrompt && <div onClick={() => fetchJson('api/mailing')}>Changer mon mot de passe</div>}
       { oldPassPrompt &&
         <div className="Account--input">
           Ancien mot de passe :

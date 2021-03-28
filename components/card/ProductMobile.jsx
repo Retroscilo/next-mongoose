@@ -3,11 +3,11 @@
 import { jsx } from 'theme-ui'
 import { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import Input from '../components/Input'
-import fetchJson from '../lib/fetchJson'
-import DragDrop from '../components/DragDrop'
+import Input from '../Input'
+import fetchJson from '../../lib/fetchJson'
+import DragDrop from '../DragDrop'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
-import { useClickOutside } from '../lib/hooks/useClickOutside'
+import { useClickOutside } from '../../lib/hooks/useClickOutside'
 
 const Product = ({ cardId, catId, infoSet, refresh, index }) => {
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc } = infoSet

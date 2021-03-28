@@ -6,12 +6,13 @@ import User from '../../lib/models/user.model'
 
 const handler = nc()
   .get(async (req, res) => {
-    const user = req.session.get('user')
+    const session = req.session.get('user')
+    const user = await User.findById(session.userId)
 
-    if (user) {
+    if (session) {
       res.json({
         isLoggedIn: true,
-        ...user,
+        ...session,
       })
     } else {
       res.json({

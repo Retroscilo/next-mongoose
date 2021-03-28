@@ -2,13 +2,13 @@
 /** @jsx jsx */
 // @refresh reset
 import { jsx, Grid } from 'theme-ui'
-import Product from './Product'
+import ProductMobile from './ProductMobile'
 import ProductDesktop from './ProductDesktop'
 import PropTypes from 'prop-types'
-import fetchJson from '../lib/fetchJson'
-import Input from '../components/Input'
+import fetchJson from '../../lib/fetchJson'
+import Input from '../Input'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useViewport } from '../lib/hooks/useViewport'
+import { useViewport } from '../../lib/hooks/useViewport'
 import { useState } from 'react'
 
 const Category = ({ cardId, infoSet, refresh }) => {

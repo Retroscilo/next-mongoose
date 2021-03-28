@@ -6,7 +6,7 @@ import { jsx } from 'theme-ui'
 import useUser from '../../lib/hooks/useUser'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
-import Category from '../../components/Category'
+import Category from '../../components/card/Category'
 import useCard from '../../lib/hooks/useCard'
 import CardHeader from '../../components/RestaurantHeader'
 import React from 'react'
@@ -20,7 +20,7 @@ const Card = () => {
     redirectTo: '/login',
     redirectIfFound: false,
   })
-  console.log(user)
+
   const addCategory = async () => {
     const body = { cardId }
     await fetchJson('/api/category', {

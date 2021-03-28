@@ -10,7 +10,7 @@ export default function Home () {
 
   return (
     <div>
-      <div className={"animatedBackground"}>
+      <div className={'animatedBackground'}>
         <div sx={{ position: 'absolute', right: 0 }}>
           <Image
             src={'/Phone.png'}

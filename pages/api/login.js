@@ -15,7 +15,7 @@ const handler = nc()
       const match = await user.checkPassword(password)
       if (!match) throw new Error('invalid email/password')
 
-      req.session.set('user', { userId: user._id, email, isLoggedIn: true })
+      req.session.set('user', { userId: user._id, email, isLoggedIn: true, verified: user.status.verified })
       await req.session.save()
 
       res.json(user)

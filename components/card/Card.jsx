@@ -4,10 +4,10 @@ import { jsx } from 'theme-ui'
 import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
-import fetchJson from '../lib/fetchJson'
-import { useClickOutside } from '../lib/hooks/useClickOutside'
+import fetchJson from '../../lib/fetchJson'
+import { useClickOutside } from '../../lib/hooks/useClickOutside'
 import { motion, useAnimation } from 'framer-motion'
-import Input from './Input'
+import Input from '../Input'
 
 const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) => {
   const router = useRouter()

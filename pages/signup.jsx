@@ -25,13 +25,12 @@ const SignUp = () => {
     }
 
     try {
-      await mutateUser(
-        fetchJson('/api/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        }),
-      )
+      await fetchJson('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      mutateUser(fetchJson('/api/user'))
       setIsSignedUp(true)
     } catch (error) {
       switch (error.data.error.code) {

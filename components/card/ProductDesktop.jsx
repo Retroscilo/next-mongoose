@@ -3,9 +3,9 @@
 import { jsx } from 'theme-ui'
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import Input from '../components/Input'
-import fetchJson from '../lib/fetchJson'
-import DragDrop from '../components/DragDrop'
+import Input from '../Input'
+import fetchJson from '../../lib/fetchJson'
+import DragDrop from '../DragDrop'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 
 const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {

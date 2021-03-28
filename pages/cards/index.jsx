@@ -8,7 +8,7 @@ import useSWR from 'swr'
 import User from '../../lib/models/user.model'
 import Restaurant from '../../lib/models/restaurant.model'
 import React, { useState, useEffect } from 'react'
-import Card from '../../components/Card'
+import Card from '../../components/card/Card'
 import fetchJSON from '../../lib/fetchJson'
 
 /** Futur implements:

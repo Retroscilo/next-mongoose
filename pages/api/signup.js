@@ -8,8 +8,12 @@ export default withSession(async (req, res) => {
   await connect()
 
   try {
-    const newUser = await User.create({ email, password })
-    req.session.set('user', { isLoggedIn: true, email, userId: newUser._id })
+    const newUser = await User.create({
+      email,
+      password,
+      status: { verified: false },
+    })
+    req.session.set('user', { isLoggedIn: true, email, userId: newUser._id, verified: false })
     await req.session.save()
 
     res.status(201).send(newUser)

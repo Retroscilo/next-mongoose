@@ -3093,6 +3093,11 @@
   "resolved" "https://registry.npmjs.org/node-releases/-/node-releases-1.1.70.tgz"
   "version" "1.1.70"
 
+"nodemailer@^6.5.0":
+  "integrity" "sha512-Tm4RPrrIZbnqDKAvX+/4M+zovEReiKlEXWDzG4iwtpL9X34MJY+D5LnQPH/+eghe8DLlAVshHAJZAZWBGhkguw=="
+  "resolved" "https://registry.npmjs.org/nodemailer/-/nodemailer-6.5.0.tgz"
+  "version" "6.5.0"
+
 "noop-logger@^0.1.1":
   "integrity" "sha1-lKKxYzxPExdVMAfYlm/Q6EG2pMI="
   "resolved" "https://registry.npmjs.org/noop-logger/-/noop-logger-0.1.1.tgz"

@@ -23,6 +23,7 @@ const Account = ({ SSRrestaurants }) => {
   const [ restaurants, setRestaurants ] = useState(SSRrestaurants)
   const { data: freshRestaurants, mutate } = useSWR('/api/restaurant')
   useEffect(() => freshRestaurants && setRestaurants(freshRestaurants), [ freshRestaurants ])
+  console.log(user)
 
   async function addRestaurant () {
     await fetchJson('/api/restaurant', {

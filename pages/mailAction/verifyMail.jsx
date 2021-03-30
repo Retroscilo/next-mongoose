@@ -9,18 +9,18 @@ const MailAction = () => {
   const router = useRouter()
   const [ verified, setVerified ] = useState(false)
   useEffect(async () => {
-    console.log(router.query.code)
-    try {
-      await fetchJson(`/api/action/verifyMail`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: router.query.code,
-      })
-      setVerified(true)
-    } catch (err) {
-      console.log(err)
-    }
-  })
+    if (router.query.code !== undefined)
+      try {
+        await fetchJson(`/api/action/verifyMail`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(router.query.code),
+        })
+        setVerified(true)
+      } catch (err) {
+        console.log(err)
+      }
+  }, [ router.query.code ])
   return (
     <div sx={{ width: '100%', height: 'min', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       {!verified &&

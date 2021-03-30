@@ -14,7 +14,8 @@ const UserCard = ({ user, mutateUser }) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newValue),
     })
-    mutateUser(fetchJson('/api/user'))
+    await mutateUser(fetchJson('/api/user'))
+    await fetchJson('/api/action/verifyMail')
   }
 
   async function updatePassword (field, newValue) {

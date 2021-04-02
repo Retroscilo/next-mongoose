@@ -2,12 +2,10 @@
 /** @jsx jsx */
 // Front
 import { jsx, Spinner } from 'theme-ui'
-import theme from '../theme'
 import React, { useEffect, useState } from 'react'
 // Components
 import RestaurantCard from '../components/options/RestaurantCard'
 import UserCard from '../components/options/UserCard'
-import Input from '../components/Input'
 // lib
 import fetchJson from '../lib/fetchJson'
 import useSWR from 'swr'
@@ -17,13 +15,13 @@ import withSession from '../lib/session'
 import connect from '../lib/middlewares/mongodb'
 import User from '../lib/models/user.model'
 import Restaurant from '../lib/models/restaurant.model'
+import Router from 'next/router'
 
 const Account = ({ SSRrestaurants }) => {
   const { user, mutateUser } = useUser({ redirectTo: '/login', redirectIfFound: false })
   const [ restaurants, setRestaurants ] = useState(SSRrestaurants)
   const { data: freshRestaurants, mutate } = useSWR('/api/restaurant')
   useEffect(() => freshRestaurants && setRestaurants(freshRestaurants), [ freshRestaurants ])
-  console.log(user)
 
   async function addRestaurant () {
     await fetchJson('/api/restaurant', {
@@ -100,6 +98,7 @@ const Account = ({ SSRrestaurants }) => {
 
 export const getServerSideProps = connect(withSession(async ({ req, res }) => {
   const session = req.session.get('user')
+  if (!session) return { props: {} }
   const user = await User.findById(session.userId)
   const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
 

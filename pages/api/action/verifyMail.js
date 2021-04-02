@@ -8,13 +8,16 @@ const handler = nc()
   .get(async (req, res) => {
     const session = req.session.get('user')
     const code = generateCode()
-    console.log('test')
+
     try {
       const user = await User.findById(session.userId)
-      console.log(user)
       user.status = { verified: false, code, Date: new Date() }
+      const date = new Date()
+      user.status.expiration = date.setUTCHours(date.getHours() + 1)
       await user.save()
       sendConfirmationMail(session.email, code)
+
+      res.status(200).send(user)
     } catch (err) {
       console.log(err)
       throw err
@@ -25,14 +28,23 @@ const handler = nc()
       const session = req.session.get('user')
       const user = await User.findById(session.userId)
 
-      if (!user.checkVerificationCode(req.body) || user.status.verified) throw new Error('Les codes de vérification ne correspondent pas !')
+      if (!user.checkVerificationCode(req.body)) throw new Error('Les codes de vérification ne correspondent pas !')
+      if (user.status.verified) throw new Error('Vous avez déjà validé ce mail !')
+      const date = new Date()
+      if (user.status.expiration > date.setUTCHours(date.getHours() + 1)) {
+        const code = generateCode()
+        sendConfirmationMail(session.email, code)
+        throw new Error('Votre code est expiré, nous venons de vous renvoyer un nouveau mail de confirmation.')
+      }
+
       user.status.verified = true
+
       await user.save()
 
       res.status(200).send(user)
     } catch (err) {
       console.log(err)
-      throw new Error(err)
+      return res.status(400).send({ body: err.message })
     }
   })
 

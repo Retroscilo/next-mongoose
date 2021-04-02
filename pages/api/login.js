@@ -11,7 +11,7 @@ const handler = nc()
       if (!email || !password) return res.status(400).send({ message: 'invalid email or password' })
 
       const user = await User.findOne({ email }).exec()
-
+      if(!user) throw new Error("Ce mail n'est associé à aucun compte")
       const match = await user.checkPassword(password)
       if (!match) throw new Error('invalid email/password')
 

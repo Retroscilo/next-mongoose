@@ -72,15 +72,15 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
   // empty field Error
   const handleBlur = async e => {
     if (options?.empty?.prevent && e.target.innerText.length == 0) return handleError(options?.empty?.err || 'Vous devez remplir ce champ !')
-    if (e.target.innerHTML !== defaultValue && e.target.innerText.length <= (options?.max || 999) && error === false) {
-      if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err || 'Vérifiez votre saisie !')
+    /* if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err || 'Vérifiez votre saisie !') */
+    if (e.target.innerHTML !== defaultValue && !error) {
       try {
         await update(field, e.target.innerText)
         pulseControls.start([ null, 'green' ])
         setError(false)
       } catch (err) {
-        console.log(err.data.body)
-        typeof err.data.body === 'string' ? handleError(err.data.body) : handleError('Something went wrong')
+        console.log(err?.data?.body)
+        typeof err?.data?.body === 'string' ? handleError(err.data.body) : handleError('Something went wrong')
       }
     } else if (e.target.innerHTML === defaultValue) setError(false)
   }

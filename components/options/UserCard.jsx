@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import fetchJson from '../../lib/fetchJson'
 
 const UserCard = ({ user, mutateUser }) => {
-  const [ oldPassPrompt, setOldPassPrompt ] = useState(false)
+  const [ resetPass, setResetPass ] = useState(false)
 
   async function updateMail (field, newValue) {
     await fetchJson('/api/user', {
@@ -14,16 +14,26 @@ const UserCard = ({ user, mutateUser }) => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newValue),
     })
-    await mutateUser(fetchJson('/api/user'))
+    mutateUser(fetchJson('/api/user'))
     await fetchJson('/api/action/verifyMail')
   }
 
-  async function updatePassword (field, newValue) {
-    try {
-      await fetchJson('/api/user')
-    } catch (err) {
-      throw new Error(err.data.err)
-    }
+  async function resetPassword (mail) {
+    setResetPass(true)
+    await fetchJson('/api/action/password', {
+      method: 'PUT',
+      header: { 'content-type': 'application/json' },
+      body: mail,
+    })
+  }
+
+  async function deleteAccount () {
+    await fetchJson('/api/user', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+    })
+    await fetchJson('api/logout')
+    mutateUser()
   }
 
   return (
@@ -38,7 +48,7 @@ const UserCard = ({ user, mutateUser }) => {
             right: '-150px',
             top: '-50%',
             border: '2px solid',
-            color: user.verified ? '' : 'crimson',
+            color: user.verified ? 'primary' : 'crimson',
             borderColor: user.verified ? 'primary' : 'crimson',
             borderRadius: '3px',
             px: 2,
@@ -66,19 +76,12 @@ const UserCard = ({ user, mutateUser }) => {
         />
       </div>
       { !user.verified &&
-        <>
-          Vous n'avez pas reçu de mail ? <span onClick={() => fetchJson('/api/action/verifyMail')} >Renvoyer un mail de confirmation</span>
-        </> }
-      { !oldPassPrompt && <div onClick={() => fetchJson('api/mailing')}>Changer mon mot de passe</div>}
-      { oldPassPrompt &&
-        <div className="Account--input">
-          Ancien mot de passe :
-          <Input
-            update={updatePassword}
-            defaultValue={'*******'}
-          />
-        </div>}
-      <div sx={{ color: 'crimson' }}>Supprimer mon compte</div>
+        <div sx={{ variant: 'text.light', mt: 1 }}>
+          Un mail de confirmation vous a été envoyé <br /> <br /> <span sx={{ color: 'text', cursor: 'pointer' }} onClick={() => fetchJson('/api/action/verifyMail')} > Renvoyer un mail de confirmation </span>
+        </div> }
+      { !resetPass && <div onClick={() => resetPassword(user.email)} sx={{ cursor: 'pointer' }} >Changer mon mot de passe</div>}
+      { resetPass && <div>Vous allez recevoir un mail qui vous permettra de saisir un nouveau mot de passe !</div>}
+      <div onClick={deleteAccount} sx={{ color: 'crimson', cursor: 'pointer' }}>Supprimer mon compte</div>
       <style jsx>{`
         .Account--input {
           display: grid; 

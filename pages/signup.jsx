@@ -7,6 +7,7 @@ import useUser from '../lib/hooks/useUser'
 import Form from '../components/form'
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 const SignUp = () => {
   const { mutateUser } = useUser()
@@ -31,6 +32,7 @@ const SignUp = () => {
         body: JSON.stringify(body),
       })
       mutateUser(fetchJson('/api/user'))
+      await fetchJson('/api/action/verifyMail')
       setIsSignedUp(true)
     } catch (error) {
       switch (error.data.error.code) {
@@ -67,17 +69,22 @@ const SignUp = () => {
         sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
       >Créez votre carte digitale en 5 minutes</div>
       {!isSignedUp &&
-        <Form
-          onSubmit={signUp}
-          title={'Créer un compte Pixme'}
-          errorMessage={errorMsg}
-          fields={[
-            { type: 'text', name: 'Email', check: checkMail, error: 'Vérifiez votre email !' },
-            { type: 'text', name: 'Mot de passe', check: checkPassword, error: 'Mot de passe invalide !', legend: '8 charactères minimum, au moins un chiffre et une lettre' },
-          ]}
-        >
-          <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
-        </Form>
+        <div>
+          <Form
+            onSubmit={signUp}
+            title={'Créer un compte Pixme'}
+            errorMessage={errorMsg}
+            fields={[
+              { type: 'text', name: 'Email', check: checkMail, error: 'Vérifiez votre email !' },
+              { type: 'text', name: 'Mot de passe', check: checkPassword, error: 'Mot de passe invalide !', legend: '8 charactères minimum, au moins un chiffre et une lettre' },
+            ]}
+          >
+            <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
+          </Form>
+          <Link href="/login">
+            <a>Déjà un compte ? Se connecter</a>
+          </Link>
+        </div>
       }
       {isSignedUp &&
       <Form

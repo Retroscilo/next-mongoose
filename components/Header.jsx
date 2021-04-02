@@ -11,7 +11,7 @@ import { useClickOutside } from '../lib/hooks/useClickOutside'
 import theme from '../theme'
 
 const Header = () => {
-  const { user, mutateUser } = useUser({ redirectTo: '/login', redirectIfFound: false })
+  const { user, mutateUser } = useUser({ redirectIfFound: false })
   const router = useRouter()
   const [ displayAccountOptions, setDAO ] = useState(false)
 
@@ -71,7 +71,6 @@ const Header = () => {
                       e.preventDefault()
                       await mutateUser(fetchJson('/api/logout', { method: 'POST' }))
                       setDAO(false)
-                      router.push('/login')
                     }}
                   >
                     Déconnection

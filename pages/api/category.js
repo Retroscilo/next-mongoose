@@ -1,6 +1,7 @@
 import Card from '../../lib/models/card.model'
 import nc from 'next-connect'
 import connect from '../../lib/connectDB'
+import errors from '../../lib/errors'
 
 const handler = nc()
   .get(async (req, res) => {
@@ -20,22 +21,19 @@ const handler = nc()
     await connect()
     try {
       const { cardId } = req.body
-      const card = await Card
-        .findById(cardId)
+      const card = await Card.findById(cardId)
 
-      card.categories
-        .push(
-          {
-            catName: 'Nouvelle catégorie',
-            catDescription: 'Une description ?',
-            products: [ { prodName: 'Mon produit', prodDescription: 'Une description ?', prodPrice: '3' } ],
-          })
+      card.categories.push({
+        catName: 'Nouvelle catégorie',
+        catDescription: 'Une description ?',
+        products: [ { prodName: 'Mon produit', prodDescription: 'Une description ?', prodPrice: '3' } ],
+      })
       const newCategory = await card.save()
 
       res.status(200).json(newCategory)
     } catch (e) {
       console.log(e)
-      res.status(400).json({ error: e.message })
+      res.status(401).send({ body: e.message })
     }
   })
   .put(async (req, res) => {
@@ -50,8 +48,7 @@ const handler = nc()
 
       res.status(200).json(updatedCategory)
     } catch (e) {
-      console.log(e)
-      res.status(400).json({ error: e.message })
+      res.status(400).json({ body: errors(e) })
     }
   })
   .delete(async (req, res) => {

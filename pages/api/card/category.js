@@ -1,12 +1,12 @@
 import Card from '../../../lib/models/card.model'
 import nc from 'next-connect'
-import secure from '../../../lib/middlewares/secure'
+import secure from '../../../lib/middlewares/secureCards'
 import connect from '../../../lib/middlewares/mongodb'
 import errors from '../../../lib/errors'
 
 const handler = nc()
+  .use(secure)
   .get(async (req, res) => {
-    if (req.query.id === 'undefined') return res.status(200).end()
     try {
       const id = req.query.id
       const card = await Card.findOne({ _id: id })

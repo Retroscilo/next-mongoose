@@ -4,26 +4,29 @@
 // @refresh reset
 
 import { jsx, Spinner } from 'theme-ui'
-import React, { useEffect } from 'react'
-import Router, { useRouter } from 'next/router'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
 // Components
 import CardHeader from '../../components/RestaurantHeader'
 import Category from '../../components/card/Category'
 // Hooks
 import useUser from '../../lib/hooks/useUser'
-import useCard from '../../lib/hooks/useCard'
 // SSR
 import User from '../../lib/models/user.model'
 import Card from '../../lib/models/card.model'
 import withSession from '../../lib/session'
+import connect from '../../lib/middlewares/mongodb'
+import useSwr from 'swr'
 
-const CardPage = ({ cat }) => {
+const CardPage = ({ SSRcat }) => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
+  const { id } = router.query
 
-  const { id } = router.query // get related card id
-  const { categories, updateCard } = useCard(id) // get card structure & method to use to display changes
+  const [ categories, setCategories ] = useState(SSRcat)
+  const { data: freshCategories, mutate: updateCard } = useSwr('/api/card/category?id=' + id)
+  useEffect(() => freshCategories && setCategories(freshCategories), [ freshCategories ])
 
   const addCategory = async () => {
     const body = { id }
@@ -64,7 +67,7 @@ const CardPage = ({ cat }) => {
   )
 }
 
-export const getServerSideProps = withSession(async ({ req, res, params }) => {
+export const getServerSideProps = connect(withSession(async ({ req, res, params }) => {
   const session = req.session.get('user')
   if (!session) return { redirect: { destination: '/login', permanent: false } }
   const user = await User.findById(session.userId)
@@ -73,9 +76,9 @@ export const getServerSideProps = withSession(async ({ req, res, params }) => {
   if (!card || user.restaurants.indexOf(card.restaurantId) === -1) return { redirect: { destination: '/cards', permanent: false } }
   return {
     props: {
-      user: 'test',
+      SSRcat: JSON.parse(JSON.stringify(card.categories)),
     },
   }
-})
+}))
 
 export default CardPage

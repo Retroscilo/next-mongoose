@@ -1,11 +1,11 @@
 import nc from 'next-connect'
-import withSession from '../../../lib/session'
 import connect from '../../../lib/middlewares/mongodb'
-import User from '../../../lib/models/user.model'
 import Restaurant from '../../../lib/models/restaurant.model'
 import Card from '../../../lib/models/card.model'
+import secure from '../../../lib/middlewares/secureCards'
 
 const handler = nc()
+  .use(secure)
   .post(async (req, res) => {
     // Create new card
     try {
@@ -18,7 +18,7 @@ const handler = nc()
       await card.save()
       await restaurant.save()
 
-      return res.status(200).json(restaurant)
+      return res.json(req.query)
     } catch (err) {
       console.log(err)
       return res.status(400).send(err)
@@ -39,7 +39,7 @@ const handler = nc()
 
       await restaurant.save()
 
-      return res.status(200).send(restaurant)
+      return res.send(req.query)
     } catch (err) {
       console.log(err)
       res.status(400).send(err)
@@ -60,7 +60,7 @@ const handler = nc()
 
       await Card.findByIdAndDelete(cardId)
 
-      return res.status(200).json(restaurant)
+      return res.send(req.query)
     } catch (err) {
       console.log(err)
       return res.status(400).send(err)

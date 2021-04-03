@@ -1,10 +1,11 @@
 import Card from '../../../lib/models/card.model'
 import nc from 'next-connect'
-import connect from '../../../lib/connectDB'
+import connect from '../../../lib/middlewares/mongodb'
+import secure from '../../../lib/middlewares/secureCards'
 
 const handler = nc()
+  .use(secure)
   .post(async (req, res) => {
-    await connect()
     try {
       const { cardId, catId } = req.body
       const card = await Card.findById(cardId).exec()
@@ -20,7 +21,6 @@ const handler = nc()
     }
   })
   .put(async (req, res) => {
-    await connect()
     try {
       const { cardId, catId, prodId, field, value: newValue } = req.body
       const card = await Card.findById(cardId).exec()
@@ -37,7 +37,6 @@ const handler = nc()
     }
   })
   .delete(async (req, res) => {
-    await connect()
     try {
       const { cardId, catId, prodId } = req.body
       const card = await Card.findById(cardId)
@@ -53,4 +52,4 @@ const handler = nc()
     }
   })
 
-export default handler
+export default connect(handler)

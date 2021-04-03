@@ -1,11 +1,11 @@
-import Card from '../../lib/models/card.model'
+import Card from '../../../lib/models/card.model'
 import nc from 'next-connect'
-import connect from '../../lib/connectDB'
-import errors from '../../lib/errors'
+import secure from '../../../lib/middlewares/secure'
+import connect from '../../../lib/middlewares/mongodb'
+import errors from '../../../lib/errors'
 
 const handler = nc()
   .get(async (req, res) => {
-    await connect()
     if (req.query.id === 'undefined') return res.status(200).end()
     try {
       const id = req.query.id
@@ -18,9 +18,8 @@ const handler = nc()
     }
   })
   .post(async (req, res) => {
-    await connect()
     try {
-      const { cardId } = req.body
+      const { id: cardId } = req.body
       const card = await Card.findById(cardId)
 
       card.categories.push({
@@ -37,7 +36,6 @@ const handler = nc()
     }
   })
   .put(async (req, res) => {
-    await connect()
     try {
       const { field, value: newValue, catId, cardId } = req.body
       const card = await Card.findById(cardId).exec()
@@ -52,7 +50,6 @@ const handler = nc()
     }
   })
   .delete(async (req, res) => {
-    await connect()
     try {
       const { cardId, catId } = req.body
       const card = await Card.findById(cardId)
@@ -67,4 +64,4 @@ const handler = nc()
     }
   })
 
-export default handler
+export default connect(handler)

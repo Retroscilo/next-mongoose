@@ -2,28 +2,32 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 // @refresh reset
-import { jsx } from 'theme-ui'
-import useUser from '../../lib/hooks/useUser'
-import { useRouter } from 'next/router'
+
+import { jsx, Spinner } from 'theme-ui'
+import React, { useEffect } from 'react'
+import Router, { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
-import Category from '../../components/card/Category'
-import useCard from '../../lib/hooks/useCard'
+// Components
 import CardHeader from '../../components/RestaurantHeader'
-import React from 'react'
+import Category from '../../components/card/Category'
+// Hooks
+import useUser from '../../lib/hooks/useUser'
+import useCard from '../../lib/hooks/useCard'
+// SSR
+import User from '../../lib/models/user.model'
+import Card from '../../lib/models/card.model'
+import withSession from '../../lib/session'
 
-const Card = () => {
+const CardPage = ({ cat }) => {
+  useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
-  const { id: cardId } = router.query // get related card id
-  const { categories, updateCard } = useCard(cardId) // get card structure & method to use to display changes
 
-  const { user } = useUser({ // redirect if no user connected
-    redirectTo: '/login',
-    redirectIfFound: false,
-  })
+  const { id } = router.query // get related card id
+  const { categories, updateCard } = useCard(id) // get card structure & method to use to display changes
 
   const addCategory = async () => {
-    const body = { cardId }
-    await fetchJson('/api/category', {
+    const body = { id }
+    await fetchJson('/api/card/category', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -33,7 +37,7 @@ const Card = () => {
 
   return (
     <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {!categories && <h1>Loading</h1>}
+      {!categories && <Spinner />}
       {categories
         && <>
           <CardHeader />
@@ -47,7 +51,7 @@ const Card = () => {
           {categories.map((category, i) => (
             <Category
               key={i}
-              cardId={cardId} // related card id for requests
+              cardId={id} // related card id for requests
               catName={category.catName}
               infoSet={category} // category structure with title, desc. etc...
               refresh={updateCard} // method to call after each update in db (post/put)
@@ -60,4 +64,18 @@ const Card = () => {
   )
 }
 
-export default Card
+export const getServerSideProps = withSession(async ({ req, res, params }) => {
+  const session = req.session.get('user')
+  if (!session) return { redirect: { destination: '/login', permanent: false } }
+  const user = await User.findById(session.userId)
+  const card = await Card.findById(params.id)
+  // if card not found or is not in user's restaurants, redirect.
+  if (!card || user.restaurants.indexOf(card.restaurantId) === -1) return { redirect: { destination: '/cards', permanent: false } }
+  return {
+    props: {
+      user: 'test',
+    },
+  }
+})
+
+export default CardPage

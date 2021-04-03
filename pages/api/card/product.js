@@ -1,6 +1,6 @@
-import Card from '../../lib/models/card.model'
+import Card from '../../../lib/models/card.model'
 import nc from 'next-connect'
-import connect from '../../lib/connectDB'
+import connect from '../../../lib/connectDB'
 
 const handler = nc()
   .post(async (req, res) => {

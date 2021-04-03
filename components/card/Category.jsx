@@ -19,7 +19,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
   
   const addProduct = async () => {
     const body = { cardId, catId }
-    await fetchJson('/api/product', {
+    await fetchJson('/api/card/product', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -29,7 +29,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
 
   const updateCategory = async (field, value) => {
     const body = { cardId, catId, field, value }
-    await fetchJson('/api/category', {
+    await fetchJson('/api/card/category', {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -39,7 +39,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
 
   const deleteCategory = async () => {
     const body = { cardId, catId }
-    await fetchJson('/api/category', {
+    await fetchJson('/api/card/category', {
       method: 'delete',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -110,7 +110,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
         <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
           <AnimatePresence initial={false}>
             {(products && mobile) && products.map((product, i) => (
-              <Product
+              <ProductMobile
                 layout
                 key={product._id}
                 index={i}

@@ -17,7 +17,7 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
   const updateProduct = async (field, value) => {
     const body = { cardId, catId, prodId, field, value }
     try {
-      const res = await fetchJson('/api/product', {
+      const res = await fetchJson('/api/card/product', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -30,7 +30,7 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
   }
 
   const deleteProduct = async () => {
-    await fetchJson('/api/product', {
+    await fetchJson('/api/card/product', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cardId, catId, prodId }),

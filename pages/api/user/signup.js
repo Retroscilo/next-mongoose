@@ -1,7 +1,7 @@
-import withSession from '../../lib/session'
-import connect from '../../lib/connectDB'
-import User from '../../lib/models/user.model'
-import fetchJson from '../../lib/fetchJson'
+import withSession from '../../../lib/session'
+import connect from '../../../lib/connectDB'
+import User from '../../../lib/models/user.model'
+import fetchJson from '../../../lib/fetchJson'
 
 export default withSession(async (req, res) => {
   const { email, password } = await req.body

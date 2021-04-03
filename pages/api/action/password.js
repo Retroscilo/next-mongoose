@@ -3,24 +3,26 @@ import withSession from '../../../lib/session'
 import connect from '../../../lib/middlewares/mongodb'
 import { generateCode, sendResetPassword } from '../../../lib/mailing'
 import User from '../../../lib/models/user.model'
+import errors from '../../../lib/errors'
 
 const handler = nc()
-  // It's a put cause user may not be logged in (when he want to recover his password), and I need a mail to send the resetPassword mail
+  // It's a PUT : user may not be logged in (when he want to recover his password), and I need a mail to send the resetPassword mail
   .put(async (req, res) => {
     try {
       const email = req.body
       const user = await User.findOne({ email })
-      console.log(email, user)
       if (!user) throw new Error("Ce mail n'existe pas")
-      const code = generateCode()
+      if (!user.status.verified) throw new Error("Merci de vérifier votre email d'abord !")
 
-      user.status = { ...user.status, code, Date: new Date() }
+      // Change user status with new code and expiration + 1 hour
+      const code = generateCode()
       const date = new Date()
+      user.status.code = code
       user.status.expiration = date.setUTCHours(date.getHours() + 1)
       await user.save()
 
-      sendResetPassword(email, code)
-      res.status(200).send(user)
+      sendResetPassword(email, user.status._id, code)
+      res.send({ message: 'mail envoyé' })
     } catch (err) {
       console.log(err)
       return res.status(400).send({ body: err.message })
@@ -29,21 +31,22 @@ const handler = nc()
   .post(async (req, res) => {
     // Change user's pass
     try {
-      const lock = generateCode()
-      const session = req.session.get('user')
-      const user = await User.findById(session.userId)
+      const { id: statusId, code, newPass } = req.body
+      const user = await User.findOne({ 'status._id': statusId })
 
-      const { code, pass } = req.body
-      if (user.status.code !== code) throw new Error("Il y un problème avec vos codes d'accès, nous vous avons envoyé un nouveau mail.")
-      user.password = pass
-      // change status code to prevent multiple modification from one password mail
+      if (user.status.expiration < new Date()) throw new Error('Vos codes sont expirés, essayez de nouveau !')
+      if (!user || user.status.code !== code) throw new Error("Il y un problème avec vos codes d'accès, essayez à nouveau :(")
+
+      user.password = newPass
+      // change status code to prevent multiple modification from one mail
+      const lock = generateCode()
       user.status.code = lock
       await user.save()
 
-      return res.status(200).send(user)
+      return res.send(req.body)
     } catch (err) {
       console.log(err)
-      return res.status(401).send({ body: errors(err) })
+      return res.status(401).send({ message: err.message })
     }
   })
 

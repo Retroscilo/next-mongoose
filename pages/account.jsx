@@ -15,7 +15,6 @@ import withSession from '../lib/session'
 import connect from '../lib/middlewares/mongodb'
 import User from '../lib/models/user.model'
 import Restaurant from '../lib/models/restaurant.model'
-import Router from 'next/router'
 
 const Account = ({ SSRrestaurants }) => {
   const { user, mutateUser } = useUser({ redirectTo: '/login', redirectIfFound: false })
@@ -35,7 +34,7 @@ const Account = ({ SSRrestaurants }) => {
     <div
       sx={{
         display: 'grid',
-        gridTemplateColumns: '250px 1fr',
+        gridTemplateColumns: [ '0 1fr', '250px 1fr' ],
       }}
     >
       <nav
@@ -44,6 +43,7 @@ const Account = ({ SSRrestaurants }) => {
           borderRight: '1px solid lightgrey',
           p: 0,
           m: 0,
+          overflow: 'hidden',
         }}
       >
         <ul>
@@ -59,11 +59,31 @@ const Account = ({ SSRrestaurants }) => {
         </ul>
       </nav>
 
-      {/** ----------------------------------------------------- USER ------------------------------------------------------------ */}
       {!user && <Spinner />}
       {user && <section sx={{ px: 3, height: 'min', overflow: 'auto' }}>
         <h1>Général</h1>
-        <h2 sx={{ variant: 'text.body', fontSize: 3, fontWeight: 'normal' }}>Utilisateur</h2>
+        {/** ----------------------------------------------------- USER ------------------------------------------------------------ */}
+        <h2
+          sx={{
+            variant: 'text.body',
+            fontSize: 3,
+            fontWeight: 'normal',
+            position: 'relative',
+            '&::after': {
+              fontSize: 2,
+              content: user.verified ? '"Verifié"' : '"Non vérifié"',
+              position: 'absolute',
+              left: '120px',
+              top: '-10%',
+              border: '2px solid',
+              color: user.verified ? 'primary' : 'crimson',
+              borderColor: user.verified ? 'primary' : 'crimson',
+              borderRadius: '3px',
+              px: 2,
+              py: 1,
+            },
+          }}
+        >Utilisateur</h2>
         <UserCard user={user} mutateUser={mutateUser} />
 
         {/** ----------------------------------------------------- RESTAURANT ------------------------------------------------------------ */}
@@ -98,7 +118,7 @@ const Account = ({ SSRrestaurants }) => {
 
 export const getServerSideProps = connect(withSession(async ({ req, res }) => {
   const session = req.session.get('user')
-  if (!session) return { props: {} }
+  if (!session) return { redirect: { destination: '/login', permanent: false } }
   const user = await User.findById(session.userId)
   const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
 

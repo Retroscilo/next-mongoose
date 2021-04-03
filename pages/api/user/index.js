@@ -1,11 +1,11 @@
 /* eslint-disable curly */
-import withSession from '../../lib/session'
-import connect from '../../lib/middlewares/mongodb'
+import withSession from '../../../lib/session'
+import connect from '../../../lib/middlewares/mongodb'
 import nc from 'next-connect'
-import User from '../../lib/models/user.model'
-import Restaurant from '../../lib/models/restaurant.model'
-import Card from '../../lib/models/card.model'
-import errors from '../../lib/errors'
+import User from '../../../lib/models/user.model'
+import Restaurant from '../../../lib/models/restaurant.model'
+import Card from '../../../lib/models/card.model'
+import errors from '../../../lib/errors'
 
 const handler = nc()
   .get(async (req, res) => {

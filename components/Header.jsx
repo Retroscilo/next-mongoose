@@ -69,7 +69,7 @@ const Header = () => {
                     sx={{ bg: 'white', borderBottomLeftRadius: '3px' }}
                     onClick={async e => {
                       e.preventDefault()
-                      await mutateUser(fetchJson('/api/logout', { method: 'POST' }))
+                      await mutateUser(fetchJson('/api/user/logout', { method: 'POST' }))
                       setDAO(false)
                     }}
                   >

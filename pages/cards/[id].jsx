@@ -8,18 +8,32 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
 // Components
-import CardHeader from '../../components/RestaurantHeader'
 import Category from '../../components/card/Category'
 // Hooks
+import { useViewport } from '../../lib/hooks/useViewport'
 import useUser from '../../lib/hooks/useUser'
 // SSR
 import User from '../../lib/models/user.model'
+import Restaurant from '../../lib/models/restaurant.model'
 import Card from '../../lib/models/card.model'
 import withSession from '../../lib/session'
 import connect from '../../lib/middlewares/mongodb'
 import useSwr from 'swr'
 
-const CardPage = ({ SSRcat }) => {
+const CardHeader = ({ restaurant }) => {
+  const { width } = useViewport()
+  const mobile = width < 832
+
+  return (
+    <div sx={{ width: '100%', bg: 'white' }}>
+      <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
+        <h1>{restaurant.restaurantName}</h1>
+      </div>
+    </div>
+  )
+}
+
+const CardPage = ({ SSRcat, restaurant }) => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
   const { id } = router.query
@@ -43,7 +57,7 @@ const CardPage = ({ SSRcat }) => {
       {!categories && <Spinner />}
       {categories
         && <>
-          <CardHeader />
+          <CardHeader restaurant={restaurant}/>
           <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
             <ul sx={{ display: 'flex', justifyContent: 'space-between', maxWidth: 'body', mx: 'auto', px: 3 }}>
               {categories.map(category => (
@@ -72,11 +86,14 @@ export const getServerSideProps = connect(withSession(async ({ req, res, params 
   if (!session) return { redirect: { destination: '/login', permanent: false } }
   const user = await User.findById(session.userId)
   const card = await Card.findById(params.id)
+  const restaurant = await Restaurant.findById(card.restaurantId)
+
   // if card not found or is not in user's restaurants, redirect.
   if (!card || user.restaurants.indexOf(card.restaurantId) === -1) return { redirect: { destination: '/cards', permanent: false } }
   return {
     props: {
       SSRcat: JSON.parse(JSON.stringify(card.categories)),
+      restaurant: JSON.parse(JSON.stringify(restaurant)),
     },
   }
 }))

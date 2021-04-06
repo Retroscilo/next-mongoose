@@ -4,10 +4,10 @@ import connect from '../../../lib/middlewares/mongodb'
 import User from '../../../lib/models/user.model'
 import Restaurant from '../../../lib/models/restaurant.model'
 import Card from '../../../lib/models/card.model'
-import secure from '../../../lib/middlewares/secureCards'
+import requestSession from '../../../lib/middlewares/requestSession'
 
 const handler = nc({ attachParams: true })
-  .use(secure)
+  .use(requestSession)
   .get(async (req, res) => {
     // Get restaurant informations & cards (SWR used in /cards)
     try {

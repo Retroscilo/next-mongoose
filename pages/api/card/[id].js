@@ -2,10 +2,10 @@ import nc from 'next-connect'
 import connect from '../../../lib/middlewares/mongodb'
 import Restaurant from '../../../lib/models/restaurant.model'
 import Card from '../../../lib/models/card.model'
-import secure from '../../../lib/middlewares/secureCards'
+import requestSession from '../../../lib/middlewares/requestSession'
 
 const handler = nc()
-  .use(secure)
+  .use(requestSession)
   .post(async (req, res) => {
     // Create new card
     try {

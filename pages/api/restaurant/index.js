@@ -4,8 +4,10 @@ import connect from '../../../lib/middlewares/mongodb'
 import User from '../../../lib/models/user.model'
 import Restaurant from '../../../lib/models/restaurant.model'
 import Card from '../../../lib/models/card.model'
+import requestSession from '../../../lib/middlewares/requestSession'
 
 const handler = nc({ attachParams: true })
+  .use(requestSession)
   .get(withSession(async (req, res) => {
     // All user's restaurants
     const session = req.session.get('user')
@@ -22,8 +24,8 @@ const handler = nc({ attachParams: true })
   .post(withSession(async (req, res) => {
     const userId = req.session.get('user').userId
     try {
-      const restaurantName = req.body
-      console.log(req.body)
+      const { restaurantName } = req.body
+      console.log(restaurantName)
       const user = await User.findById(userId)
       const newRestaurant = await Restaurant.create({ restaurantName: restaurantName || 'Nouveau restaurant', owner: user._id })
 

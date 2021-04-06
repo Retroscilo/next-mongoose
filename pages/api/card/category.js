@@ -1,11 +1,11 @@
 import Card from '../../../lib/models/card.model'
 import nc from 'next-connect'
-import secure from '../../../lib/middlewares/secureCards'
+import requestSession from '../../../lib/middlewares/requestSession'
 import connect from '../../../lib/middlewares/mongodb'
 import errors from '../../../lib/errors'
 
 const handler = nc()
-  .use(secure)
+  .use(requestSession)
   .get(async (req, res) => {
     try {
       const id = req.query.id

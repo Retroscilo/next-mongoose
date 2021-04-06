@@ -13,6 +13,7 @@ const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) =
   const router = useRouter()
   const [ options, setDisplayOptions ] = useState(false)
   const wrapperRef = useRef(null)
+
   // close options on outside click
   useClickOutside(wrapperRef, setDisplayOptions)
   const [ isHover, setIsHover ] = useState(false)

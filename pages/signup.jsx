@@ -89,7 +89,7 @@ const RestoForm = ({ setStep }) => {
       await fetchJson('/api/restaurant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(e.target.restaurantName.value),
+        body: JSON.stringify({ restaurantName: e.target.restaurantName.value }),
       })
       setStep(3)
     } catch (err) {

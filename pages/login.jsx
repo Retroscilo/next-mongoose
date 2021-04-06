@@ -1,112 +1,97 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
+/** @jsxRuntime classic */
+/** @jsx jsx */
 /* import { Formik, Form, Field, ErrorMessage } from 'formik' */
-import { jsx } from 'theme-ui'
-import fetchJson from '../lib/fetchJson'
-import useUser from '../lib/hooks/useUser'
-import Form from '../components/form'
-import React, { useState } from 'react'
-import Link from 'next/link'
+import { jsx } from 'theme-ui'
+import fetchJson from '../lib/fetchJson'
+import useUser from '../lib/hooks/useUser'
+import Form from '../components/form'
+import React, { useState } from 'react'
+import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
 
-const Login = () => {
-  const { mutateUser } = useUser({
-    redirectTo: '/cards',
-    redirectIfFound: true,
+const Login = () => {
+  const { mutateUser } = useUser({
+    redirectTo: '/cards',
+    redirectIfFound: true,
   })
 
-  const [ errorMsg, setErrorMsg ] = useState('')
-  const [ forgottenPass, setForgottenPass ] = useState(false)
-  const [ mailSent, setMailSent ] = useState(false)
+  const [ errorMsg, setErrorMsg ] = useState('')
+  const [ forgottenPass, setForgottenPass ] = useState(false)
+  const [ mailSent, setMailSent ] = useState(false)
 
-  const sendReset = async e => {
-    try {
-      e.preventDefault()
-      await fetchJson('/api/action/password', {
-        method: 'PUT',
-        header: { 'content-type': 'application/json' },
-        body: e.target.Email.value,
+  const sendReset = async e => {
+    e.preventDefault()
+    try {
+      await fetchJson('/api/action/password', {
+        method: 'PUT',
+        header: { 'content-type': 'application/json' },
+        body: e.target.mail.value,
       })
       setMailSent(true)
-    } catch (err) {
-      setErrorMsg(err.data.body)
+    } catch (err) {
+      console.log(err.data.message)
+      setErrorMsg(err.data.message)
     }
   }
 
-  async function handleSubmit (e) {
+  async function handleSubmit (e) {
     e.preventDefault()
 
-    const body = {
-      email: e.currentTarget.Email.value,
-      password: e.currentTarget['Mot de passe'].value,
+    const body = {
+      email: e.currentTarget.mail.value,
+      password: e.currentTarget.password.value,
     }
-    try {
-      await mutateUser(
+    try {
+      await mutateUser(
         fetchJson('/api/user/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
         }),
       )
-    } catch (error) {
-      console.error('An unexpected error happened:', error)
+    } catch (error) {
+      console.error('An unexpected error happened:', error)
       setErrorMsg(error.data.message)
     }
   }
 
-  return (
-    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '1fr 20rem' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
-      <div className="login">
-        {!forgottenPass &&
+  return (
+    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '1fr 20rem' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
+      <div className="login">
+        {!forgottenPass &&
         <>
-          <Form
-            errorMessage={errorMsg}
-            onSubmit={handleSubmit}
-            title={'Connection'}
-            fields={[
-              { type: 'email', name: 'Email' },
-              { type: 'text', name: 'Mot de passe' },
-            ]}
-          >
-            <button type="submit" sx={{ variant: 'Button.primary', alignSelf: 'flex-start' }}>Connection</button>
+          <Form onSubmit={handleSubmit} errorMsg={errorMsg}>
+            <h1>Connectez-vous à votre compte</h1>
+            <label htmlFor="mail">E-mail</label>
+            <input type="text" name="mail" />
+            <span sx={{ display: 'flex', justifyContent: 'space-between' }}><label htmlFor="password">Mot de passe</label><span sx={{ cursor: 'pointer', mt: 4, color: 'primary' }} onClick={() => { setForgottenPass(true); setErrorMsg('') }}>Mot de passe oublié ?</span></span>
+            <input type="password" name="password" />
+            <input type="submit" value="Continuer" />
           </Form>
-          <Link href="/signup">
-            <a sx={{ pl: 3 }}>Pas de compte ? S'inscrire</a>
+          <Link href="/signup">
+            <a sx={{ mt: 3, display: 'inline-block', color: 'textLight' }}>Pas de compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>S'inscrire</span></a>
           </Link>
-          <div sx={{ pl: 3 }} onClick={() => setForgottenPass(true)}>Mot de passe oublié ?</div>
         </>}
-        {forgottenPass &&
+        {forgottenPass &&
         <>
-          {!mailSent &&
+          {!mailSent &&
           <>
-            <Form
-              errorMessage={errorMsg}
-              onSubmit={sendReset}
-              title={'Mot de passe oublié'}
-              fields={[
-                { type: 'email', name: 'Email' },
-              ]}
-            >
-              <button type="submit" sx={{ variant: 'Button.primary', alignSelf: 'flex-start' }}>Réinitialiser mon mot de passe</button>
+            <Form onSubmit={sendReset} errorMsg={errorMsg}>
+              <h1>Récupérez votre mot de passe</h1>
+              <label htmlFor="mail">E-mail</label>
+              <input name="mail" type="text" />
+              <input type="submit" value="Réinitialiser mon mot de passe" />
             </Form>
-            <div sx={{ pl: 3 }} onClick={() => setForgottenPass(false)}>C'est bon, je m'en souviens !</div>
+            <div sx={{ mt: 3, display: 'inline-block', color: 'primary', cursor: 'pointer' }} onClick={() => { setForgottenPass(false); setErrorMsg('') }}>C'est bon, je m'en souviens !</div>
           </>}
-          {mailSent && <div>Nous vous avons envoyé un mail pour que vous puissiez réinitialiser votre mot de passe.</div>}
+          {mailSent && <div><Form>Nous vous avons envoyé un mail pour que vous puissiez réinitialiser votre mot de passe.</Form></div>}
         </>}
       </div>
       <div
-        sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
+        sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/illustration--signin.svg) no-repeat', backgroundSize: 'contain', backgroundPosition: 'center 70%', color: '#17202C', fontSize: 5, fontWeight: 'medium', pt: 5, px: 3 }}
       >Créez votre carte digitale en 5 minutes</div>
-      <style jsx>{`
-        .login {
-          max-width: 21rem;
-          margin: 0 auto;
-          padding: 1rem;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-      `}</style>
     </div>
   )
 }
 
-export default Login
+export default Login

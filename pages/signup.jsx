@@ -1,6 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, Spinner} from 'theme-ui'
+import { jsx, Spinner } from 'theme-ui'
 import theme from '../theme'
 import fetchJson from '../lib/fetchJson'
 import useUser from '../lib/hooks/useUser'
@@ -8,98 +8,148 @@ import Form from '../components/form'
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 
-const SignUp = () => {
+const Page = () => {
+  const [ step, setStep ] = useState(1)
+  return (
+    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '20rem 1fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
+      <div
+        sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
+      >
+        Créez votre carte digitale en 5 minutes
+      </div>
+      <div>
+        <AnimatePresence>
+          {step === 1 && <SignUpForm setStep={setStep} />}
+          {step === 2 && <RestoForm setStep={setStep} />}
+          {step === 3 && <Thanks />}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+const SignUpForm = ({ setStep }) => {
   const { mutateUser } = useUser()
-  const router = useRouter()
-  const [ isSignedUp, setIsSignedUp ] = useState(false)
   const [ isLoading, setIsLoading ] = useState(false)
   const [ errorMsg, setErrorMsg ] = useState('')
 
   async function signUp (e) {
     e.preventDefault()
     setIsLoading(true)
-
-    const body = {
-      email: e.currentTarget.Email.value,
-      password: e.currentTarget['Mot de passe'].value,
-    }
-
     try {
       await fetchJson('/api/user/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ email: e.currentTarget.email.value, password: e.currentTarget.password.value }),
       })
       mutateUser(fetchJson('/api/user'))
       await fetchJson('/api/action/verifyMail')
-      setIsSignedUp(true)
+      setIsLoading(false)
+      setStep(2)
     } catch (error) {
-      switch (error.data.error.code) {
-      case 11000: setErrorMsg('Ce mail est déjà utilisé'); break
-      default: setErrorMsg('Nous rencontrons des difficultées. Essayez de recharger la page.')
-      }
+      setErrorMsg(error.data.message)
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
+
+  return (
+    <motion.div
+      key="signup"
+      initial={{ x: 0, opacity: 1 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -120, opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <Form onSubmit={signUp} errorMsg={errorMsg}>
+        <h1>S'inscrire sur Qarte</h1>
+        <label htmlFor="email">E-mail</label>
+        <input name="email" type="email" />
+        <label htmlFor="password">Mot de passe</label>
+        <input type="password" name="password" />
+        <sub>8 charactères minimum.</sub>
+        {!isLoading && <input type="submit" value="continuer" />}
+        {isLoading && <div sx={{ width: '100%', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', bg: 'primary', mt: 4 }}><Spinner height={30} color={'white'} /></div>}
+      </Form>
+      <Link href="/login">
+        <a sx={{ color: 'textLight', mt: 3, display: 'inline-block' }}>Déjà un compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>Se connecter</span></a>
+      </Link>
+    </motion.div>
+  )
+}
+
+const RestoForm = ({ setStep }) => {
+  const [ errorMsg, setErrorMsg ] = useState('')
 
   async function addRestaurant (e) {
     e.preventDefault()
-    setIsLoading(true)
-    const body = { restaurantName: e.target['Nom de votre restaurant'].value }
-
+    if (e.target.restaurantName.value.length === 0) return setErrorMsg('Merci de saisir un nom pour votre restaurant.')
     try {
       await fetchJson('/api/restaurant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(e.target.restaurantName.value),
       })
-      router.push('/cards')
+      setStep(3)
     } catch (err) {
-      setErrorMsg('Nous rencontrons des difficultées. Essayez de recharger la page.')
+      setErrorMsg(err.message)
     }
   }
 
-  const checkMail = value => /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value)
-  const checkPassword = value => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)
-
   return (
-    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '20rem 1fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
-      <div
-        sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
-      >Créez votre carte digitale en 5 minutes</div>
-      {!isSignedUp &&
-        <div>
-          <Form
-            onSubmit={signUp}
-            title={'Créer un compte Pixme'}
-            errorMessage={errorMsg}
-            fields={[
-              { type: 'text', name: 'Email', check: checkMail, error: 'Vérifiez votre email !' },
-              { type: 'text', name: 'Mot de passe', check: checkPassword, error: 'Mot de passe invalide !', legend: '8 charactères minimum, au moins un chiffre et une lettre' },
-            ]}
-          >
-            <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
-          </Form>
-          <Link href="/login">
-            <a>Déjà un compte ? Se connecter</a>
-          </Link>
-        </div>
-      }
-      {isSignedUp &&
-      <Form
-        onSubmit={addRestaurant}
-        title={'Quel est le nom de votre restaurant ?'}
-        subTitle={'(Vous pourrez le modifier plus tard dans vos réglages)'}
-        fields={[
-          { type: 'text', name: 'Nom de votre restaurant', check: value => value.length > 0 },
-        ]}
-      >
-        <span sx={{ display: 'flex', alignItems: 'center', alignSelf: 'flex-start' }}><button type="submit" sx={{ variant: 'Button.primary' }}>On y va !</button>{isLoading && <Spinner height={30} />}</span>
+    <motion.div
+      key="resto"
+      initial={{ x: 120, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -120, opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <Form onSubmit={addRestaurant} errorMsg={errorMsg}>
+        <h1>Dites-nous en un peu plus</h1>
+        <h2>Nous avons besoin d'informations pour paramétrer votre compte.</h2>
+        <label htmlFor="restaurantName">Comment s'appelle votre restaurant ?</label>
+        <input name="restaurantName" type="text" />
+        <label htmlFor="description">Quelques mots sur votre restaurant ? (optionnel)</label>
+        <textarea
+          type="text"
+          name="description"
+          rows="3"
+          placeholder="Découvrez le meilleur de de la Street Food thaïlandaise comme si vous y étiez ! Produit bio et français, cuisine maison & plus encore !"
+        />
+        <input type="submit" value="continuer" />
       </Form>
-      }
-    </div>
+    </motion.div>
   )
 }
 
-export default SignUp
+const Thanks = ({ setStep }) => {
+  console.log('inscrit !')
+  return (
+    <motion.div
+      key="thanks"
+      initial={{ x: 120, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -120, opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      <Form>
+        <h1 sx={{ mb: 2 }}>Merci pour votre inscription ! 🥳</h1>
+        <p>
+          Pour commencer à créer vos cartes digitales : <br /> ☞ &nbsp;
+          <Link href="/cards">
+            <a sx={{ color: 'primary', mt: 3, display: 'inline-block', cursor: 'pointer' }}>  Mes cartes</a>
+          </Link>
+        </p>
+        <p>
+          Pour changer des informations relatives à votre profil ou à votre restaurant : <br /> ☞ &nbsp;
+          <Link href="/account">
+            <a sx={{ color: 'primary', mt: 3, display: 'inline-block', cursor: 'pointer' }}>  Mes options</a>
+          </Link>
+        </p>
+      </Form>
+    </motion.div>
+  )
+}
+
+export default Page

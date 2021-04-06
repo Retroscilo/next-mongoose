@@ -8,12 +8,13 @@ const handler = nc()
     const { email, password } = await req.body
 
     try {
-      if (!email || !password) return res.status(400).send({ message: 'invalid email or password' })
+      if (!email) return res.status(401).send({ message: "Vous n'avez pas renseigné votre adresse E-mail." })
+      if (!password) return res.status(401).send({ message: "Vous n'avez pas renseigné de mot de passe." })
 
       const user = await User.findOne({ email }).exec()
-      if (!user) throw new Error("Ce mail n'est associé à aucun compte")
+      if (!user) throw new Error('E-mail ou mot de passe incorrect.')
       const match = await user.checkPassword(password)
-      if (!match) throw new Error('invalid email/password')
+      if (!match) throw new Error('E-mail ou mot de passe incorrect.')
 
       req.session.set('user', { userId: user._id, email, isLoggedIn: true, verified: user.status.verified })
       await req.session.save()

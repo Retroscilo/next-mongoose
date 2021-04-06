@@ -34,14 +34,13 @@ const MailAction = () => {
       {!passReset &&
       <>
         <Form
-          errorMessage={error}
+          errorMsg={error}
           onSubmit={changePassword}
-          title={'Réinitialiser votre mot de passe'}
-          fields={[
-            { type: 'text', name: 'password' },
-          ]}
         >
-          <button type="submit" sx={{ variant: 'Button.primary', alignSelf: 'flex-start' }}>Réinitialiser</button>
+          <h1>Réinitialiser votre mot de passe</h1>
+          <label htmlFor="password">Nouveau mot de passe</label>
+          <input name="password" type="password" />
+          <input type="submit" value="Réinitialiser mon mot de passe" />
         </Form>
       </>
       }

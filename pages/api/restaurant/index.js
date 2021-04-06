@@ -22,7 +22,8 @@ const handler = nc({ attachParams: true })
   .post(withSession(async (req, res) => {
     const userId = req.session.get('user').userId
     try {
-      const restaurantName = req.body.restaurantName
+      const restaurantName = req.body
+      console.log(req.body)
       const user = await User.findById(userId)
       const newRestaurant = await Restaurant.create({ restaurantName: restaurantName || 'Nouveau restaurant', owner: user._id })
 

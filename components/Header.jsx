@@ -23,7 +23,7 @@ const Header = () => {
         <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: 'header', px: 3, m: 0, '& li': { ml: 3 } }}>
           <li sx={{ position: 'absolute', left: 0 }}>
             <Link href="/">
-              <a>PixMe</a>
+              <a><div sx={{ background: 'url("/logo--full.svg") no-repeat', width: '75px', height: '30px', backgroundSize: 'contain' }} /></a>
             </Link>
           </li>
           {!user?.isLoggedIn && (

@@ -1,117 +1,86 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from 'theme-ui'
-import React, { useEffect, useRef, useState } from 'react'
-import PropTypes from 'prop-types'
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
+import theme from '../theme'
+import PropTypes from 'prop-types'
+import { motion, useAnimation } from 'framer-motion'
+import { useEffect } from 'react'
 
-const Input = ({ field, displayError }) => {
-  const input = useRef(null)
-  const [ isFocus, setIsFocus ] = useState(false)
-  useEffect(() => (input.current.value.length > 0) && setIsFocus(true), [])
-  const [ isError, setIsError ] = useState(displayError)
-  useEffect(() => displayError && field.check && !field.check(input.current.value) && setIsError(true), [displayError])
-
-  const handleBlur = e => e.target.value === '' && setIsFocus(false)
-
-  const handleChange = e => {
-    field.check && field.check(e.target.value) && setIsError(false)
-    field.check && !field.check(e.target.value) && displayError && setIsError(true)
-  }
-
-  return (
-    <span sx={{ 
-      position: 'relative',
-      my: 3,
-      width: '100%', 
-      '&::after': { 
-        content: `"${field.legend || ''}"`,
-        fontSize: 0,
-        color: 'textLight'
-      }
-      }}
-    >
-      <label
-        htmlFor={field.name}
-        sx={{
-          position: 'absolute',
-          left: 0,
-          pointerEvents: 'none',
-          fontSize: isFocus ? 0 : 2,
-          top: isFocus ? '-15px' : 0,
-          transition: 'all 0.1s ease-in-out',
-          width: '100%',
-          color: 'textLight',
-          '&::after': { 
-            content: `"${field.error || ''}"`,
-            right: 0,
-            opacity: isError ? 1 : 0,
-            position: 'absolute',
-            color: 'crimson',
-            transition: 'opacity 0.2s ease-in-out'
-          },
-        }}
-      >
-        {field.name}
-      </label>
-      <input
-        ref={input}
-        sx={{
-          bg: 'transparent',
-          border: 'none',
-          borderBottom: isError ? '1px solid crimson' : '1px solid lightgrey',
-          width: '100%',
-          transition: 'border 0.2s ease-in-out',
-          fontSize: 2,
-          '&:focus': {
-            outline: 'none',
-          },
-        }}
-        type={field.type}
-        name={field.name}
-        onFocus={() => setIsFocus(true)}
-        onBlur={handleBlur}
-        onChange={handleChange}
-      />
-    </span>
-  )
-}
-
-const Form = ({ onSubmit, children, fields, title, subTitle, errorMessage }) => {
-  const [ displayError, setDisplayError ] = useState(false)
-  const handleSubmit = e => {
+// form title: h1 / subtitle: h2
+const Form = ({ onSubmit, children, errorMsg }) => {
+  const handleSubmit = e => {
     e.preventDefault()
-
-    // check if all field are valids and allow errors to display if not
-    if (!fields.every(field => field.check ? field.check(e.currentTarget[field.name].value) : true)) return setDisplayError(true)
-    
     onSubmit(e)
   }
 
-  return (
-    <div sx={{ variant: 'Form.default' }}>
-      <h2 sx={{ alignSelf: 'flex-start' }}>{title}</h2>
-      {subTitle && <p sx={{ variant: 'text.light', m: 0, mb: 3, alignSelf: 'flex-start'}}>{subTitle}</p>}
-      <form onSubmit={handleSubmit} sx={{ width: '100%' }}>
-        {fields.map((field, i) => (
-          <Input key={i} field={field} displayError={displayError} />
-        ))}
-        {children}
-        {errorMessage && <span sx={{ alignSelf: 'flex-start', mt: 3, color: 'crimson' }}>{errorMessage}</span>}
-      </form>
-    </div>
+  const wizzle = useAnimation()
+
+  useEffect(() => errorMsg && wizzle.start({ x: [ -10, 10, -10, 10, 0 ] }),[ errorMsg ])
+
+  return (
+    <motion.form
+      animate={wizzle}
+      sx={{
+        position: 'relative',
+        bg: 'white',
+        mx: 'auto',
+        p: 5,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        boxShadow: 'low',
+        borderRadius: '3px',
+        width: '35em',
+        '& h1': { my: 0, fontSize: 4, fontWeight: '500' },
+        '& h2': { color: 'textLight', fontSize: 2, fontWeight: '400', my: 0, mt: 3, lineHeight: 0.9 },
+        '& label, & input': { mt: 4, color: 'textLight' },
+        '& input:not([type="submit"]), textarea': {
+          transition: 'box-shadow 0.3s',
+          mt: 2,
+          border: '1px solid lightgrey',
+          height: '40px',
+          borderRadius: '3px',
+          color: 'textLight',
+          px: 3,
+          fontSize: 2,
+          outline: 'none',
+        },
+        '& textarea': { resize: 'none', variant: 'text.body', height: 'fit-content', py: 2, '&::placeholder': { color: '#C2C2C2' } },
+        '& input:not([type="submit"]):focus': {
+          boxShadow: `0 0 2px .5px royalblue`,
+          outline: 'none',
+        },
+        '& input[type="submit"]': {
+          variant: 'Button.primary',
+          width: '100%',
+          height: '40px',
+        },
+        '& sub': { color: 'textLight', mt: 1 }
+     }} 
+      onSubmit={handleSubmit}
+    >
+      {children}
+      {errorMsg &&
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, bottom: 40 },
+          visible: { opacity: 1, bottom: 30 },
+        }}
+        initial={'hidden'}
+        animate={'visible'}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        sx={{ position: 'absolute', bottom: '20px', color: 'crimson', '&::before': { content: '""', width: '16px', height: '15px', background: 'url("/warn.svg")', display: 'inline-block', backgroundSize: 'contain', mr: 1, mt: 1 } }}
+      >
+        {errorMsg}
+      </motion.div>}
+    </motion.form>
   )
 }
 
-export default Form
+export default Form
 
-Form.propTypes = {
-  children: PropTypes.object,
-  errorMessage: PropTypes.string,
-  fields: PropTypes.array,
-  title: PropTypes.string,
-  onSubmit: PropTypes.func,
-}
-
-Input.propType = {
-  field: PropTypes.object,
+Form.propTypes = {
+  children: PropTypes.oneOfType([ PropTypes.array, PropTypes.string ]),
+  errorMsg: PropTypes.string,
+  onSubmit: PropTypes.func,
 }

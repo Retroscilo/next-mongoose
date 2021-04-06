@@ -38,5 +38,6 @@ module.exports = {
     'react/jsx-pascal-case': 'off',
     'operator-linebreak': 'off',
     'no-useless-escape': 'off',
+    'no-irregular-whitespace': 'off',
   },
 }

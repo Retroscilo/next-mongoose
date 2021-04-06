@@ -10,9 +10,9 @@ const handler = nc()
   .put(async (req, res) => {
     try {
       const email = req.body
+      if (!email) throw new Error('Merci de rentrer un email.')
       const user = await User.findOne({ email })
-      if (!user) throw new Error("Ce mail n'existe pas")
-      if (!user.status.verified) throw new Error("Merci de vérifier votre email d'abord !")
+      if (!user.status.verified) throw new Error("Merci de faire vérifier votre email d'abord !")
 
       // Change user status with new code and expiration + 1 hour
       const code = generateCode()
@@ -25,17 +25,18 @@ const handler = nc()
       res.send({ message: 'mail envoyé' })
     } catch (err) {
       console.log(err)
-      return res.status(400).send({ body: err.message })
+      return res.status(400).send({ message: err.message })
     }
   })
   .post(async (req, res) => {
     // Change user's pass
     try {
       const { id: statusId, code, newPass } = req.body
+      if (!newPass) throw new Error('Merci de saisir un nouveau mot de passe')
       const user = await User.findOne({ 'status._id': statusId })
 
       if (user.status.expiration < new Date()) throw new Error('Vos codes sont expirés, essayez de nouveau !')
-      if (!user || user.status.code !== code) throw new Error("Il y un problème avec vos codes d'accès, essayez à nouveau :(")
+      if (!user || !code || user.status.code !== code) throw new Error("Il y un problème avec vos codes d'accès, essayez à nouveau")
 
       user.password = newPass
       // change status code to prevent multiple modification from one mail

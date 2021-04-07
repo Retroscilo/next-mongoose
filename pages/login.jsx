@@ -110,7 +110,7 @@ const SigninForm = ({ setForgottenPass }) => {
       <Form onSubmit={handleSubmit} errorMsg={errorMsg}>
         <h1>Connectez-vous à votre compte</h1>
         <label htmlFor="mail">E-mail</label>
-        <input type="text" name="mail" />
+        <input type="email" name="mail" />
         <span sx={{ display: 'flex', justifyContent: 'space-between' }}><label htmlFor="password">Mot de passe</label><span sx={{ cursor: 'pointer', mt: 4, color: 'primary' }} onClick={() => { setForgottenPass(true); setErrorMsg('') }}>Mot de passe oublié ?</span></span>
         <input type="password" name="password" />
         <input type="submit" value="Continuer" />

@@ -9,7 +9,8 @@ import { useClickOutside } from '../../lib/hooks/useClickOutside'
 import { motion, useAnimation } from 'framer-motion'
 import Input from '../Input'
 
-const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) => {
+const CardBox = ({ card, update, active, setActive, updateName, deleteCard }) => {
+  const { name, cardId: id } = card
   const router = useRouter()
   const [ options, setDisplayOptions ] = useState(false)
   const wrapperRef = useRef(null)
@@ -103,9 +104,9 @@ const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) =
   )
 }
 
-export default Card
+export default CardBox
 
-Card.propTypes = {
+CardBox.propTypes = {
   active: PropTypes.bool,
   description: PropTypes.string,
   id: PropTypes.string,

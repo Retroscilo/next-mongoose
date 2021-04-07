@@ -100,8 +100,7 @@ const Cards = ({ restaurants }) => {
         {restaurant && restaurant.cards.map(card => (
           <Card
             key={card.cardId}
-            id={card.cardId}
-            name={card.name}
+            card={card}
             setActive={setActive}
             updateName={updateCardName}
             deleteCard={deleteCard}
@@ -113,7 +112,7 @@ const Cards = ({ restaurants }) => {
           onClick={addCart}
           sx={{ variant: 'Card.empty', '&::before': { content: '""', background: 'url(/addYourFirstCard.svg) no-repeat', position: 'absolute', width: restaurant.cards.length === 0 ? '260px' : '0', height: '260px', backgroundSize: 'contain', left: '-270px', top: '10px' } }}
         >
-          <div sx={{ variant: 'Add.product.desktop', position: 'initial', '&:hover': { boxShadow: 'low' } }} />
+          <div sx={{ variant: 'Add.product.desktop', position: 'initial', border: 'none' }} />
         </div>}
       </div>
     </>

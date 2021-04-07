@@ -10,8 +10,7 @@ const handler = nc()
     try {
       const id = req.query.id
       const card = await Card.findOne({ _id: id })
-      const categories = card.categories
-      res.status(200).json(categories)
+      res.status(200).json(card)
     } catch (e) {
       console.log(e)
       res.status(404).json({ error: e.message })

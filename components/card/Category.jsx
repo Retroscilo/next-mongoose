@@ -1,18 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 // @refresh reset
-import { jsx, Grid } from 'theme-ui'
+
+// Components
 import ProductMobile from './ProductMobile'
 import ProductDesktop from './ProductDesktop'
+import Input from '../Input'
+// Front
 import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
-import Input from '../Input'
+import { jsx, Grid } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
+// Hooks
 import { useViewport } from '../../lib/hooks/useViewport'
 import { useState } from 'react'
 
-const Category = ({ cardId, infoSet, refresh }) => {
-  const { _id: catId, catName, catDescription, products } = infoSet
+const Category = ({ cardId, structure, refresh }) => {
+  const { _id: catId, catName, catDescription, products } = structure
   const [ isHover, setIsHover ] = useState(false)
   const { width } = useViewport()
   const mobile = width < 832
@@ -132,22 +136,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          <div 
-            sx={{ 
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              border: '2px solid',
-              borderColor: 'primary',
-              borderRadius: '3px',
-              cursor: 'pointer',
-              height: '100px',
-              order: 999
-            }} 
-            onClick={addProduct}
-          >
-            <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }}  />
-          </div>
+          <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />
         </div>
       </div>
     </motion.div>

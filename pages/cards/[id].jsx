@@ -34,12 +34,12 @@ const CardHeader = ({ restaurant }) => {
   )
 }
 
-const CardPage = ({ SSRcat, restaurant }) => {
+const CardPage = ({ SSRcard, restaurant }) => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
   const { id } = router.query
 
-  const { data: categories, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcat })
+  const { data: card, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcard })
 
   const addCategory = async () => {
     const body = { id }
@@ -53,22 +53,21 @@ const CardPage = ({ SSRcat, restaurant }) => {
 
   return (
     <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {categories
+      {card.categories
         && <>
           <CardHeader restaurant={restaurant} />
           <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
             <ul sx={{ display: 'flex', justifyContent: 'space-evenly', maxWidth: 'body', mx: 'auto', px: 3 }}>
-              {categories.map(category => (
+              {card.categories.map(category => (
                 <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
               ))}
             </ul>
           </div>
-          {categories.map((category, i) => (
+          {card.categories.map((category, i) => (
             <Category
               key={i}
-              card={card}
-              cardId={id} // related card id for requests
-              infoSet={category} // category structure with title, desc. etc...
+              cardId={card._id}
+              structure={category} // category structure with title, desc. etc...
               refresh={updateCard} // method to call after each update in db (post/put)
             />
           ))}
@@ -90,7 +89,7 @@ export const getServerSideProps = connect(withSession(async ({ req, res, params 
   if (!card || user.restaurants.indexOf(card.restaurantId) === -1) return { redirect: { destination: '/cards', permanent: false } }
   return {
     props: {
-      SSRcat: JSON.parse(JSON.stringify(card.categories)),
+      SSRcard: JSON.parse(JSON.stringify(card)),
       restaurant: JSON.parse(JSON.stringify(restaurant)),
     },
   }

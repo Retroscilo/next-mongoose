@@ -38,7 +38,8 @@ const Card = ({ name, id, update, active, setActive, updateName, deleteCard }) =
 
   return (
     <motion.div
-      ref={wrapperRef} sx={{ variant: active ? 'Card.active' : 'Card.default' }}
+      ref={wrapperRef}
+      sx={{ variant: active ? 'Card.active' : 'Card.default' }}
       onClick={() => router.push(`/cards/${ id }`)}
       id={id}
       onHoverStart={() => setIsHover(true)}

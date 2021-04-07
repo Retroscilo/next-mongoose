@@ -28,6 +28,7 @@ const CardHeader = ({ restaurant }) => {
     <div sx={{ width: '100%', bg: 'white' }}>
       <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
         <h1>{restaurant.restaurantName}</h1>
+        <p>{restaurant.restaurantDescription}</p>
       </div>
     </div>
   )
@@ -38,9 +39,7 @@ const CardPage = ({ SSRcat, restaurant }) => {
   const router = useRouter()
   const { id } = router.query
 
-  const [ categories, setCategories ] = useState(SSRcat)
-  const { data: freshCategories, mutate: updateCard } = useSwr('/api/card/category?id=' + id)
-  useEffect(() => freshCategories && setCategories(freshCategories), [ freshCategories ])
+  const { data: categories, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcat })
 
   const addCategory = async () => {
     const body = { id }
@@ -54,12 +53,11 @@ const CardPage = ({ SSRcat, restaurant }) => {
 
   return (
     <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {!categories && <Spinner />}
       {categories
         && <>
-          <CardHeader restaurant={restaurant}/>
+          <CardHeader restaurant={restaurant} />
           <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
-            <ul sx={{ display: 'flex', justifyContent: 'space-between', maxWidth: 'body', mx: 'auto', px: 3 }}>
+            <ul sx={{ display: 'flex', justifyContent: 'space-evenly', maxWidth: 'body', mx: 'auto', px: 3 }}>
               {categories.map(category => (
                 <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
               ))}
@@ -68,15 +66,15 @@ const CardPage = ({ SSRcat, restaurant }) => {
           {categories.map((category, i) => (
             <Category
               key={i}
+              card={card}
               cardId={id} // related card id for requests
-              catName={category.catName}
               infoSet={category} // category structure with title, desc. etc...
               refresh={updateCard} // method to call after each update in db (post/put)
             />
           ))}
+          <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>
         </>
       }
-      <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>
     </div>
   )
 }

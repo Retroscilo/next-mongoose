@@ -1,15 +1,19 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import withSession from '../../lib/session'
-import connect from '../../lib/middlewares/mongodb'
+// Components & front
 import { jsx, Button } from 'theme-ui'
-import useUser from '../../lib/hooks/useUser'
-import useSWR from 'swr'
-import User from '../../lib/models/user.model'
-import Restaurant from '../../lib/models/restaurant.model'
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/card/Card'
+import Link from 'next/link'
+// Static Gen
 import fetchJSON from '../../lib/fetchJson'
+import useUser from '../../lib/hooks/useUser'
+import useSWR from 'swr'
+// SSR
+import User from '../../lib/models/user.model'
+import Restaurant from '../../lib/models/restaurant.model'
+import withSession from '../../lib/session'
+import connect from '../../lib/middlewares/mongodb'
 
 /** Futur implements:
  * -> micro-animation when a card is set as activeCard
@@ -29,17 +33,13 @@ const Cards = ({ restaurants }) => {
   useEffect(() => freshRestaurant && setRestaurant(freshRestaurant), [ freshRestaurant ])
 
   const addCart = async () => {
-    // pre-populate data
-    const date = new Date()
-    setRestaurant({ ...restaurant, cards: [ ...restaurant.cards, { cardId: 'prefetched', name: 'Menu ' + date.getFullYear() } ] })
-
-    // then do a post request
+    // do a post request
     await fetchJSON(`/api/card/${ restaurant._id }`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
 
-    // finally re-validate cached data
+    // re-validate cached data
     mutate()
   }
 
@@ -79,17 +79,24 @@ const Cards = ({ restaurants }) => {
   return (
     <>
       {restaurant &&
-      <ul sx={{ display: 'flex', width: '100%', bg: 'white', my: 0, height: '50px', alignItems: 'center' }}>
-        {restaurants.map(restaurant => (
-          <li
-            key={restaurant._id}
-            onClick={() => setRestaurant(restaurant)}
-          >
-            {restaurant.restaurantName}
-          </li>))}
-      </ul>}
-      <div sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', maxWidth: '800px', mx: 'auto', my: 3, gridGap: 2, justifyItems: 'center', alignItems: 'center' }}>
-        {!restaurant && <div>Oups, vous n'avez pas de restaurants enregistré ! Rendez-vous ici pour créer un restaurant</div>}
+      <div sx={{ width: '100%', bg: 'white' }}>
+        <ul sx={{ display: 'flex', maxWidth: 'body', mx: 'auto', my: 0, height: '50px', alignItems: 'center', justifyContent: 'space-evenly' }}>
+          {restaurants.map(restaurantItem => (
+            <li
+              key={restaurantItem._id}
+              onClick={() => setRestaurant(restaurantItem)}
+              sx={{ cursor: 'pointer', border: restaurantItem._id === restaurant._id ? '2px solid' : '', borderColor: 'primary', borderRadius: '50px', px: 2 }}
+            >
+              {restaurantItem.restaurantName}
+            </li>))}
+          <li sx={{ variant: 'Button.primaryAlternate.S' }}>
+            <Link href="/account"><a>Ajouter un restaurant</a></Link>
+          </li>
+        </ul>
+      </div>
+      }
+      <div sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: [ 'column', 'row' ], width: 'fit-content', maxWidth: '800px', mx: 'auto', my: 5, alignItems: 'center', '& > *': { ml: [ 0, 3 ], mb: 3 } }}>
+        {!restaurant && <div>Oups, vous n'avez pas de restaurants enregistré ! Rendez-vous <Link href="/account"><a sx={{ color: 'primary' }}>ici</a></Link> pour créer un restaurant</div>}
         {restaurant && restaurant.cards.map(card => (
           <Card
             key={card.cardId}
@@ -104,7 +111,7 @@ const Cards = ({ restaurants }) => {
         {restaurant &&
         <div
           onClick={addCart}
-          sx={{ variant: 'Card.empty' }}
+          sx={{ variant: 'Card.empty', '&::before': { content: '""', background: 'url(/addYourFirstCard.svg) no-repeat', position: 'absolute', width: restaurant.cards.length === 0 ? '260px' : '0', height: '260px', backgroundSize: 'contain', left: '-270px', top: '10px' } }}
         >
           <div sx={{ variant: 'Add.product.desktop', position: 'initial', '&:hover': { boxShadow: 'low' } }} />
         </div>}

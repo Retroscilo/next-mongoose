@@ -72,7 +72,7 @@ const handler = nc({ attachParams: true })
       // clean restaurant
       await Restaurant.findByIdAndDelete(restaurantId)
 
-      return res.status(200).json(user)
+      return res.status(200).json(req.query)
     } catch (err) {
       console.log(err)
       return res.status(400).send(err)

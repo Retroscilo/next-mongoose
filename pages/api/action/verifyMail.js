@@ -41,7 +41,7 @@ const handler = nc()
 
       await user.save()
 
-      res.status(200).send(user)
+      res.status(200).send(req.query)
     } catch (err) {
       console.log(err)
       return res.status(400).send({ body: err.message })

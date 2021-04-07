@@ -24,7 +24,7 @@ function MyApp ({ Component, pageProps }) {
         <div sx={{ minHeight: 'minGlobal' }}>
           <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, 'a': { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
-            <title>PixMe</title>
+            <title>Qarte</title>
             <link rel="preconnect" href="https://fonts.gstatic.com" />
             <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
           </Head>

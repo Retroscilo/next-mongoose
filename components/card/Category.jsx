@@ -54,7 +54,7 @@ const Category = ({ cardId, infoSet, refresh }) => {
         width: '100%',
         backgroundColor: '#f4f5f5',
         transition: 'height 0.5s ease',
-        height: (mobile ? 'fit-content' : `calc(127px + ${116*(Math.round(products.length/2))}px)`),
+        height: (mobile ? 'fit-content' : `calc(127px + ${116*(Math.round((products.length + 1)/2))}px)`),
       }}
       id={catId}
       whileHover={{ backgroundColor: '#eee' }}
@@ -132,8 +132,23 @@ const Category = ({ cardId, infoSet, refresh }) => {
               />
             ))}
           </AnimatePresence>
+          <div 
+            sx={{ 
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              border: '2px solid',
+              borderColor: 'primary',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              height: '100px',
+              order: 999
+            }} 
+            onClick={addProduct}
+          >
+            <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }}  />
+          </div>
         </div>
-        <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />
       </div>
     </motion.div>
   )

@@ -29,7 +29,7 @@ export default function Home () {
         <Link href="/login">
           <Button
             sx={{
-              variant: 'Button.primaryAlternate',
+              variant: 'Button.primaryAlternate.M',
             }}
           >
             <a>Démarrer maintenant</a>

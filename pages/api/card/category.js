@@ -6,17 +6,6 @@ import errors from '../../../lib/errors'
 
 const handler = nc()
   .use(requestSession)
-  .get(async (req, res) => {
-    try {
-      const id = req.query.id
-      const card = await Card.findOne({ _id: id })
-      const categories = card.categories
-      res.status(200).json(categories)
-    } catch (e) {
-      console.log(e)
-      res.status(404).json({ error: e.message })
-    }
-  })
   .post(async (req, res) => {
     try {
       const { id: cardId } = req.body

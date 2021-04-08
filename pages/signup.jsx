@@ -69,7 +69,7 @@ const SignUpForm = ({ setStep }) => {
         <label htmlFor="password">Mot de passe</label>
         <input type="password" name="password" />
         <sub>8 charactères minimum.</sub>
-        {!isLoading && <input type="submit" value="continuer" />}
+        {!isLoading && <input type="submit" value="Continuer" />}
         {isLoading && <div sx={{ width: '100%', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', bg: 'primary', mt: 4 }}><Spinner height={30} color={'white'} /></div>}
       </Form>
       <Link href="/login">
@@ -117,7 +117,7 @@ const RestoForm = ({ setStep }) => {
           rows="3"
           placeholder="Découvrez le meilleur de de la Street Food thaïlandaise comme si vous y étiez ! Produit bio et français, cuisine maison & plus encore !"
         />
-        <input type="submit" value="continuer" />
+        <input type="submit" value="Continuer" />
       </Form>
     </motion.div>
   )

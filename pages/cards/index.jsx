@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 // Components & front
-import { jsx, Button } from 'theme-ui'
+import { jsx } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
 import Card from '../../components/card/Card'
 import Link from 'next/link'
@@ -38,7 +38,6 @@ const Cards = ({ restaurants }) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
-
     // re-validate cached data
     mutate()
   }
@@ -95,7 +94,7 @@ const Cards = ({ restaurants }) => {
         </ul>
       </div>
       }
-      <div sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: [ 'column', 'row' ], width: 'fit-content', maxWidth: '800px', mx: 'auto', my: 5, alignItems: 'center', '& > *': { ml: [ 0, 3 ], mb: 3 } }}>
+      <div sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'end', flexDirection: [ 'column', 'row' ], width: 'fit-content', maxWidth: '800px', mx: 'auto', my: 5, '& > *': { ml: [ 0, 3 ], mb: 3 } }}>
         {!restaurant && <div>Oups, vous n'avez pas de restaurants enregistré ! Rendez-vous <Link href="/account"><a sx={{ color: 'primary' }}>ici</a></Link> pour créer un restaurant</div>}
         {restaurant && restaurant.cards.map(card => (
           <Card
@@ -112,6 +111,7 @@ const Cards = ({ restaurants }) => {
           onClick={addCart}
           sx={{ variant: 'Card.empty', '&::before': { content: '""', background: 'url(/addYourFirstCard.svg) no-repeat', position: 'absolute', width: restaurant.cards.length === 0 ? '260px' : '0', height: '260px', backgroundSize: 'contain', left: '-270px', top: '10px' } }}
         >
+          <span sx={{ color: 'primary' }}>Ajouter une carte</span> 
           <div sx={{ variant: 'Add.product.desktop', position: 'initial', border: 'none' }} />
         </div>}
       </div>

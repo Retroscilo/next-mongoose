@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
@@ -11,6 +11,7 @@ import Input from '../Input'
 
 const CardBox = ({ card, update, active, setActive, updateName, deleteCard }) => {
   const { name, cardId: id } = card
+  const [ isSure, setIsSure ] = useState(false)
   const router = useRouter()
   const [ options, setDisplayOptions ] = useState(false)
   const wrapperRef = useRef(null)
@@ -18,6 +19,7 @@ const CardBox = ({ card, update, active, setActive, updateName, deleteCard }) =>
   // close options on outside click
   useClickOutside(wrapperRef, setDisplayOptions)
   const [ isHover, setIsHover ] = useState(false)
+  useEffect(() => !isHover && setIsSure(false), [ isHover ])
   const optionsControl = useAnimation()
 
   function displayOptions (e) {
@@ -41,7 +43,6 @@ const CardBox = ({ card, update, active, setActive, updateName, deleteCard }) =>
     <motion.div
       ref={wrapperRef}
       sx={{ variant: active ? 'Card.active' : 'Card.default' }}
-      onClick={() => router.push(`/cards/${ id }`)}
       id={id}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
@@ -91,14 +92,16 @@ const CardBox = ({ card, update, active, setActive, updateName, deleteCard }) =>
         >
           Définir comme actif
         </div>}
-        <div sx={{ mt: 2 }}>Modifier</div>
-        <div
-          sx={{ color: 'crimson', mt: 2 }}
-          onClick={e => {
-            e.stopPropagation()
-            deleteCard(id)
-          }}
-        >Supprimer</div>
+        <div sx={{ mt: 2 }} onClick={() => router.push(`/cards/${ id }`)}>Modifier</div>
+        <div sx={{ color: 'crimson', mt: 2 }} >
+          {!isSure && <span onClick={() => setIsSure(true)}>Supprimer</span>}
+          {isSure && <span>Êtes-vous sûr ?
+            <div sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', mt: 2 }}>
+              <span sx={{ color: 'crimson' }} onClick={() => deleteCard(id)}>Oui</span>
+              <span sx={{ variant: 'Button.primary', px: 2 }} onClick={() => setIsSure(false)}>Non</span>
+            </div>
+          </span>}
+        </div>
       </motion.div>
     </motion.div>
   )

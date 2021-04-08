@@ -13,14 +13,16 @@ import { jsx, Grid } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
 // Hooks
 import { useViewport } from '../../lib/hooks/useViewport'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Category = ({ cardId, structure, refresh }) => {
+  const { width } = useViewport(); const mobile = width < 832
   const { _id: catId, catName, catDescription, products } = structure
+
+  const [ isSure, setIsSure ] = useState(false)
   const [ isHover, setIsHover ] = useState(false)
-  const { width } = useViewport()
-  const mobile = width < 832
-  
+  useEffect(() => !isHover && setIsSure(false), [ isHover ])
+
   const addProduct = async () => {
     const body = { cardId, catId }
     await fetchJson('/api/card/product', {
@@ -100,16 +102,28 @@ const Category = ({ cardId, structure, refresh }) => {
               top: '50%',
               transform: 'translateY(-50%)',
               right: '5px',
-              backgroundImage: 'url("/dustbinNoText.svg")',
+              backgroundImage: isSure ? '' : 'url("/dustbinNoText.svg")',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: '35%',
               cursor: 'pointer',
               borderRadius: '100px',
               opacity: (isHover || mobile) ? 1 : 0,
+              '&::before': {
+                content: isSure ? '""' : '"Supprimer"',
+                color: 'crimson',
+                position: 'absolute',
+                left: '-110%',
+                top: '50%',
+              }
             }}
-            onClick={deleteCategory}
-          />
+            onClick={() => setIsSure(true)}
+          >
+            <div sx={{ position: 'absolute', width: '250px', transform: isSure ? 'scaleX(1)' : 'scaleX(0)', left: '-200px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson' }}>Êtes-vous sûr ?
+              <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); setIsSure(false); deleteCategory()}}>Oui</span>
+              <span sx={{ variant: 'Button.primary', px: 2 }} onClick={e => {e.stopPropagation(); setIsSure(false)}}>Non</span>
+            </div>
+          </div>
         </div>
         <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
           <AnimatePresence initial={false}>

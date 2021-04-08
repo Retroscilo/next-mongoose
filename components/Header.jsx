@@ -54,7 +54,14 @@ const Header = () => {
               >
                 Mon compte
                 {displayAccountOptions && <ul sx={{ bg: 'white', minWidth: '10rem', position: 'absolute', right: 0, top: 5, width: 'fit-content', fontSize: 1, m: 0, p: 0, display: 'flex', flexDirection: 'column', borderRadius: '3px', border: '1px solid lightgrey', boxShadow: 'high', '& li': { px: 3, py: 3, ml: 0 }, '& li:hover': { bg: '#EDEDED' } }}>
-                  <li sx={{ bg: '#EDEDED', cursor: 'default' }}>{user.email}</li>
+                  <li
+                    sx={{ bg: '#EDEDED', cursor: 'pointer' }}
+                    onClick={e => {
+                      e.stopPropagation()
+                      setDAO(false)
+                      router.push('/account')
+                    }}
+                  >{user.email}</li>
                   <li
                     sx={{ bg: 'white', cursor: 'pointer' }}
                     onClick={e => {

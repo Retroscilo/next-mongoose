@@ -54,7 +54,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
           variant={!restaurant.restaurantDescription ? 'light' : ''}
           field={'restaurantDescription'}
           update={(field, newValue) => modifyRestaurant(restaurant._id, { field, newValue })}
-          options={{ max: 50, after: 'url(/editAlt.svg)' }}
+          options={{ max: 200, after: 'url(/editAlt.svg)', width: '300px', maxHeight: '95px' }}
         />
       </div>
       <div className="Account--input">

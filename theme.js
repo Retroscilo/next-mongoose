@@ -193,6 +193,7 @@ const theme = {
       border: '2px solid',
       borderColor: 'primary',
       boxShadow: 'low',
+      mb: '70px !important',
       '&::after': {
         content: '"active"',
         width: '100%',
@@ -201,6 +202,11 @@ const theme = {
         textAlign: 'center',
         position: 'absolute',
         bottom: 0,
+      },
+      '&::before': {
+        content: '"Votre QR Code renvoie vos clients vers cette carte."',
+        position: 'absolute',
+        bottom: '-50px',
       },
     },
     empty: {
@@ -273,6 +279,11 @@ const theme = {
           height: '35px',
           top: '50%',
           left: '50%',
+        },
+        '&::before': {
+          content: '"Ajouter un produit"',
+          color: 'primary',
+          mr: 2
         },
         position: 'relative',
       },

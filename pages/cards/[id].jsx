@@ -3,10 +3,12 @@
 /** @jsx jsx */
 // @refresh reset
 
+// Front
 import { jsx, Spinner } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
+import Link from 'next/link'
 // Components
 import Category from '../../components/card/Category'
 // Hooks
@@ -27,7 +29,39 @@ const CardHeader = ({ restaurant }) => {
   return (
     <div sx={{ width: '100%', bg: 'white' }}>
       <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
-        <h1>{restaurant.restaurantName}</h1>
+        <div sx={{ display: 'flex', alignItems: 'center' }}>
+          <Link href="/cards">
+            <a>
+              <div
+                sx={{
+                  position: 'relative',
+                  background: 'url("/leftArrayCTA.svg") no-repeat',
+                  width: '30px',
+                  height: '30px',
+                  backgroundSize: 'contain',
+                  transition: 'transform 0.2s ease',
+                  mr: 2,
+                  '&::after': {
+                    position: 'absolute',
+                    content: '""',
+                    display: 'inline-block',
+                    background: 'url("/ArrayCTA__dash--black.svg") no-repeat',
+                    backgroundSize: 'contain',
+                    width: '25px',
+                    height: '25px',
+                    left: '8px',
+                    opacity: 0,
+                    top: 'calc(50% - 3px)',
+                    transition: 'opacity 0.2s ease',
+                  },
+                  '&:hover': { transform: 'translateX(-10px)' },
+                  '&:hover::after': { opacity: 1 },
+                }}
+              />
+            </a>
+          </Link>
+          <h1>{restaurant.restaurantName}</h1>
+        </div>
         <p>{restaurant.restaurantDescription}</p>
       </div>
     </div>
@@ -63,9 +97,9 @@ const CardPage = ({ SSRcard, restaurant }) => {
               ))}
             </ul>
           </div>
-          {card.categories.map((category, i) => (
+          {card.categories.map((category) => (
             <Category
-              key={i}
+              key={category._id}
               cardId={card._id}
               structure={category} // category structure with title, desc. etc...
               refresh={updateCard} // method to call after each update in db (post/put)

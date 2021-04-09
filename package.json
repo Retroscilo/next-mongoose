@@ -23,6 +23,7 @@
     "next-iron-session": "^4.1.11",
     "nodemailer": "^6.5.0",
     "prop-types": "^15.7.2",
+    "qrcode": "^1.4.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "swr": "^0.4.2",

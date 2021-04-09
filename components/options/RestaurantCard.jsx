@@ -5,6 +5,7 @@ import Input from '../Input'
 import { useState } from 'react'
 import fetchJson from '../../lib/fetchJson'
 
+
 const RestaurantCard = ({ restaurant, mutate }) => {
   const [ confirmDelete, setConfirmDelete ] = useState(false)
 

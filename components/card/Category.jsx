@@ -16,10 +16,7 @@ import { useRouter } from 'next/router'
 import { useViewport } from '../../lib/hooks/useViewport'
 import { useEffect, useState } from 'react'
 
-const Category = ({ cardId, structure, refresh }) => {
-  const router = useRouter()
-  const client = router.query.client === ''
-
+const Category = ({ client, cardId, structure, refresh }) => {
   const { width } = useViewport(); const mobile = width < 832
   const { _id: catId, catName, catDescription, products } = structure
 
@@ -74,12 +71,12 @@ const Category = ({ cardId, structure, refresh }) => {
       <div sx={{ maxWidth: 'body', p: (mobile ? 0 : 3), pt: (mobile ? 4 : 3), m: '0 auto' }}>
         <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly' }} >
           <Input
+            client={client}
             defaultValue={catName}
             update={updateCategory}
             variant="h"
             field={'catName'}
             options={{
-              client: client,
               width: 560,
               max: 40,
               empty: {
@@ -89,12 +86,12 @@ const Category = ({ cardId, structure, refresh }) => {
             }}
           />
           <Input
+            client={client}
             defaultValue={catDescription}
             update={updateCategory}
             variant="light"
             field={'catDescription'}
             options={{
-              client: client,
               width: 500,
               max: 80
             }}
@@ -115,13 +112,6 @@ const Category = ({ cardId, structure, refresh }) => {
               cursor: 'pointer',
               borderRadius: '100px',
               opacity: (isHover || mobile) ? 1 : 0,
-              '&::before': {
-                content: isSure ? '""' : '"Supprimer"',
-                color: 'crimson',
-                position: 'absolute',
-                left: '-110%',
-                top: '50%',
-              }
             }}
             onClick={() => setIsSure(true)}
           >
@@ -135,6 +125,7 @@ const Category = ({ cardId, structure, refresh }) => {
           <AnimatePresence initial={false}>
             {(products && mobile) && products.map((product, i) => (
               <ProductMobile
+                client={client}
                 layout
                 key={product._id}
                 index={i}
@@ -146,6 +137,7 @@ const Category = ({ cardId, structure, refresh }) => {
             ))}
             {(products && !mobile) && products.map((product, i) => (
               <ProductDesktop
+                client={client}
                 layout
                 key={product._id}
                 index={i}
@@ -156,7 +148,7 @@ const Category = ({ cardId, structure, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />
+          {!client && <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
         </div>
       </div>
     </motion.div>

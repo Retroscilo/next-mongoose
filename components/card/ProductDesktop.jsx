@@ -6,9 +6,9 @@ import PropTypes from 'prop-types'
 import Input from '../Input'
 import fetchJson from '../../lib/fetchJson'
 import DragDrop from '../DragDrop'
-import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
+import { motion } from 'framer-motion'
 
-const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
+const ProductDesktop = ({ client, cardId, catId, infoSet, refresh, index }) => {
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc } = infoSet
   const [ order, setOrder ] = useState(index)
   useEffect(() => setOrder(index), [ index ])
@@ -65,16 +65,18 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      <motion.div // DELETE
+      {!client && <motion.div // DELETE
         sx={{ height: '25px', width: '25px', borderRadius: '100px', position: 'absolute', top: '-10px', left: '-10px', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/x.svg)', zIndex: 1, boxShadow: 'low' }}
         variants={{
           hidden: { scale: 0 },
           visible: { scale: 1 },
         }}
+        initial={'hidden'}
         animate={ isHover ? 'visible' : 'hidden' }
         onClick={deleteProduct}
-      />
+      />}
       <Input
+        client={client}
         defaultValue={prodName}
         update={updateProduct}
         variant="regular"
@@ -89,6 +91,7 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
         }}
       />
       <Input
+        client={client}
         defaultValue={prodDescription}
         update={updateProduct}
         variant="light"
@@ -96,6 +99,7 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
         options={{ max: 80, gridArea: 'prodDescription' }}
       />
       <Input
+        client={client}
         defaultValue={prodPrice}
         update={updateProduct}
         variant="light"
@@ -112,6 +116,7 @@ const ProductDesktop = ({ cardId, catId, infoSet, refresh, index }) => {
         }}
       />
       <DragDrop
+        client={client}
         infoSet={{ imgSrc, cardId, prodId }}
         update={updateProduct}
         variant="Product.photo"
@@ -125,7 +130,8 @@ export default ProductDesktop
 ProductDesktop.propTypes = {
   cardId: PropTypes.string,
   catId: PropTypes.string,
+  client: PropTypes.bool,
+  index: PropTypes.number,
   infoSet: PropTypes.object,
-  order: PropTypes.number,
   refresh: PropTypes.func,
 }

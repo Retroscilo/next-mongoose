@@ -25,7 +25,7 @@ const QR = ({ restaurant }) => {
 
   const drawCanvas = async colors => {
     const c = colors.split(':')
-    await QRCode.toCanvas(canvasc.current, 'https://qarte.fr/client/' + id, { color: { dark: c[0], light: c[1] }, errorCorrectionLevel: 'M' })
+    await QRCode.toCanvas(canvasc.current, 'https://localhost:3000/cards/' + id + '?user', { color: { dark: c[0], light: c[1] }, errorCorrectionLevel: 'M' })
     setCanvasReady(true)
   }
   useEffect(async () => {

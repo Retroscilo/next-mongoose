@@ -11,8 +11,11 @@ import Footer from '../components/Footer'
 import Head from 'next/head'
 import { ViewportProvider } from '../lib/hooks/useViewport'
 import { Global } from '@emotion/core'
+import { useRouter } from 'next/router'
 
 function MyApp ({ Component, pageProps }) {
+  const router = useRouter()
+
   return (
     <SWRConfig
       value={{
@@ -22,13 +25,13 @@ function MyApp ({ Component, pageProps }) {
     >
       <ThemeProvider theme={ theme } component={ Component }>
         <div sx={{ minHeight: 'minGlobal' }}>
-          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, 'a': { textDecoration: 'none', color: 'inherit' } })} />
+          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, a: { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
             <title>Qarte</title>
             <link rel="preconnect" href="https://fonts.gstatic.com" />
             <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
           </Head>
-          <Header />
+          {router.route.toString().indexOf('client') === -1 && <Header />}
           <ViewportProvider>
             <Component {...pageProps} />
           </ViewportProvider>

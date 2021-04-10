@@ -6,7 +6,7 @@ import { uploadPhoto } from '../lib/connectAws'
 import { motion } from 'framer-motion'
 import theme from '../theme'
 
-const DragDrop = ({ infoSet, update }) => {
+const DragDrop = ({ infoSet, update, client }) => {
   const { cardId, prodId, imgSrc } = infoSet
   const [ hash, setHash ] = useState(Date.now()) // force image reload 
   const dropRef = useRef(null)
@@ -39,7 +39,7 @@ const DragDrop = ({ infoSet, update }) => {
       e.preventDefault()
       e.stopPropagation()
       setFillColor(theme.colors.primary)
-      uploadAndRefresh(e.dataTransfer.files)
+      !client && uploadAndRefresh(e.dataTransfer.files)
     }
 
     div.addEventListener('dragenter', handleDragIn)
@@ -70,7 +70,7 @@ const DragDrop = ({ infoSet, update }) => {
   }
 
   const onClickHandler = (e) => {
-    inputRef.current.click()
+    !client && inputRef.current.click()
   }
 
   const handleChange = async e => {
@@ -87,14 +87,14 @@ const DragDrop = ({ infoSet, update }) => {
         height: '84px',
         right: 2,
         gridArea: 'photo',
-        cursor: 'pointer',
+        cursor: client ? 'default' : 'pointer',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center' }} 
       onClick={onClickHandler} 
       onHoverStart={() => setFillColor(theme.colors.primary)}
       onHoverEnd={() => setFillColor('black')}>
-      {!imgSrc && 
+      {!imgSrc && !client && 
         <svg 
           width="50" 
           height="50" 
@@ -108,7 +108,7 @@ const DragDrop = ({ infoSet, update }) => {
       {imgSrc && 
         <div sx={{ width: '100%', height: '100%', background: `url('${imgSrc+'?'+hash}') no-repeat center`, backgroundSize: 'cover' }}></div>
       }
-      <input ref={inputRef} type="file" accept="image/jpeg, image/png, image/gif, image/heic, image/heif, image/tiff, image/webp" autoComplete="off" sx={{ display: 'none' }} onChange={handleChange} />
+      {!client && <input ref={inputRef} type="file" accept="image/jpeg, image/png, image/gif, image/heic, image/heif, image/tiff, image/webp" autoComplete="off" sx={{ display: 'none' }} onChange={handleChange} />}
     </motion.div>
   )
 }

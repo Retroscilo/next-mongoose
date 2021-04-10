@@ -48,7 +48,7 @@ const ErrorInfo = ({ error }) => {
   )
 }
 
-const Input = ({ defaultValue, update, variant, field, options }) => {
+const Input = ({ client, defaultValue, update, variant, field, options }) => {
   const [ error, setError ] = useState(false)
   const pulseControls = useAnimation()
   const handleError = message => {
@@ -87,7 +87,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
 
   return (
     <span sx={{ position: 'relative', gridArea: options?.gridArea || '', cursor: 'default'}}>
-    {!options.client && <motion.div
+    {!client && <motion.div
       contentEditable="true"
       suppressContentEditableWarning={true}
       suppressErrors={true}
@@ -136,7 +136,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
     >
       {defaultValue}
     </motion.div>}
-    {options.client && 
+    {client && 
       <span sx={{ 
         position: 'relative',
         variant: `Input.${ variant }`,
@@ -159,6 +159,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
 export default Input
 
 Input.propTypes = {
+  client: PropTypes.bool,
   defaultValue: PropTypes.string,
   field: PropTypes.string,
   update: PropTypes.func,

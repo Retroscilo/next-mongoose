@@ -29,7 +29,7 @@ const CardHeader = ({ restaurant }) => {
   const mobile = width < 832
   const router = useRouter()
   const [ clientView, setclientView ] = useState(false)
-  useEffect(() => router.push(`/cards/${ router.query.id }?${ clientView ? 'client' : '' }`, undefined, { shallow: clientView }), [ clientView ])
+  useEffect(() => router.push(`/cards/${ router.query.id }?${ clientView ? 'client' : '' }`, undefined, { shallow: true }), [ clientView ])
 
   return (
     <div sx={{ width: '100%', bg: 'white' }}>
@@ -69,7 +69,7 @@ const CardHeader = ({ restaurant }) => {
             <h1>{restaurant.restaurantName}</h1>
           </span>
           <Switch
-            isOn={clientView} label={'Vue utilisateur'}
+            isOn={clientView} label={'Vue client'}
             onClick={() => setclientView(!clientView)}
           />
         </div>
@@ -83,6 +83,7 @@ const CardPage = ({ SSRcard, restaurant }) => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
   const router = useRouter()
   const { id } = router.query
+  const client = (router.query.client === '')
 
   const { data: card, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcard })
 
@@ -110,13 +111,14 @@ const CardPage = ({ SSRcard, restaurant }) => {
           </div>
           {card.categories.map(category => (
             <Category
+              client={client}
               key={category._id}
               cardId={card._id}
               structure={category} // category structure with title, desc. etc...
               refresh={updateCard} // method to call after each update in db (post/put)
             />
           ))}
-          <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>
+          {!client && <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>}
         </>
       }
     </div>

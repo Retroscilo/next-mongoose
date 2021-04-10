@@ -7,7 +7,7 @@ import propTypes from 'prop-types'
 
 export default function Switch ({ isOn, label, ...props }) {
   return (
-    <div sx={{ display: 'flex', alignItems: 'center', pr: 2 }}>
+    <div sx={{ display: 'flex', alignItems: 'center', pr: 2, color: isOn ? 'body' : 'textLight' }}>
       {label} &nbsp;
       <div
         { ...props }

@@ -143,6 +143,7 @@ export default Product
 Product.propTypes = {
   cardId: PropTypes.string,
   catId: PropTypes.string,
+  index: PropTypes.number,
   infoSet: PropTypes.object,
   refresh: PropTypes.func,
 }

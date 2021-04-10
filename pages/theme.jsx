@@ -41,18 +41,18 @@ const SelectIcons = ({ icons, options = {} }) => {
   )
 }
 
-const QRCard = ({ id, name }) => {
+const QRCard = ({ restaurant, QR }) => {
   const canvasc = useRef(null)
   const dlCanvas = e => {
     let dt = canvasc.current.toDataURL('image/png')
     dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
-    dt = dt.replace(/^data:application\/octet-stream/, `data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=QRCode_${name}.png`)
+    dt = dt.replace(/^data:application\/octet-stream/, `data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=QRCode_${restaurant.restaurantName}.png`)
     e.target.href = dt
   }
   const [ canvasReady, setCanvasReady ] = useState(false)
   const drawCanvas = async colors => {
     const c = colors.split(':')
-    await QRCode.toCanvas(canvasc.current, 'texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext', { color: { dark: c[0], light: c[1] } })
+    await QRCode.toCanvas(canvasc.current, 'texttexttexttexttexttexttexttexttexttexttexttexttex', { color: { dark: c[0], light: c[1] }, errorCorrectionLevel: 'L' })
     setCanvasReady(true)
   }
   useEffect(async () => drawCanvas('#000:#FFF'), [])
@@ -82,9 +82,9 @@ const QRCard = ({ id, name }) => {
         Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.
       </canvas>
       <a
-        download={`QRCode_${ name }`} href="#"
+        download={`QRCode_${ restaurant.restaurantName }`} href="#"
         onClick={e => dlCanvas(e)}
-        sx={{ display: 'block' }}
+        sx={{ display: 'block', variant: 'Button.primary' }}
       >Télécharger mon QR Code</a>
     </div>
   )
@@ -109,7 +109,7 @@ const theme = () => {
         <input type="text" name="text" />
         <input type="submit" value="tester" />
       </form> */}
-      <QRCard name={'Le grand large'} />
+      <QRCard restaurant={{ _id: '07c82b4965733', restaurantName: 'Le grand large' }} />
     </div>
 )}
 

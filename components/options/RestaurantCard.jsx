@@ -1,10 +1,81 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx } from 'theme-ui'
+import { jsx, Spinner } from 'theme-ui'
 import Input from '../Input'
-import { useState } from 'react'
+// eslint-disable-next-line no-unused-vars
+import React, { useState, useEffect, useRef } from 'react'
 import fetchJson from '../../lib/fetchJson'
+import IconSelector from '../IconSelector'
+import QRCode from 'qrcode'
+import propTypes from 'prop-types'
 
+const QR = ({ restaurant }) => {
+  const { _id: id, restaurantName: name, QR } = restaurant
+  const { color: defaultColor, logo, shape, frame } = QR || {}
+  const canvasc = useRef(null)
+  const [ canvasReady, setCanvasReady ] = useState(false)
+  const [ color, setColor ] = useState(defaultColor || '#000:#FFF')
+
+  const dlCanvas = e => {
+    let dt = document.querySelector('canvas').toDataURL('image/png')
+    dt = dt.replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+    dt = dt.replace(/^data:application\/octet-stream/, `data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=QRCode_${ name }.png`)
+    e.target.href = dt
+  }
+
+  const drawCanvas = async colors => {
+    const c = colors.split(':')
+    await QRCode.toCanvas(canvasc.current, 'https://qarte.fr/client/' + id, { color: { dark: c[0], light: c[1] }, errorCorrectionLevel: 'M' })
+    setCanvasReady(true)
+  }
+  useEffect(async () => {
+    drawCanvas(color)
+    await fetchJson('/api/QR', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id, field: 'color', value: color }),
+    })
+  }, [ color ])
+
+  return (
+    <div sx={{ display: 'grid', gridTemplateAreas: '"custom qr" "custom qr" "download qr"' }}>
+      <span sx={{ display: 'flex', gridArea: 'custom', flexDirection: 'column', '& > *': { mt: 2 } }}>
+        <span sx={{ display: 'flex' }}>
+          Couleur: &nbsp;
+          <IconSelector
+            icons={[
+              { value: '#000:#FFF', url: '/selectIcons/bw.svg' },
+              { value: '#03018C:#FFF', url: '/selectIcons/blw.svg' },
+              { value: '#FF4D4D:#FFF', url: '/selectIcons/rw.svg' },
+              { value: '#FF8008:#FFF', url: '/selectIcons/yw.svg' },
+              { value: '#FFF:#000', url: '/selectIcons/wb.svg' },
+            ]}
+            options={{ iconSize: '20px', callback: value => setColor(value), defaultColor: color }}
+          />
+        </span>
+        <span>Logo: <span sx={{ color: 'textLight' }}>Bientôt !</span></span>
+        <span>Forme: <span sx={{ color: 'textLight' }}>Bientôt !</span></span>
+        <span>Cadre: <span sx={{ color: 'textLight' }}>Bientôt !</span></span>
+      </span>
+      {!canvasReady && <Spinner />}
+      <canvas
+        ref={canvasc}
+        width="300"
+        height="300"
+        sx={{ opacity: canvasReady ? 1 : 0, border: '2px solid lightgrey', gridArea: 'qr', justifySelf: 'end' }}
+      >
+        Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.
+      </canvas>
+      <a
+        download={`QRCode_${ name }`} href="#"
+        onClick={e => dlCanvas(e)}
+        sx={{ display: 'block', variant: 'Button.primary', gridArea: 'download', alignSelf: 'end' }}
+      >
+        Télécharger mon QR Code
+      </a>
+    </div>
+  )
+}
 
 const RestaurantCard = ({ restaurant, mutate }) => {
   const [ confirmDelete, setConfirmDelete ] = useState(false)
@@ -58,16 +129,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
           options={{ max: 200, after: 'url(/editAlt.svg)', width: '300px', maxHeight: '95px' }}
         />
       </div>
-      <div className="Account--input">
-        Adresse :
-        <Input
-          defaultValue={restaurant.location || 'Ajouter une adresse'}
-          variant={!restaurant.location ? 'light' : ''}
-          field={'location'}
-          update={(field, newValue) => modifyRestaurant(restaurant._id, { field, newValue })}
-          options={{ max: 50, after: 'url(/editAlt.svg)' }}
-        />
-      </div>
+      <QR restaurant={restaurant} />
       {!confirmDelete &&
       <div
         sx={{ color: 'crimson', cursor: 'pointer' }}
@@ -76,7 +138,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
       {confirmDelete === restaurant._id &&
       <div sx={{ color: 'crimson' }}>
         Êtes-vous sûr ? Toutes les cartes seront également supprimées.
-        <span sx={{ display: 'flex', maxWidth: '15rem', mx: 'auto', mt: 3, justifyContent: 'space-between', alignItems:'center' }}>
+        <span sx={{ display: 'flex', maxWidth: '15rem', mx: 'auto', mt: 3, justifyContent: 'space-between', alignItems: 'center' }}>
           <div sx={{ variant: 'Button.primary' }} onClick={() => setConfirmDelete(false)}>Annuler</div>
           <div sx={{ cursor: 'pointer' }} onClick={() => { deleteRestaurant(restaurant._id); setConfirmDelete(false) }}>Confirmer</div>
         </span>
@@ -92,3 +154,10 @@ const RestaurantCard = ({ restaurant, mutate }) => {
 }
 
 export default RestaurantCard
+
+QR.propTypes = { restaurant: propTypes.object }
+
+RestaurantCard.propTypes = {
+  mutate: propTypes.func,
+  restaurant: propTypes.object,
+}

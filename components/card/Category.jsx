@@ -9,13 +9,17 @@ import Input from '../Input'
 // Front
 import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
-import { jsx, Grid } from 'theme-ui'
+import { jsx } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/router'
 // Hooks
 import { useViewport } from '../../lib/hooks/useViewport'
 import { useEffect, useState } from 'react'
 
 const Category = ({ cardId, structure, refresh }) => {
+  const router = useRouter()
+  const client = router.query.client === ''
+
   const { width } = useViewport(); const mobile = width < 832
   const { _id: catId, catName, catDescription, products } = structure
 
@@ -68,13 +72,14 @@ const Category = ({ cardId, structure, refresh }) => {
       onHoverEnd={() => setIsHover(false)}
     >
       <div sx={{ maxWidth: 'body', p: (mobile ? 0 : 3), pt: (mobile ? 4 : 3), m: '0 auto' }}>
-        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly'}} >
+        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly' }} >
           <Input
             defaultValue={catName}
             update={updateCategory}
             variant="h"
             field={'catName'}
             options={{
+              client: client,
               width: 560,
               max: 40,
               empty: {
@@ -89,11 +94,12 @@ const Category = ({ cardId, structure, refresh }) => {
             variant="light"
             field={'catDescription'}
             options={{
+              client: client,
               width: 500,
               max: 80
             }}
           />
-          <div
+          {!client && <div
             sx={{
               transition: 'opacity 0.2s ease',
               height: '50px',
@@ -123,7 +129,7 @@ const Category = ({ cardId, structure, refresh }) => {
               <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); setIsSure(false); deleteCategory()}}>Oui</span>
               <span sx={{ variant: 'Button.primary', px: 2 }} onClick={e => {e.stopPropagation(); setIsSure(false)}}>Non</span>
             </div>
-          </div>
+          </div>}
         </div>
         <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
           <AnimatePresence initial={false}>

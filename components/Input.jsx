@@ -87,7 +87,7 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
 
   return (
     <span sx={{ position: 'relative', gridArea: options?.gridArea || '', cursor: 'default'}}>
-    <motion.div
+    {!options.client && <motion.div
       contentEditable="true"
       suppressContentEditableWarning={true}
       suppressErrors={true}
@@ -135,7 +135,22 @@ const Input = ({ defaultValue, update, variant, field, options }) => {
       transition={{ boxShadow: { duration: 0.2, ease: 'linear' }, outline: { duration: 0.2, ease: 'linear' } }}
     >
       {defaultValue}
-    </motion.div>
+    </motion.div>}
+    {options.client && 
+      <span sx={{ 
+        position: 'relative',
+        variant: `Input.${ variant }`,
+        display: 'block',
+        width: options?.width || '100%',
+        overflow: 'auto',
+        maxHeight: options?.maxHeight || '38px',
+        border: 'none',
+        borderRadius: '3px',
+        bg: 'inherit',
+        pl: options?.label ? '12px' : 1,
+        pr: options?.after ? '18px' : 1,
+        lineHeight: 1.2,
+      }}>{defaultValue}</span>}
     {error && <ErrorInfo error={error} />}
     </span>
   )

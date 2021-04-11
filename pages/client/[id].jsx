@@ -5,29 +5,21 @@
 
 // Front
 import { jsx } from 'theme-ui'
-import fetchJson from '../../lib/fetchJson'
-import React, { useState, useEffect } from 'react'
-// Hooks
-import { useViewport } from '../../lib/hooks/useViewport'
+
 // Components
-import Category from '../../components/card/Category'
-import { Menu } from '../cards/[id]'
+import Menu from '../../components/card/Menu'
 import propTypes from 'prop-types'
-import Switch from '../../components/misc/Switch'
+
 // SG
 import Card from '../../lib/models/card.model'
 import Restaurant from '../../lib/models/restaurant.model'
 
-const CardViewer = ({ card, restaurant }) => {
-  console.log(card, restaurant)
-  return (
-    <Menu
-      card={card}
-      restaurant={restaurant}
-      client
-    />
-  )
-}
+const CardViewer = ({ card, restaurant }) => (
+  <Menu
+    card={card}
+    restaurant={restaurant}
+    client
+  />)
 
 export async function getStaticPaths () {
   return {
@@ -49,3 +41,8 @@ export async function getStaticProps ({ params }) {
 }
 
 export default CardViewer
+
+CardViewer.propTypes = {
+  card: propTypes.object,
+  restaurant: propTypes.object,
+}

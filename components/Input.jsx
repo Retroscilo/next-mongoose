@@ -64,7 +64,7 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
 
   // maxChar error
   const handleKeyUp = e => {
-    if(e.target.innerText.length > (options?.max || 999)) return handleError(`${options?.max} charactères maximum (${e.target.innerText.length}/${options?.max})`)
+    if(e.target.innerText.length > (options?.max || 999)) return handleError(`${options?.max} caractères maximum (${e.target.innerText.length}/${options?.max})`)
     else setError(false)
     e.key === "Enter" && e.target.blur()
   }

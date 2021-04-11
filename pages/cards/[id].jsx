@@ -12,7 +12,7 @@ import Link from 'next/link'
 // Components
 import Category from '../../components/card/Category'
 import propTypes from 'prop-types'
-import Switch from '../../components/Switch'
+import { Switch, PrevArrow } from '../../components/misc/index'
 // Hooks
 import { useViewport } from '../../lib/hooks/useViewport'
 import useUser from '../../lib/hooks/useUser'
@@ -24,67 +24,65 @@ import withSession from '../../lib/session'
 import connect from '../../lib/middlewares/mongodb'
 import useSwr from 'swr'
 
-const CardHeader = ({ restaurant }) => {
+/**
+ * Render the view of menu
+ * @param {object} card structure of menu (categories & product)
+ * @param {object} restaurant contain restaurant info (name/description/photo...)
+ * @param {bool} client set true for restaurant's client render or false to activate the editor
+ * @returns {void}
+*/
+export const Menu = ({ card, restaurant, client, ...props }) => {
   const { width } = useViewport()
   const mobile = width < 832
-  const router = useRouter()
-  const [ clientView, setclientView ] = useState(false)
-  useEffect(() => router.push(`/cards/${ router.query.id }?${ clientView ? 'client' : '' }`, undefined, { shallow: true }), [ clientView ])
+  const [ clientView, setClientView ] = useState(client)
 
   return (
-    <div sx={{ width: '100%', bg: 'white' }}>
-      <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
-        <div sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span sx={{ display: 'flex', alignItems: 'center' }}>
-            {!(router.query.client === '') && <Link href="/cards">
-              <a>
-                <div
-                  sx={{
-                    position: 'relative',
-                    background: 'url("/leftArrayCTA.svg") no-repeat',
-                    width: '30px',
-                    height: '30px',
-                    backgroundSize: 'contain',
-                    transition: 'transform 0.2s ease',
-                    mr: 2,
-                    '&::after': {
-                      position: 'absolute',
-                      content: '""',
-                      display: 'inline-block',
-                      background: 'url("/ArrayCTA__dash--black.svg") no-repeat',
-                      backgroundSize: 'contain',
-                      width: '25px',
-                      height: '25px',
-                      left: '8px',
-                      opacity: 0,
-                      top: 'calc(50% - 3px)',
-                      transition: 'opacity 0.1s ease',
-                    },
-                    '&:hover': { transform: 'translateX(-10px)' },
-                    '&:hover::after': { opacity: 1 },
-                  }}
-                />
-              </a>
-            </Link>}
-            <h1>{restaurant.restaurantName}</h1>
-          </span>
-          <Switch
-            isOn={clientView} label={'Vue client'}
-            onClick={() => setclientView(!clientView)}
-          />
+    <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <div sx={{ width: '100%', bg: 'white' }}>
+        <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
+          <div sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span sx={{ display: 'flex', alignItems: 'center' }}>
+              {!client && <PrevArrow />}
+              <h1>{restaurant.restaurantName}</h1>
+            </span>
+            {!client &&
+              <Switch
+                isOn={clientView}
+                label={'Vue client'}
+                onClick={() => setClientView(!clientView)}
+              />}
+          </div>
+          <p>{restaurant.restaurantDescription}</p>
         </div>
-        <p>{restaurant.restaurantDescription}</p>
       </div>
+      <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
+        <ul sx={{ display: 'flex', justifyContent: 'space-evenly', maxWidth: 'body', mx: 'auto', px: 3 }}>
+          {card.categories.map(category => (
+            <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
+          ))}
+        </ul>
+      </div>
+      {card.categories.map(category => (
+        <Category
+          client={clientView}
+          key={category._id}
+          cardId={card._id}
+          structure={category}
+          refresh={props.updateCard}
+        />
+      ))}
+      {!clientView && <div sx={{ variant: 'Add.category' }} onClick={props.addCategory}>Ajouter une catégorie </div>}
     </div>
   )
 }
 
-const CardPage = ({ SSRcard, restaurant }) => {
+const CardEditor = ({ SSRcard, restaurant }) => {
+  // Check if User connected, nor redirect
   useUser({ redirectTo: '/login', redirectIfFound: false })
+
+  // CSR
   const router = useRouter()
   const { id } = router.query
-  const client = (router.query.client === '')
-
   const { data: card, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcard })
 
   const addCategory = async () => {
@@ -98,30 +96,13 @@ const CardPage = ({ SSRcard, restaurant }) => {
   }
 
   return (
-    <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {card.categories
-        && <>
-          <CardHeader restaurant={restaurant} />
-          <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
-            <ul sx={{ display: 'flex', justifyContent: 'space-evenly', maxWidth: 'body', mx: 'auto', px: 3 }}>
-              {card.categories.map(category => (
-                <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
-              ))}
-            </ul>
-          </div>
-          {card.categories.map(category => (
-            <Category
-              client={client}
-              key={category._id}
-              cardId={card._id}
-              structure={category} // category structure with title, desc. etc...
-              refresh={updateCard} // method to call after each update in db (post/put)
-            />
-          ))}
-          {!client && <div sx={{ variant: 'Add.category' }} onClick={addCategory}>Ajouter une catégorie</div>}
-        </>
-      }
-    </div>
+    <Menu
+      card={card}
+      restaurant={restaurant}
+      client={false}
+      updateCard={updateCard}
+      addCategory={addCategory}
+    />
   )
 }
 
@@ -142,13 +123,17 @@ export const getServerSideProps = connect(withSession(async ({ req, res, params 
   }
 }))
 
-export default CardPage
+export default CardEditor
 
-CardHeader.propTypes = {
+Menu.propTypes = {
+  addCategory: propTypes.func,
+  card: propTypes.object,
+  client: propTypes.bool,
   restaurant: propTypes.object,
+  updateCard: propTypes.func,
 }
 
-CardPage.propTypes = {
+CardEditor.propTypes = {
   SSRcard: propTypes.object,
   restaurant: propTypes.object,
 }

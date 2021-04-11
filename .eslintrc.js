@@ -34,6 +34,7 @@ module.exports = {
     'react/jsx-curly-spacing': 'off',
     'react/jsx-indent-props': 'off',
     'react/jsx-no-bind': 'off',
+    'react/jsx-handler-names': 'off',
     'sort-imports': 'off',
     'react/jsx-pascal-case': 'off',
     'operator-linebreak': 'off',

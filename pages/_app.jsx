@@ -36,7 +36,7 @@ function MyApp ({ Component, pageProps }) {
             <Component {...pageProps} />
           </ViewportProvider>
         </div>
-        <Footer />
+        {router.route.toString().indexOf('client') === -1 && <Footer />}
       </ThemeProvider>
     </SWRConfig>
   )

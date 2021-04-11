@@ -61,7 +61,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
         width: '100%',
         backgroundColor: '#f4f5f5',
         transition: 'height 0.5s ease',
-        height: (mobile ? 'fit-content' : `calc(127px + ${116*(Math.round((products.length + 1)/2))}px)`),
+        height: (mobile ? 'fit-content' : `calc(127px + ${116*(Math.round((products.length + (client ? 0 : 1))/2))}px)`),
       }}
       id={catId}
       whileHover={{ backgroundColor: '#eee' }}

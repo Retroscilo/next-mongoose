@@ -10,7 +10,6 @@ import errors from '../../../lib/errors'
 const handler = nc()
   .get(async (req, res) => {
     const session = req.session.get('user')
-
     if (session) {
       const user = await User.findById(session.userId)
       res.json({

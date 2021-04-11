@@ -13,6 +13,7 @@ import propTypes from 'prop-types'
 // SG
 import Card from '../../lib/models/card.model'
 import Restaurant from '../../lib/models/restaurant.model'
+import connect from '../../lib/middlewares/mongodb'
 
 const CardViewer = ({ card, restaurant }) => (
   <Menu
@@ -30,7 +31,7 @@ export async function getStaticPaths () {
   }
 }
 
-export async function getStaticProps ({ params }) {
+export const getStaticProps = connect(async ({ params }) => {
   const card = await Card.findById(params.id).lean()
   const restaurant = await Restaurant.findById(card.restaurantId).lean()
 
@@ -38,7 +39,7 @@ export async function getStaticProps ({ params }) {
     props: { card: JSON.parse(JSON.stringify(card)), restaurant: JSON.parse(JSON.stringify(restaurant)) },
     revalidate: 1,
   }
-}
+})
 
 export default CardViewer
 

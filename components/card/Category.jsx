@@ -11,7 +11,6 @@ import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
 import { jsx } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useRouter } from 'next/router'
 // Hooks
 import { useViewport } from '../../lib/hooks/useViewport'
 import { useEffect, useState } from 'react'

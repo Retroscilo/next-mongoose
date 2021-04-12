@@ -4,7 +4,8 @@
 // @refresh reset
 
 // Front
-import { jsx } from 'theme-ui'
+import { jsx, Spinner } from 'theme-ui'
+import { useRouter } from 'next/router'
 
 // Components
 import Menu from '../../components/card/Menu'
@@ -15,12 +16,19 @@ import Card from '../../lib/models/card.model'
 import Restaurant from '../../lib/models/restaurant.model'
 import connect from '../../lib/connectDB'
 
-const CardViewer = ({ card, restaurant }) => (
-  <Menu
-    card={card}
-    restaurant={restaurant}
-    client
-  />)
+const CardViewer = ({ card, restaurant }) => {
+  const router = useRouter()
+  if (router.isFallback) return (
+    <Spinner />
+  )
+  return (
+    <Menu
+      card={card}
+      restaurant={restaurant}
+      client
+    />
+  )
+}
 
 export async function getStaticPaths () {
   return {

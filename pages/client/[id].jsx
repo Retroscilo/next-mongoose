@@ -33,6 +33,7 @@ export async function getStaticPaths () {
 
 export const getStaticProps = connect(async ({ params }) => {
   await connect()
+  
   const card = await Card.findById(params.id).lean()
   const restaurant = await Restaurant.findById(card.restaurantId).lean()
 

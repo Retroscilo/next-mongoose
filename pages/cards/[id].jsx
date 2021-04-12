@@ -4,29 +4,29 @@
 // @refresh reset
 
 // Front
-import { jsx } from 'theme-ui'
+import { jsx, Spinner } from 'theme-ui'
 import { useRouter } from 'next/router'
 import fetchJson from '../../lib/fetchJson'
+import fetchWithId from '../../lib/fetchWithId'
 import Menu from '../../components/card/Menu'
 import propTypes from 'prop-types'
+import { useEffect, useState } from 'react'
 // Hooks
 import useSwr from 'swr'
 import useUser from '../../lib/hooks/useUser'
-// SSR
-import User from '../../lib/models/user.model'
-import Restaurant from '../../lib/models/restaurant.model'
-import Card from '../../lib/models/card.model'
-import withSession from '../../lib/session'
-import connect from '../../lib/middlewares/mongodb'
 
-const CardEditor = ({ SSRcard, restaurant }) => {
+const CardEditor = () => {
   // Check if User connected, nor redirect
   useUser({ redirectTo: '/login', redirectIfFound: false })
 
-  // CSR
+  // SG
   const router = useRouter()
   const { id } = router.query
-  const { data: card, mutate: updateCard } = useSwr('/api/card/' + id, fetchJson, { initialData: SSRcard })
+
+  // Subscribe to card first, then load restaurant infos. Await for router to be ready client side.
+  const { data: card, mutate: updateCard } = useSwr(id ? [ '/api/card/', id ] : null, fetchWithId)
+  const [ restaurant, setRestaurant ] = useState(null)
+  useEffect(async () => card && setRestaurant(await fetchJson('/api/restaurant/' + card.restaurantId)), [ card ])
 
   const addCategory = async () => {
     const body = { id }
@@ -38,6 +38,7 @@ const CardEditor = ({ SSRcard, restaurant }) => {
     await updateCard()
   }
 
+  if (!restaurant || !card) return <div><Spinner /></div>
   return (
     <Menu
       card={card}
@@ -49,26 +50,4 @@ const CardEditor = ({ SSRcard, restaurant }) => {
   )
 }
 
-export const getServerSideProps = connect(withSession(async ({ req, res, params }) => {
-  const session = req.session.get('user')
-  if (!session) return { redirect: { destination: '/login', permanent: false } }
-  const user = await User.findById(session.userId)
-  const card = await Card.findById(params.id)
-  const restaurant = await Restaurant.findById(card.restaurantId)
-
-  // if card not found or is not in user's restaurants, redirect.
-  if (!card || user.restaurants.indexOf(card.restaurantId) === -1) return { redirect: { destination: '/cards', permanent: false } }
-  return {
-    props: {
-      SSRcard: JSON.parse(JSON.stringify(card)),
-      restaurant: JSON.parse(JSON.stringify(restaurant)),
-    },
-  }
-}))
-
 export default CardEditor
-
-CardEditor.propTypes = {
-  SSRcard: propTypes.object,
-  restaurant: propTypes.object,
-}

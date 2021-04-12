@@ -3,8 +3,7 @@
 // @refresh reset
 
 // Components
-import ProductMobile from './ProductMobile'
-import ProductDesktop from './ProductDesktop'
+import Product from './Product'
 import Input from '../Input'
 // Front
 import PropTypes from 'prop-types'
@@ -12,11 +11,9 @@ import fetchJson from '../../lib/fetchJson'
 import { jsx } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
 // Hooks
-import { useViewport } from '../../lib/hooks/useViewport'
 import { useEffect, useState } from 'react'
 
 const Category = ({ client, cardId, structure, refresh }) => {
-  const { width } = useViewport(); const mobile = width < 832
   const { _id: catId, catName, catDescription, products } = structure
 
   const [ isSure, setIsSure ] = useState(false)
@@ -60,15 +57,15 @@ const Category = ({ client, cardId, structure, refresh }) => {
         width: '100%',
         backgroundColor: '#f4f5f5',
         transition: 'height 0.5s ease',
-        height: (mobile ? 'fit-content' : `calc(127px + ${116*(Math.round((products.length + (client ? 0 : 1))/2))}px)`),
+        height: [ 'fit-content', `calc(127px + ${116*(Math.round((products.length + (client ? 0 : 1))/2))}px)` ]
       }}
       id={catId}
       whileHover={{ backgroundColor: '#eee' }}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      <div sx={{ maxWidth: 'body', p: (mobile ? 0 : 3), pt: (mobile ? 4 : 3), m: '0 auto' }}>
-        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly' }} >
+      <div sx={{ maxWidth: 'body', p: [ 0, 3 ], pt: [ 4, 3 ], m: '0 auto' }}>
+        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: [ 2, 0 ], justifyContent: 'space-evenly' }} >
           <Input
             client={client}
             defaultValue={catName}
@@ -110,7 +107,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
               backgroundSize: '35%',
               cursor: 'pointer',
               borderRadius: '100px',
-              opacity: (isHover || mobile) ? 1 : 0,
+              opacity: isHover ? 1 : [ 1, 0 ],
             }}
             onClick={() => setIsSure(true)}
           >
@@ -120,22 +117,10 @@ const Category = ({ client, cardId, structure, refresh }) => {
             </div>
           </div>}
         </div>
-        <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
+        <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', 'minmax(0, 1fr) minmax(0, 1fr)' ], gridGap: [0, 3] }}>
           <AnimatePresence initial={false}>
-            {(products && mobile) && products.map((product, i) => (
-              <ProductMobile
-                client={client}
-                layout
-                key={product._id}
-                index={i}
-                cardId={cardId}
-                catId={catId}
-                infoSet={product}
-                refresh={refresh}
-              />
-            ))}
-            {(products && !mobile) && products.map((product, i) => (
-              <ProductDesktop
+            {products.map((product, i) => (
+              <Product
                 client={client}
                 layout
                 key={product._id}
@@ -147,7 +132,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          {!client && <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
+          {!client && <div sx={{ variant: ['Add.product.mobile', 'Add.product.desktop'] }} onClick={addProduct} />}
         </div>
       </div>
     </motion.div>

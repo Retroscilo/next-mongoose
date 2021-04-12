@@ -18,7 +18,7 @@ const theme = {
     bold: '700',
   },
   radii: [ 3 ],
-  breakpoints: [ '40em', '52em', '64em' ],
+  breakpoints: [ '832px' ],
   space: [ 0, 4, 8, 16, 32, 64, 128, 256, 512 ],
   fontSizes: [ 12, 14, 16, 20, 24, 32, 48, 64, 96 ],
   shadows: {

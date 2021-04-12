@@ -3,9 +3,8 @@
 /** @jsx jsx */
 // @refresh reset
 
-import { useViewport } from '../../lib/hooks/useViewport'
-import { jsx } from 'theme-ui'
-import { useState } from 'react'
+import { jsx, Spinner } from 'theme-ui'
+import { useState, useRef, useEffect } from 'react'
 import Category from '../../components/card/Category'
 import propTypes from 'prop-types'
 import { Switch, PrevArrow } from '../../components/misc/index'
@@ -18,15 +17,15 @@ import { Switch, PrevArrow } from '../../components/misc/index'
  * @returns {void}
 */
 const Menu = ({ card, restaurant, client, ...props }) => {
-  const { width } = useViewport()
-  const mobile = width < 832
   const [ clientView, setClientView ] = useState(client)
+  const catList = useRef(null)
+  const [ wrapping, setWrapping ] = useState(false)
 
   return (
     /* Card Header (restaurant infos) */
     <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       <div sx={{ width: '100%', bg: 'white' }}>
-        <div sx={{ maxWidth: 'body', pl: mobile ? 2 : 3, m: '0 auto' }}>
+        <div sx={{ maxWidth: 'body', pl: [ 2, 3 ], m: '0 auto' }}>
           <div sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span sx={{ display: 'flex', alignItems: 'center' }}>
               {!client && <PrevArrow />}
@@ -44,7 +43,7 @@ const Menu = ({ card, restaurant, client, ...props }) => {
       </div>
       {/* Category navigation */}
       <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
-        <ul sx={{ display: 'flex', justifyContent: 'space-evenly', maxWidth: 'body', mx: 'auto', px: 3 }}>
+        <ul ref={catList} sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', maxWidth: 'body', mx: 'auto', px: 3, height: '20px' }}>
           {card.categories.map(category => (
             <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
           ))}

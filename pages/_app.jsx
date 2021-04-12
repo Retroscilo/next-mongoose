@@ -9,7 +9,6 @@ import fetch from '../lib/fetchJson'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Head from 'next/head'
-import { ViewportProvider } from '../lib/hooks/useViewport'
 import { Global } from '@emotion/core'
 import { useRouter } from 'next/router'
 
@@ -32,9 +31,7 @@ function MyApp ({ Component, pageProps }) {
             <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
           </Head>
           {router.route.toString().indexOf('client') === -1 && <Header />}
-          <ViewportProvider>
-            <Component {...pageProps} />
-          </ViewportProvider>
+          <Component {...pageProps} />
         </div>
         {router.route.toString().indexOf('client') === -1 && <Footer />}
       </ThemeProvider>

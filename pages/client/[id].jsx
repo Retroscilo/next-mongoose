@@ -31,9 +31,9 @@ export async function getStaticPaths () {
   }
 }
 
-export const getStaticProps = connect(async ({ params }) => {
+export const getStaticProps = async ({ params }) => {
   await connect()
-  
+
   const card = await Card.findById(params.id).lean()
   const restaurant = await Restaurant.findById(card.restaurantId).lean()
 
@@ -41,7 +41,7 @@ export const getStaticProps = connect(async ({ params }) => {
     props: { card: JSON.parse(JSON.stringify(card)), restaurant: JSON.parse(JSON.stringify(restaurant)) },
     revalidate: 1,
   }
-})
+}
 
 export default CardViewer
 

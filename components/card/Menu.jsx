@@ -8,6 +8,23 @@ import { useState, useRef, useEffect } from 'react'
 import Category from '../../components/card/Category'
 import propTypes from 'prop-types'
 import { Switch, PrevArrow } from '../../components/misc/index'
+import { useViewport } from '../../lib/hooks/useViewport'
+import ListSelector from '../../components/misc/listSelector'
+
+const CategoryNav = ({ categories, client }) => {
+  const displayedCat = categories.filter((cat, i) => i < 3)
+  const hiddenCat = categories.filter((cat, i) => i > 3)
+  return (
+    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 60, overflowX: 'auto' }}>
+      <ul sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mx: 'auto', maxWidth: 'body', p: 0, '& > *': { mx: 4, color: 'primary', cursor: 'pointer' } }}>
+        {displayedCat.map(category => (
+          <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
+        ))}
+        <ListSelector label={'plus'} options={hiddenCat} />
+      </ul>
+    </div>
+  )
+}
 
 /**
  * Render the view of menu
@@ -18,8 +35,6 @@ import { Switch, PrevArrow } from '../../components/misc/index'
 */
 const Menu = ({ card, restaurant, client, ...props }) => {
   const [ clientView, setClientView ] = useState(client)
-  const catList = useRef(null)
-  const [ wrapping, setWrapping ] = useState(false)
 
   return (
     /* Card Header (restaurant infos) */
@@ -42,13 +57,7 @@ const Menu = ({ card, restaurant, client, ...props }) => {
         </div>
       </div>
       {/* Category navigation */}
-      <div sx={{ bg: 'white', position: 'sticky', top: '70px', width: '100%', zIndex: 60 }}>
-        <ul ref={catList} sx={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', maxWidth: 'body', mx: 'auto', px: 3, height: '20px' }}>
-          {card.categories.map(category => (
-            <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
-          ))}
-        </ul>
-      </div>
+      <CategoryNav categories={card.categories} client={client} />
       {/* Card body */}
       {card.categories.map(category => (
         <Category

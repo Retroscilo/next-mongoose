@@ -12,9 +12,11 @@ import { jsx } from 'theme-ui'
 import { motion, AnimatePresence } from 'framer-motion'
 // Hooks
 import { useEffect, useState } from 'react'
+import { useViewport } from '../../lib/hooks/useViewport'
 
 const Category = ({ client, cardId, structure, refresh }) => {
   const { _id: catId, catName, catDescription, products } = structure
+  const { width } = useViewport()
 
   const [ isSure, setIsSure ] = useState(false)
   const [ isHover, setIsHover ] = useState(false)
@@ -111,7 +113,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
             }}
             onClick={() => setIsSure(true)}
           >
-            <div sx={{ position: 'absolute', width: '250px', transform: isSure ? 'scaleX(1)' : 'scaleX(0)', left: '-200px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson' }}>Êtes-vous sûr ?
+            <div sx={{ position: 'absolute', width: '250px', transform: isSure ? 'translateX(0)' : 'translateX(20px)', opacity: isSure ? 1 : 0, left: '-200px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson', pointerEvents: isSure ? 'initial' : 'none' }}>Êtes-vous sûr ?
               <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); setIsSure(false); deleteCategory()}}>Oui</span>
               <span sx={{ variant: 'Button.primary', px: 2 }} onClick={e => {e.stopPropagation(); setIsSure(false)}}>Non</span>
             </div>
@@ -132,7 +134,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          {!client && <div sx={{ variant: ['Add.product.mobile', 'Add.product.desktop'] }} onClick={addProduct} />}
+          {!client && <div sx={{ variant: width < 832 ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
         </div>
       </div>
     </motion.div>

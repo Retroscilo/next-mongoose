@@ -11,6 +11,7 @@ import Footer from '../components/Footer'
 import Head from 'next/head'
 import { Global } from '@emotion/core'
 import { useRouter } from 'next/router'
+import { ViewportProvider } from '../lib/hooks/useViewport'
 
 function MyApp ({ Component, pageProps }) {
   const router = useRouter()
@@ -31,7 +32,9 @@ function MyApp ({ Component, pageProps }) {
             <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
           </Head>
           {router.route.toString().indexOf('client') === -1 && <Header />}
-          <Component {...pageProps} />
+          <ViewportProvider>
+            <Component {...pageProps} />
+          </ViewportProvider>
         </div>
         {router.route.toString().indexOf('client') === -1 && <Footer />}
       </ThemeProvider>

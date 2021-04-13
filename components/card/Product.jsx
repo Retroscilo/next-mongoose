@@ -7,14 +7,14 @@ import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 // Hooks
-import useWindow from '../../lib/hooks/useWindow'
 import { useClickOutside } from '../../lib/hooks/useClickOutside'
+import { useViewport } from '../../lib/hooks/useViewport'
 // Components
 import Input from '../Input'
 import DragDrop from '../DragDrop'
 
 const Product = ({ client, cardId, catId, infoSet, refresh, index }) => {
-  const { width } = useWindow(); const mobile = width < 832
+  const { width } = useViewport(); const mobile = width < 832
 
   if (mobile) return <ProductMobile client={client} cardId={cardId} catId={catId} infoSet={infoSet} refresh={refresh} index={index} />
   return <ProductDesktop client={client} cardId={cardId} catId={catId} infoSet={infoSet} refresh={refresh} index={index} />

@@ -1,0 +1,8 @@
+{
+  "presets": [["next/babel", {
+    "preset-env": {},
+    "styled-jsx": {
+      "plugins": ["styled-jsx-plugin-stylus"]
+    }
+  }]]
+}

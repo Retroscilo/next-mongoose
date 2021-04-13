@@ -248,7 +248,7 @@ const theme = {
       mobile: {
         position: 'absolute',
         zIndex: '2',
-        left: 'calc(50% - 17.5px)',
+        left: 'calc(50% - 25px)',
         bottom: '-25px',
         width: '50px',
         height: '50px',
@@ -283,13 +283,14 @@ const theme = {
         '&::before': {
           content: '"Ajouter un produit"',
           color: 'primary',
-          mr: 2
+          mr: 2,
         },
         position: 'relative',
       },
     },
     category: {
-      my: 3,
+      mb: 4,
+      mt: 5,
       bg: 'primary',
       color: '#fff',
       width: '185px',

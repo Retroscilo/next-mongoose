@@ -14,7 +14,7 @@ const Login = () => {
 
   return (
     <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '0.7fr 0.3fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
-      <div className="login">
+      <div>
         <AnimatePresence initial={false}>
           {!forgottenPass && <SigninForm setForgottenPass={setForgottenPass} />}
           {forgottenPass && <RecoverPassForm setForgottenPass={setForgottenPass} />}

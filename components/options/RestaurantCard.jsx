@@ -5,7 +5,7 @@ import Input from '../Input'
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect, useRef } from 'react'
 import fetchJson from '../../lib/fetchJson'
-import IconSelector from '../IconSelector'
+import IconSelector from '../misc/IconSelector'
 import QRCode from 'qrcode'
 import propTypes from 'prop-types'
 
@@ -38,7 +38,7 @@ const QR = ({ restaurant }) => {
   }, [ color ])
 
   return (
-    <div sx={{ display: 'grid', gridTemplateAreas: '"custom qr" "custom qr" "download qr"' }}>
+    <div className={'qrWrapper'} sx={{ display: 'grid', gridTemplateAreas: '"custom qr" "custom qr" "download qr"' }}>
       <span sx={{ display: 'flex', gridArea: 'custom', flexDirection: 'column', '& > *': { mt: 2 } }}>
         <span sx={{ display: 'flex' }}>
           Couleur: &nbsp;
@@ -50,7 +50,7 @@ const QR = ({ restaurant }) => {
               { value: '#FF8008:#FFF', url: '/selectIcons/yw.svg' },
               { value: '#FFF:#000', url: '/selectIcons/wb.svg' },
             ]}
-            options={{ iconSize: '20px', callback: value => setColor(value), defaultColor: color }}
+            options={{ iconSize: '20px', callback: value => setColor(value), default: color }}
           />
         </span>
         <span>Logo: <span sx={{ color: 'textLight' }}>Bientôt !</span></span>
@@ -73,6 +73,17 @@ const QR = ({ restaurant }) => {
       >
         Télécharger mon QR Code
       </a>
+      <style jsx>{`
+        .qrWrapper 
+          display: grid
+          gridTemplateAreas: '"custom qr" "custom qr" "download qr"'
+          @media(max-width: 470px)
+            display flex
+            flex-direction: column
+            margin-top 0
+            & > *
+              margin-top 20px
+      `}</style>
     </div>
   )
 }
@@ -103,7 +114,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
 
   return (
     <div key={restaurant._id} sx={{ bg: 'white', p: 3, pb: 3, px: 3, maxWidth: '30rem', my: 3, '& > *:not(:first-of-type)': { mt: 4 } }}>
-      <div className="Account--input">
+      <div className={'Account--input'}>
         Nom :
         <Input
           defaultValue={restaurant.restaurantName}
@@ -126,7 +137,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
           variant={!restaurant.restaurantDescription ? 'light' : ''}
           field={'restaurantDescription'}
           update={(field, newValue) => modifyRestaurant(restaurant._id, { field, newValue })}
-          options={{ max: 200, after: 'url(/editAlt.svg)', width: '300px', maxHeight: '95px' }}
+          options={{ max: 200, after: 'url(/editAlt.svg)', maxHeight: '95px' }}
         />
       </div>
       <QR restaurant={restaurant} />
@@ -143,12 +154,6 @@ const RestaurantCard = ({ restaurant, mutate }) => {
           <div sx={{ cursor: 'pointer' }} onClick={() => { deleteRestaurant(restaurant._id); setConfirmDelete(false) }}>Confirmer</div>
         </span>
       </div>}
-      <style jsx>{`
-        .Account--input {
-          display: grid; 
-          grid-template-columns: 150px 1fr;
-        }
-      `}</style>
     </div>
   )
 }

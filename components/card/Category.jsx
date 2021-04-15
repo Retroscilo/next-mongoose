@@ -17,6 +17,7 @@ import { useViewport } from '../../lib/hooks/useViewport'
 const Category = ({ client, cardId, structure, refresh }) => {
   const { _id: catId, catName, catDescription, products } = structure
   const { width } = useViewport()
+  const mobile = width < 832
 
   const [ isSure, setIsSure ] = useState(false)
   const [ isHover, setIsHover ] = useState(false)
@@ -59,15 +60,15 @@ const Category = ({ client, cardId, structure, refresh }) => {
         width: '100%',
         backgroundColor: '#f4f5f5',
         transition: 'height 0.5s ease',
-        height: [ 'fit-content', `calc(127px + ${116*(Math.round((products.length + (client ? 0 : 1))/2))}px)` ]
+        height: mobile ? 'fit-content' : `calc(127px + ${136*(Math.round((products.length + (client ? 0 : 1))/2))}px)`
       }}
       id={catId}
       whileHover={{ backgroundColor: '#eee' }}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      <div sx={{ maxWidth: 'body', p: [ 0, 3 ], pt: [ 4, 3 ], m: '0 auto' }}>
-        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: [ 2, 0 ], justifyContent: 'space-evenly' }} >
+      <div sx={{ maxWidth: 'body', p: mobile ? 0 : 3, pt: mobile ? 4 : 3, m: '0 auto' }}>
+        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly', overflow: 'hidden' }} >
           <Input
             client={client}
             defaultValue={catName}
@@ -109,17 +110,17 @@ const Category = ({ client, cardId, structure, refresh }) => {
               backgroundSize: '35%',
               cursor: 'pointer',
               borderRadius: '100px',
-              opacity: isHover ? 1 : [ 1, 0 ],
+              opacity: isHover ? 1 : mobile ? 1 : 0,
             }}
             onClick={() => setIsSure(true)}
           >
-            <div sx={{ position: 'absolute', width: '250px', transform: isSure ? 'translateX(0)' : 'translateX(20px)', opacity: isSure ? 1 : 0, left: '-200px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson', pointerEvents: isSure ? 'initial' : 'none' }}>Êtes-vous sûr ?
+            <div sx={{ position: 'absolute', width: isSure ?'250px' : 0, transform: isSure ? 'translateX(0)' : 'translateX(20px)', opacity: isSure ? 1 : 0, left: '-200px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson', pointerEvents: isSure ? 'initial' : 'none' }}>Êtes-vous sûr ?
               <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); setIsSure(false); deleteCategory()}}>Oui</span>
               <span sx={{ variant: 'Button.primary', px: 2 }} onClick={e => {e.stopPropagation(); setIsSure(false)}}>Non</span>
             </div>
           </div>}
         </div>
-        <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', 'minmax(0, 1fr) minmax(0, 1fr)' ], gridGap: [0, 3] }}>
+        <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
           <AnimatePresence initial={false}>
             {products.map((product, i) => (
               <Product
@@ -134,7 +135,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          {!client && <div sx={{ variant: width < 832 ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
+          {!client && <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
         </div>
       </div>
     </motion.div>

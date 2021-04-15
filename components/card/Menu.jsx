@@ -7,20 +7,23 @@ import { jsx, Spinner } from 'theme-ui'
 import { useState, useRef, useEffect } from 'react'
 import Category from '../../components/card/Category'
 import propTypes from 'prop-types'
-import { Switch, PrevArrow } from '../../components/misc/index'
+import { Switch, PrevArrow, OptionsList } from '../../components/misc/index'
 import { useViewport } from '../../lib/hooks/useViewport'
-import ListSelector from '../../components/misc/listSelector'
 
 const CategoryNav = ({ categories, client }) => {
   const displayedCat = categories.filter((cat, i) => i < 3)
-  const hiddenCat = categories.filter((cat, i) => i > 3)
+  const hiddenCat = categories.filter((cat, i) => i >= 3)
   return (
-    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 60, overflowX: 'auto' }}>
-      <ul sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mx: 'auto', maxWidth: 'body', p: 0, '& > *': { mx: 4, color: 'primary', cursor: 'pointer' } }}>
+    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 1000, overflowX: 'auto', overflow: 'visible' }}>
+      <ul sx={{ display: 'flex', alignItems: 'center', mx: 'auto', maxWidth: 'body', px: 3, overflow: 'visible', '& > *': { color: 'primary', cursor: 'pointer' } }}>
         {displayedCat.map(category => (
-          <li key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
+          <li key={category._id} sx={{ mr: 4 }} ><a href={`#${ category._id }`}>{category.catName}</a></li>
         ))}
-        <ListSelector label={'plus'} options={hiddenCat} />
+        {hiddenCat.length > 0 && <OptionsList label={'plus'} optionsList={hiddenCat}>
+          {hiddenCat.map(category => (
+            <li sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }} key={category._id}><a href={`#${ category._id }`}>{category.catName}</a></li>
+          ))}
+        </OptionsList>}
       </ul>
     </div>
   )
@@ -68,7 +71,29 @@ const Menu = ({ card, restaurant, client, ...props }) => {
           refresh={props.updateCard}
         />
       ))}
-      {!clientView && <div sx={{ variant: 'Add.category' }} onClick={props.addCategory}>Ajouter une catégorie </div>}
+      {!clientView && <AddCategory onClick={() => props.addCategory()}>Ajouter une catégorie </AddCategory>}
+    </div>
+  )
+}
+
+const AddCategory = ({...props}) => {
+  const { width } = useViewport()
+  return (
+    <div {...props} sx={{ my: 5 }}>
+      <div sx={{ bg: 'primary', my: 5, '&:hover': { boxShadow: 'low' } }} className={'addCat'}>Ajouter une catégorie</div>
+      <style jsx>{`
+        .addCat
+          color white
+          width 185px
+          height 30px
+          border-radius 3px
+          margin 0 auto
+          display flex
+          justify-content center
+          align-items center
+          cursor pointer
+          transition boxShadow .2s ease
+        `}</style>
     </div>
   )
 }

@@ -106,7 +106,7 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
         variant: `Input.${ variant }`,
         display: 'block',
         width: options?.width || '100%',
-        maxWidth: '100%',
+        maxWidth: options?.maxWidth || '100%',
         overflow: 'auto',
         maxHeight: options?.maxHeight || '38px',
         border: 'none',
@@ -149,8 +149,9 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
         border: 'none',
         borderRadius: '3px',
         bg: 'inherit',
-        pl: options?.label ? '12px' : 1,
+        pl: options?.label ? 1 : 1,
         pr: options?.after ? '18px' : 1,
+        '&::after': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'relative', left: '3px' },
         lineHeight: 1.2,
       }}>{defaultValue}</span>}
     {error && <ErrorInfo error={error} />}

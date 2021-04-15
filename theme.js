@@ -20,7 +20,7 @@ const theme = {
   radii: [ 3 ],
   breakpoints: [ '832px' ],
   space: [ 0, 4, 8, 16, 32, 64, 128, 256, 512 ],
-  fontSizes: [ 12, 14, 16, 20, 24, 32, 48, 64, 96 ],
+  fontSizes: [ 13, 14, 16, 20, 24, 32, 48, 64, 96 ],
   shadows: {
     low: '0 0 0 1px rgb(136 152 170 / 10%), 0 10px 20px 0 rgb(49 49 93 / 8%), 0 3px 10px 0 rgb(0 0 0 / 5%)',
     hover: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
@@ -164,7 +164,7 @@ const theme = {
     },
     light: {
       variant: 'text.light',
-      fontsize: 2,
+      fontSize: 0,
     },
     bold: {
       variant: 'text.body',
@@ -220,15 +220,14 @@ const theme = {
     //! Category height calculated on product height. If you have to change, DON'T FORGET to change the equation in Category. Bitch.
     mobile: {
       borderTop: '1px solid lightgrey',
-      height: '100px',
+      height: '120px',
       width: '100vw',
       bg: '#fff',
-      overflow: 'hidden',
       padding: 2,
     },
     desktop: {
       borderRadius: 0,
-      height: '100px',
+      height: '120px',
       bg: '#fff',
       overflow: 'hidden',
       display: 'flex',

@@ -100,17 +100,20 @@ const Account = ({ SSRrestaurants }) => {
           />
         ))}
         {(user && restaurants.length < 3) &&
-          <div sx={{ width: '30rem', my: 3 }}>
+          <div sx={{ width: '100%m', maxWidth: '30rem', my: 3 }}>
             <div sx={{ variant: 'Button.primary', mx: 'auto' }}onClick={addRestaurant}>Ajouter un restaurant</div>
           </div>
         }
-        <h1>QR codes</h1>
       </section>}
       <style jsx>{`
-        .Account--input {
+        :global(.Account--input)
           display: grid; 
           grid-template-columns: 150px 1fr;
-        }
+          @media (max-width: 832px)
+            display flex
+            flex-direction column
+            & :global(div)
+              margin-top: 10px
       `}</style>
     </div>
   )

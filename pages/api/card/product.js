@@ -20,6 +20,21 @@ const handler = nc()
       res.status(401).json({ error: e.message })
     }
   })
+  .patch(async (req, res) => {
+    try {
+      const { cardId, newLabels, prodId, catId } = req.body
+      const card = await Card.findById(cardId)
+      const cat = card.categories.id(catId)
+      const product = cat.products.id(prodId)
+      product.labels = newLabels
+      await card.save()
+
+      return res.status(200).send(req.query)
+    } catch (err) {
+      console.log(err)
+      res.status(401).json({ error: e.message })
+    }
+  })
   .put(async (req, res) => {
     try {
       const { cardId, catId, prodId, field, value: newValue } = req.body

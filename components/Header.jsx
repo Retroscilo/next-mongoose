@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import fetchJson from '../lib/fetchJson'
 import { useClickOutside } from '../lib/hooks/useClickOutside'
 import theme from '../theme'
+import { OptionsList } from '../components/misc/index'
 
 const Header = () => {
   const { user, mutateUser } = useUser({ redirectIfFound: false })
@@ -18,9 +19,9 @@ const Header = () => {
   const accountOptions = useRef(null)
   useClickOutside(accountOptions, () => setDAO(false))
   return (
-    <header sx={{ background: 'white', height: 'header', boxSizing: 'content-box', display: 'inline-block', borderBottom: '1px solid darkgrey', position: 'sticky', top: '0', zIndex: '600', width: '100%' }}>
+    <header sx={{ background: 'white', height: 'header', boxSizing: 'content-box', display: 'inline-block', borderBottom: '1px solid darkgrey', position: 'sticky', top: '0', zIndex: '9999', width: '100%' }}>
       <nav>
-        <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: 'header', px: 3, m: 0, '& li': { ml: 3 } }}>
+        <ul sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: 'header', px: 3, m: 0, '& > li': { ml: 3 } }}>
           <li sx={{ position: 'absolute', left: 0 }}>
             <Link href="/">
               <a><div sx={{ background: 'url("/logo--full.svg") no-repeat', width: '75px', height: '30px', backgroundSize: 'contain' }} /></a>
@@ -52,37 +53,24 @@ const Header = () => {
                 onClick={() => setDAO(!displayAccountOptions)}
                 sx={{ cursor: 'pointer', position: 'relative' }}
               >
-                Mon compte
-                {displayAccountOptions && <ul sx={{ bg: 'white', minWidth: '10rem', position: 'absolute', right: 0, top: 5, width: 'fit-content', fontSize: 1, m: 0, p: 0, display: 'flex', flexDirection: 'column', borderRadius: '3px', border: '1px solid lightgrey', boxShadow: 'high', '& li': { px: 3, py: 3, ml: 0 }, '& li:hover': { bg: '#EDEDED' } }}>
+                <OptionsList label={'Mon compte'} >
                   <li
-                    sx={{ bg: '#EDEDED', cursor: 'pointer' }}
-                    onClick={e => {
-                      e.stopPropagation()
-                      setDAO(false)
-                      router.push('/account')
-                    }}
+                    sx={{ color: 'textLight' }}
+                    onClick={() => router.push('/account') }
                   >{user.email}</li>
                   <li
-                    sx={{ bg: 'white', cursor: 'pointer' }}
-                    onClick={e => {
-                      e.stopPropagation()
-                      setDAO(false)
-                      router.push('/account')
-                    }}
+                    sx={{ cursor: 'pointer', color: 'primary' }}
+                    onClick={() => router.push('/account')}
                   >
                     Options
                   </li>
                   <li
-                    sx={{ bg: 'white', borderBottomLeftRadius: '3px' }}
-                    onClick={async e => {
-                      e.preventDefault()
-                      await mutateUser(fetchJson('/api/user/logout', { method: 'POST' }))
-                      setDAO(false)
-                    }}
+                    sx={{ borderBottomLeftRadius: '3px', color: 'crimson', cursor: 'pointer' }}
+                    onClick={async () => await mutateUser(fetchJson('/api/user/logout', { method: 'POST' })) }
                   >
                     Déconnection
                   </li>
-                </ul>}
+                </OptionsList>
               </li>
             </>
           )}

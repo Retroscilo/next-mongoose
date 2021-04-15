@@ -96,12 +96,6 @@ const UserCard = ({ user, mutateUser }) => {
         </>
         }
       </div>
-      <style jsx>{`
-        .Account--input {
-          display: grid; 
-          grid-template-columns: 150px 1fr;
-        }
-      `}</style>
     </div>
   )
 }

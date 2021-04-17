@@ -28,6 +28,7 @@ const LabelSelector = ({ labels, refresh, client, cardId, prodId, catId }) => {
   const allLabels = [ 'homeMade', 'spicy', 'vegan', 'glutenFree' ]
   const [ selectedLabels, setSelectedLabels ] = useState(allLabels.filter(label => labels.includes(label)))
   const handleClick = async label => {
+    if (client) return
     let newLabels;
     if (!selectedLabels.includes(label)) newLabels = [ ...selectedLabels, label ]
     else newLabels = selectedLabels.filter(l => l !== label)
@@ -45,9 +46,9 @@ const LabelSelector = ({ labels, refresh, client, cardId, prodId, catId }) => {
   }
 
   return (
-    <motion.ul sx={{ gridArea: 'label', width: 'fit-content', justifySelf: 'end', pr: 3, display: 'flex' }} layout transition={{ type: 'ease' }} >
+    <motion.ul sx={{ gridArea: 'label', width: 'fit-content', justifySelf: 'end', pr: 3, display: 'flex' }} transition={{ type: 'ease' }} >
       {allLabels.map(label => 
-        <motion.li key={label} layout
+        <motion.li key={label}
           sx={{
             background: `url(/productLabels/${label}.svg) no-repeat`,
             width: client && !selectedLabels.includes(label) ? '0' : '25px',
@@ -210,13 +211,15 @@ const ProductMobile = ({ client, cardId, catId, infoSet, refresh, index }) => {
   const [ order, setOrder ] = useState(index)
   useEffect(() => setOrder(index), [ index ])
 
+  const [ deleting, setDeleting ] = useState(false)
+
   function onDragEnd (e, info) { // auto close or discover delete button /!\ refine to be more accurate than just velocity
     const shouldClose = info.velocity.x > 0
     if (shouldClose) controls.start('hidden')
     else controls.start('visible')
   }
 
-  useClickOutside(productRef, () => controls.start('hidden')) // close drag when clicked outside focused product
+  useClickOutside(productRef, () => !deleting && controls.start('hidden')) // close drag when clicked outside focused product
 
   const updateProduct = async (field, value) => {
     const body = { cardId, catId, prodId, field, value }
@@ -230,14 +233,22 @@ const ProductMobile = ({ client, cardId, catId, infoSet, refresh, index }) => {
   }
 
   const deleteProduct = async () => {
+    setDeleting(true)
     animationPadding.current.style.padding = 0 // issue with framer not animating padding
-    await fetchJson('/api/card/product', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cardId, catId, prodId }),
-    })
-    await controls.start('deleting')
-    await refresh()
+    try {
+      await fetchJson('/api/card/product', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardId, catId, prodId }),
+      })
+      await controls.start('deleting')
+      await refresh()
+    } catch (e) {
+      console.log(e)
+    } finally {
+      setDeleting(false)
+    }
+    
   }
 
   const x = useMotionValue(0)

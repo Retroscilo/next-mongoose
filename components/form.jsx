@@ -24,7 +24,7 @@ const Form = ({ onSubmit, children, errorMsg }) => {
         position: 'relative',
         bg: 'white',
         mx: 'auto',
-        mb: 2,
+        mb: [ 0, 2 ],
         p: 5,
         display: 'flex',
         flexDirection: 'column',
@@ -32,7 +32,9 @@ const Form = ({ onSubmit, children, errorMsg }) => {
         boxShadow: 'low',
         borderRadius: '3px',
         width: '100%',
-        maxWidth: '35em',
+        height: [ 'calc(100vh - 95px)', '100%' ],
+        minHeight: '535px',
+        width: [ '100%', '32em' ],
         '& h1': { my: 0, fontSize: 4, fontWeight: '500' },
         '& h2': { color: 'textLight', fontSize: 2, fontWeight: '400', my: 0, mt: 3, lineHeight: 0.9 },
         '& label, & input': { mt: 4, color: 'textLight' },
@@ -71,7 +73,7 @@ const Form = ({ onSubmit, children, errorMsg }) => {
         initial={'hidden'}
         animate={'visible'}
         transition={{ duration: 0.2, ease: 'easeInOut' }}
-        sx={{ position: 'absolute', bottom: '20px', color: 'crimson', '&::before': { content: '""', width: '16px', height: '15px', background: 'url("/warn.svg")', display: 'inline-block', backgroundSize: 'contain', mr: 1, mt: 1 } }}
+        sx={{ mt: 2, color: 'crimson', '&::before': { content: '""', width: '16px', height: '15px', background: 'url("/warn.svg")', display: 'inline-block', backgroundSize: 'contain', mr: 1, mt: 1 } }}
       >
         {errorMsg}
       </motion.div>}

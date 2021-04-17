@@ -13,7 +13,7 @@ const Login = () => {
   const [ forgottenPass, setForgottenPass ] = useState(false)
 
   return (
-    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '0.7fr 0.3fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
+    <div sx={{ display: [ 'initial', 'grid' ], gridTemplateColumns: [ '1fr', '1fr 350px' ], height: 'min', justifyItems: 'center', alignItems: 'center', overflowX: 'hidden', minHeight: '600px' }}>
       <div>
         <AnimatePresence initial={false}>
           {!forgottenPass && <SigninForm setForgottenPass={setForgottenPass} />}
@@ -114,14 +114,14 @@ const SigninForm = ({ setForgottenPass }) => {
         <h1>Connectez-vous à votre compte</h1>
         <label htmlFor="mail">E-mail</label>
         <input type="email" name="mail" />
-        <span sx={{ display: 'flex', justifyContent: 'space-between' }}><label htmlFor="password">Mot de passe</label><span sx={{ cursor: 'pointer', mt: 4, color: 'primary' }} onClick={() => { setForgottenPass(true); setErrorMsg('') }}>Mot de passe oublié ?</span></span>
+        <span sx={{ display: 'flex', justifyContent: 'space-between', flexDirection: [ 'column', 'row' ] }}><label htmlFor="password">Mot de passe</label><span sx={{ cursor: 'pointer', mt: [ 2, 4 ], color: 'primary' }} onClick={() => { setForgottenPass(true); setErrorMsg('') }}>Mot de passe oublié ?</span></span>
         <input type="password" name="password" />
         {!isLoading && <input type="submit" value="Continuer" />}
         {isLoading && <div sx={{ width: '100%', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', bg: 'primary', mt: 4 }}><Spinner height={30} color={'white'} /></div>}
+        <Link href="/signup">
+          <a sx={{ mt: 3, display: 'inline-block', color: 'textLight' }}>Pas de compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>S'inscrire</span></a>
+        </Link>
       </Form>
-      <Link href="/signup">
-        <a sx={{ mt: 3, display: 'inline-block', color: 'textLight' }}>Pas de compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>S'inscrire</span></a>
-      </Link>
     </motion.div>
   )
 }

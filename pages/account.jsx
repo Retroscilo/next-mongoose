@@ -15,8 +15,11 @@ import withSession from '../lib/session'
 import connect from '../lib/middlewares/mongodb'
 import User from '../lib/models/user.model'
 import Restaurant from '../lib/models/restaurant.model'
+import { useViewport } from '../lib/hooks/useViewport'
 
 const Account = ({ SSRrestaurants }) => {
+  const { width } = useViewport()
+  const mobile = width < 832
   const { user, mutateUser } = useUser({ redirectTo: '/login', redirectIfFound: false })
   const [ restaurants, setRestaurants ] = useState(SSRrestaurants)
   const { data: freshRestaurants, mutate } = useSWR('/api/restaurant')
@@ -31,38 +34,40 @@ const Account = ({ SSRrestaurants }) => {
   }
 
   return (
-    <div
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: [ '0 1fr', '250px 1fr' ],
-      }}
-    >
-      <nav
+    <div>
+      {!mobile && <nav
         sx={{
+          width: '250px',
           bg: 'white',
           borderRight: '1px solid lightgrey',
           p: 0,
           m: 0,
           overflow: 'hidden',
+          height: 'calc(100vh - 70px)',
+          position: 'fixed',
+          top: '70px',
+          zIndex: -1,
         }}
       >
         <ul>
           <li>
             Général
-            <ul sx={{ variant: 'text.light', pl: 3, mt: 3, '& > li': { mt: 2 }, '& > li:last-child': { mb: 2 } }}>
+            <ul sx={{ variant: 'text.light', pl: 3, mt: 3, '& > li': { mt: 2 }, '& > li:last-child': { mb: 3 } }}>
               <li>Utilisateur</li>
               <li>Restaurants</li>
-              <li>QR Code</li>
             </ul>
           </li>
           <li>Abonnements</li>
+          <ul sx={{ variant: 'text.light', pl: 3, mt: 3, '& > li': { mt: 2 }, '& > li:last-child': { mb: 3 } }}>
+            <li>Bientôt !</li>
+          </ul>
         </ul>
-      </nav>
+      </nav>}
 
       {!user && <Spinner />}
-      {user && <section sx={{ px: 3, height: 'min', overflow: 'auto' }}>
+      {user && <section sx={{ px: 3, overflow: 'auto', ml: mobile ? 0 : '250px' }}>
         <h1>Général</h1>
-        {/** ----------------------------------------------------- USER ------------------------------------------------------------ */}
+        {/** USER ------------------------------------------------------------ */}
         <h2
           sx={{
             variant: 'text.body',
@@ -86,7 +91,7 @@ const Account = ({ SSRrestaurants }) => {
         >Utilisateur</h2>
         <UserCard user={user} mutateUser={mutateUser} />
 
-        {/** ----------------------------------------------------- RESTAURANT ------------------------------------------------------------ */}
+        {/** RESTAURANT ------------------------------------------------------------ */}
         <h2 sx={{ variant: 'text.body', fontSize: 3, fontWeight: 'normal' }}>Restaurants</h2>
         <h3 sx={{ variant: 'text.light', fontSize: 2, fontWeight: 'normal' }} >Ces informations s'afficheront sur votre carte</h3>
         {(user && restaurants.length === 0) &&

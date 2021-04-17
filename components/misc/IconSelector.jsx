@@ -27,7 +27,7 @@ const SelectIcons = ({ icons, options = {} }) => {
         sx={{ background: `url(${selected.url}) no-repeat`, width: O.iconSize, height: O.iconSize, backgroundSize: 'contain', border: O.stroke ? '1px solid lightgrey' : '', borderRadius: O.round ?'100px' : 0, cursor: 'pointer' }}
       />
       <div 
-        sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: O.column ? 'column' : 'row', width: O.width, bg: 'white', borderRadius: '100px', boxShadow: 'low', my: 2, pl: '25px', pb: 2, position: 'absolute', opacity: displaySelectBox ? 1 : 0, transform: displaySelectBox ? 'translate(-45%, 0)' : 'translate(-45%, -10px)', transition: 'all .2s ease', pointerEvents: displaySelectBox ? 'initial' : 'none' }}
+        sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: O.column ? 'column' : 'row', width: O.width, bg: 'white', borderRadius: '100px', boxShadow: 'low', my: 2, pl: '25px', pb: 2, position: 'absolute', opacity: displaySelectBox ? 1 : 0, transform: displaySelectBox ? 'translate(-45%, 0)' : 'translate(-45%, -10px)', transition: 'all .1s ease', pointerEvents: displaySelectBox ? 'initial' : 'none' }}
       >
         {icons.map((icon, i) => 
         <span

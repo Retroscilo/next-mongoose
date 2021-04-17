@@ -5,6 +5,7 @@
 // Components
 import Product from './Product'
 import Input from '../Input'
+import { AddProduct } from './addButtons'
 // Front
 import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
@@ -135,7 +136,7 @@ const Category = ({ client, cardId, structure, refresh }) => {
               />
             ))}
           </AnimatePresence>
-          {!client && <div sx={{ variant: mobile ? 'Add.product.mobile' : 'Add.product.desktop' }} onClick={addProduct} />}
+          {!client && <AddProduct add={addProduct} />}
         </div>
       </div>
     </motion.div>

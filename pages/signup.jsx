@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const Page = () => {
   const [ step, setStep ] = useState(1)
   return (
-    <div sx={{ display: 'grid', gridTemplateColumns: [ '1fr', '20rem 1fr' ], height: 'min', justifyItems: 'center', alignItems: 'center' }}>
+    <div sx={{ display: [ 'initial', 'grid' ], gridTemplateColumns: [ '1fr', '350px 1fr' ], height: 'min', justifyItems: 'center', alignItems: 'center', overflowX: 'hidden', minHeight: '600px' }}>
       <div
         sx={{ display: [ 'none', 'initial' ], height: '100%', background: 'url(/qrIllustration.webp) no-repeat', backgroundSize: 'contain', backgroundPosition: 'bottom', backgroundColor: '#D6D8DE', color: '#17202C', fontSize: 4, fontWeight: 'medium', pt: 5, px: 3 }}
       >
@@ -71,10 +71,10 @@ const SignUpForm = ({ setStep }) => {
         <sub>8 charactères minimum.</sub>
         {!isLoading && <input type="submit" value="Continuer" />}
         {isLoading && <div sx={{ width: '100%', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', bg: 'primary', mt: 4 }}><Spinner height={30} color={'white'} /></div>}
+        <Link href="/login">
+          <a sx={{ color: 'textLight', mt: 3, display: 'inline-block' }}>Déjà un compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>Se connecter</span></a>
+        </Link>
       </Form>
-      <Link href="/login">
-        <a sx={{ color: 'textLight', mt: 3, display: 'inline-block' }}>Déjà un compte ? <span sx={{ color: 'primary', cursor: 'pointer' }}>Se connecter</span></a>
-      </Link>
     </motion.div>
   )
 }

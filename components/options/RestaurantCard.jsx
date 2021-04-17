@@ -40,7 +40,7 @@ const QR = ({ restaurant }) => {
   return (
     <div className={'qrWrapper'} sx={{ display: 'grid', gridTemplateAreas: '"custom qr" "custom qr" "download qr"' }}>
       <span sx={{ display: 'flex', gridArea: 'custom', flexDirection: 'column', '& > *': { mt: 2 } }}>
-        <span sx={{ display: 'flex' }}>
+        <span>
           Couleur: &nbsp;
           <IconSelector
             icons={[
@@ -83,6 +83,9 @@ const QR = ({ restaurant }) => {
             margin-top 0
             & > *
               margin-top 20px
+        .qrWrapper span span
+            display grid
+            grid-template-columns 100px 1fr
       `}</style>
     </div>
   )

@@ -1,0 +1,69 @@
+/* Ubuntu */
+@font-face {
+  font-family: "Ubuntu";
+  src: url("./Ubuntu/Ubuntu-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ubuntu";
+  src: url("./Ubuntu/Ubuntu-Medium.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ubuntu";
+  src: url("./Ubuntu/Ubuntu-Light.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ubuntu";
+  src: url("./Ubuntu/Ubuntu-Bold.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* Cormorant */
+@font-face {
+  font-family: "Cormorant";
+  src: url("./Cormorant/Cormorant-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant";
+  src: url("./Cormorant/Cormorant-Medium.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant";
+  src: url("./Cormorant/Cormorant-Light.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant";
+  src: url("./Cormorant/Cormorant-Bold.ttf");
+  font-style: medium;
+  font-weight: 500;
+  font-display: swap;
+}
+
+
+/* Sacramento Qalm */
+@font-face {
+  font-family: "Sacramento";
+  src: url("./Sacramento/Sacramento-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

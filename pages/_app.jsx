@@ -28,8 +28,31 @@ function MyApp ({ Component, pageProps }) {
           <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, a: { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
             <title>Qarte</title>
-            <link rel="preconnect" href="https://fonts.gstatic.com" />
-            <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet" />
+            <link rel="stylesheet" href="/fonts/fonts.css" />
+            <link
+              rel="preload"
+              href="/fonts/Ubuntu/Ubuntu-Regular.ttf"
+              as="font"
+              crossOrigin=""
+            />
+            <link
+              rel="preload"
+              href="/fonts/Ubuntu/Ubuntu-Medium.ttf"
+              as="font"
+              crossOrigin=""
+            />
+            <link
+              rel="preload"
+              href="/fonts/Ubuntu/Ubuntu-Bold.ttf"
+              as="font"
+              crossOrigin=""
+            />
+            <link
+              rel="preload"
+              href="/fonts/Ubuntu/Ubuntu-Light.ttf"
+              as="font"
+              crossOrigin=""
+            />
           </Head>
           {router.route.toString().indexOf('client') === -1 && <Header />}
           <ViewportProvider>

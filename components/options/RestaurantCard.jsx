@@ -140,7 +140,7 @@ const RestaurantCard = ({ restaurant, mutate }) => {
           variant={!restaurant.restaurantDescription ? 'light' : ''}
           field={'restaurantDescription'}
           update={(field, newValue) => modifyRestaurant(restaurant._id, { field, newValue })}
-          options={{ max: 200, after: 'url(/editAlt.svg)', maxHeight: '95px' }}
+          options={{ max: 300, after: 'url(/editAlt.svg)', maxHeight: '95px' }}
         />
       </div>
       <QR restaurant={restaurant} />

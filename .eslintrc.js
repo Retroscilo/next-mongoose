@@ -40,5 +40,7 @@ module.exports = {
     'operator-linebreak': 'off',
     'no-useless-escape': 'off',
     'no-irregular-whitespace': 'off',
+    'import/no-namespace': 'off',
+    'import/namespace': 'off',
   },
 }

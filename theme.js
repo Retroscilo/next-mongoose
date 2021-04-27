@@ -217,17 +217,9 @@ const theme = {
   },
   Product: {
     //! Category height calculated on product height. If you have to change, DON'T FORGET to change the equation in Category. Bitch.
-    mobile: {
-      borderTop: '1px solid lightgrey',
-      height: '120px',
-      width: '100vw',
-      bg: '#fff',
-      padding: 2,
-    },
     desktop: {
       borderRadius: 0,
       height: '120px',
-      bg: '#fff',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',

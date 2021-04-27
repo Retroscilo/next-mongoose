@@ -4,7 +4,7 @@ import { jsx } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { motion, useAnimation } from 'framer-motion'
-import theme from '../theme'
+import { useTheme } from '../lib/hooks/useTheme'
 
 const ErrorInfo = ({ error }) => {
   return (
@@ -49,6 +49,7 @@ const ErrorInfo = ({ error }) => {
 }
 
 const Input = ({ client, defaultValue, update, variant, field, options }) => {
+  const theme = useTheme()
   const [ error, setError ] = useState(false)
   const pulseControls = useAnimation()
   const handleError = message => {
@@ -101,13 +102,13 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
           transition: { duration: 0.4 }
         }
       }}
-      sx={{ 
+      sx={{
         position: 'relative',
-        variant: `Input.${ variant }`,
-        display: 'block',
+        display: 'flex',
+        alignItems: 'center',
         width: options?.width || '100%',
         maxWidth: options?.maxWidth || '100%',
-        overflow: 'auto',
+        overflow: 'visible',
         maxHeight: options?.maxHeight || '38px',
         border: 'none',
         borderRadius: '3px',
@@ -117,7 +118,8 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
         pr: options?.after ? '18px' : 1,
         lineHeight: 1.2,
         '&::before': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' },
-        '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, }
+        '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, },
+        ...theme.font[variant]
       }}
       onFocus={e => {
         e.preventDefault()

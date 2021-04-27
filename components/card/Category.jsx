@@ -3,7 +3,7 @@
 // @refresh reset
 
 // Components
-import Product from './Product'
+import Product from './product/index'
 import Input from '../Input'
 import { AddProduct } from './addButtons'
 // Front
@@ -14,11 +14,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 // Hooks
 import { useEffect, useState } from 'react'
 import { useViewport } from '../../lib/hooks/useViewport'
+import { useTheme } from '../../lib/hooks/useTheme'
 
 const Category = ({ client, cardId, structure, refresh }) => {
   const { _id: catId, catName, catDescription, products } = structure
   const { width } = useViewport()
   const mobile = width < 832
+  const theme = useTheme()
 
   const [ isSure, setIsSure ] = useState(false)
   const [ isHover, setIsHover ] = useState(false)
@@ -59,22 +61,22 @@ const Category = ({ client, cardId, structure, refresh }) => {
       sx={{ 
         position: 'relative',
         width: '100%',
-        backgroundColor: '#f4f5f5',
         transition: 'height 0.5s ease',
-        height: mobile ? 'fit-content' : `calc(127px + ${136*(Math.round((products.length + (client ? 0 : 1))/2))}px)`
+        height: (mobile || theme.category.layout.desktop === '1fr') ? 'fit-content' : `calc(127px + ${136*(Math.round((products.length + (client ? 0 : 1))/2))}px)`,
+        mt: 4,
+        px: 4
       }}
       id={catId}
-      whileHover={{ backgroundColor: '#eee' }}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      <div sx={{ maxWidth: 'body', p: mobile ? 0 : 3, pt: mobile ? 4 : 3, m: '0 auto' }}>
-        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly', overflow: 'hidden' }} >
+      <div sx={{ maxWidth: 'body', p: mobile ? 0 : 3, pt: mobile ? 4 : 3, m: '0 auto', bg: theme.category.background[mobile ? 'mobile' : 'desktop' ] }}>
+        <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: '75px', pl: mobile ? 2 : 0, justifyContent: 'space-evenly', overflow: 'hidden', bg: 'white', mx: -4 }} >
           <Input
             client={client}
             defaultValue={catName}
             update={updateCategory}
-            variant="h"
+            variant="head"
             field={'catName'}
             options={{
               width: 560,
@@ -121,12 +123,11 @@ const Category = ({ client, cardId, structure, refresh }) => {
             </div>
           </div>}
         </div>
-        <div sx={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)', gridGap: mobile ? 0 : 3 }}>
+        <div sx={{ display: 'grid', gridTemplateColumns: mobile ? theme.category.layout.mobile : theme.category.layout.desktop, gridGap: mobile ? 0 : 3 }}>
           <AnimatePresence initial={false}>
             {products.map((product, i) => (
               <Product
                 client={client}
-                layout
                 key={product._id}
                 index={i}
                 cardId={cardId}

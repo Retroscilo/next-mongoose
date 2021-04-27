@@ -111,7 +111,6 @@ export default CardBox
 
 CardBox.propTypes = {
   active: PropTypes.bool,
-  description: PropTypes.string,
   id: PropTypes.string,
   name: PropTypes.string,
   update: PropTypes.func,

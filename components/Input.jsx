@@ -1,6 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx } from 'theme-ui'
+import { jsx, Spinner } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { motion, useAnimation } from 'framer-motion'
@@ -51,6 +51,7 @@ const ErrorInfo = ({ error }) => {
 const Input = ({ client, defaultValue, update, variant, field, options }) => {
   const theme = useTheme()
   const [ error, setError ] = useState(false)
+  const [ loading, setLoading ] = useState(false)
   const pulseControls = useAnimation()
   const handleError = message => {
     pulseControls.start([ null, 'red' ])
@@ -76,18 +77,21 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
     /* if (options?.validator != undefined && !options?.validator?.match(e.target.innerHTML)) return handleError(options.validator.err || 'Vérifiez votre saisie !') */
     if (e.target.innerHTML !== defaultValue && !error) {
       try {
+        setLoading(true)
         await update(field, e.target.innerText)
         pulseControls.start([ null, 'green' ])
         setError(false)
       } catch (err) {
         console.log(err?.data?.body)
         typeof err?.data?.body === 'string' ? handleError(err.data.body) : handleError('Something went wrong')
+      } finally {
+        setLoading(false)
       }
     } else if (e.target.innerHTML === defaultValue) setError(false)
   }
 
   return (
-    <span sx={{ position: 'relative', gridArea: options?.gridArea || '', cursor: 'default'}}>
+    <span sx={{ position: 'relative', gridArea: options?.gridArea || '', cursor: 'default', ml: '1px'}}>
     {!client && <motion.div
       contentEditable="true"
       suppressContentEditableWarning={true}
@@ -115,11 +119,12 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
         bg: 'inherit',
         '&:focus': { outline: 'none' },
         pl: options?.label ? '12px' : 1,
-        pr: options?.after ? '18px' : 1,
+        pr: options?.after || options?.label ? '18px' : 1,
         lineHeight: 1.2,
-        '&::before': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'absolute', top: '1px', left: '0' },
+        justifyContent: options?.justifyContent || '',
+        '&::before': { content: `"${options?.label || ''}"`, ...theme?.font[variant], position: 'absolute', top: '1px', right: '0px' },
         '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, },
-        ...theme.font[variant]
+        ...theme?.font[variant]
       }}
       onFocus={e => {
         e.preventDefault()
@@ -134,27 +139,32 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
       onKeyPress={handleKeyPress}
       animate={pulseControls}
       whileHover={ !error && { boxShadow: '0 0 0 1px rgb(212, 212, 212)' }}
-      whileFocus={ !error && { boxShadow: `0 0 2px .5px ${theme.colors.primary}` }}
+      whileFocus={ !error && { boxShadow: `0 0 2px .5px rgb(30, 78, 249)` }}
       transition={{ boxShadow: { duration: 0.2, ease: 'linear' }, outline: { duration: 0.2, ease: 'linear' } }}
     >
       {defaultValue}
+      {loading && <span sx={{ position: 'absolute', right: 0, top: 'calc(50% - 12.5px)', ...options.spinner }}><Spinner size={25} /></span>}
     </motion.div>}
     {client && 
       <span sx={{ 
         position: 'relative',
-        variant: `Input.${ variant }`,
-        display: 'block',
+        display: 'flex',
+        alignItems: 'center',
         width: options?.width || '100%',
-        maxWidth: '100%',
-        overflow: 'auto',
+        maxWidth: options?.maxWidth || '100%',
+        overflow: 'visible',
         maxHeight: options?.maxHeight || '38px',
         border: 'none',
         borderRadius: '3px',
         bg: 'inherit',
-        pl: options?.label ? 1 : 1,
-        pr: options?.after ? '18px' : 1,
-        '&::after': { content: `"${options?.label || ''}"`, variant: 'text.light', fontSize: 1, position: 'relative', left: '3px' },
+        '&:focus': { outline: 'none' },
+        pl: options?.label ? '12px' : 1,
+        pr: options?.after || options?.label ? '18px' : 1,
         lineHeight: 1.2,
+        justifyContent: options?.justifyContent || '',
+        '&::before': { content: `"${options?.label || ''}"`, ...theme?.font[variant], position: 'absolute', top: '1px', right: '0px' },
+        '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, },
+        ...theme?.font[variant]
       }}>{defaultValue}</span>}
     {error && <ErrorInfo error={error} />}
     </span>

@@ -42,5 +42,6 @@ module.exports = {
     'no-irregular-whitespace': 'off',
     'import/no-namespace': 'off',
     'import/namespace': 'off',
+    'import/extensions': 'off',
   },
 }

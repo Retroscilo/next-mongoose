@@ -2,9 +2,9 @@
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
 import { useState, useEffect, useRef } from 'react'
-import { uploadPhoto } from '../lib/connectAws'
+import { uploadPhoto } from '../../lib/connectAws'
 import { motion } from 'framer-motion'
-import theme from '../theme'
+import { useTheme } from '../../lib/hooks/useTheme'
 
 const DragDrop = ({ infoSet, update, client }) => {
   const { cardId, prodId, imgSrc } = infoSet
@@ -12,6 +12,7 @@ const DragDrop = ({ infoSet, update, client }) => {
   const dropRef = useRef(null)
   const inputRef = useRef(null)
   const [ fillColor, setFillColor ] = useState('black')
+  const theme = useTheme()
 
   useEffect(() => {
     const div = dropRef.current
@@ -20,7 +21,7 @@ const DragDrop = ({ infoSet, update, client }) => {
       e.preventDefault()
       e.stopPropagation()
       if (e.srcElement !== div) return
-      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) setFillColor(theme.colors.primary)
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) setFillColor(theme.colors.highlight)
     }
 
     function handleDragOut (e) {
@@ -83,16 +84,17 @@ const DragDrop = ({ infoSet, update, client }) => {
     <motion.div 
       ref={dropRef} 
       sx={{ 
-        width: '84px',
+        width: (!imgSrc && client) ? 0 : '84px',
         height: '84px',
         right: 2,
+        mx: '6px',
         gridArea: 'photo',
         cursor: client ? 'default' : 'pointer',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center' }} 
       onClick={onClickHandler} 
-      onHoverStart={() => setFillColor(theme.colors.primary)}
+      onHoverStart={() => setFillColor(theme.colors.highlight)}
       onHoverEnd={() => setFillColor('black')}>
       {!imgSrc && !client && 
         <svg 

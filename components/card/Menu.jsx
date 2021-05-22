@@ -2,7 +2,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 // @refresh reset
-
 import { jsx, Spinner } from 'theme-ui'
 import React, { useState, useRef, useEffect } from 'react'
 import Category from './Category'
@@ -12,63 +11,8 @@ import { useViewport } from '../../lib/hooks/useViewport'
 import { AddCategory } from '../../components/card/addButtons'
 import * as themes from './themes/index'
 import { ThemeProvider, useTheme } from '../../lib/hooks/useTheme'
-import { motion, animatedSharedLayout } from 'framer-motion'
-
-const CategoryNav = ({ categories, client, setCategory, selectedCategory }) => {
-  const { width } = useViewport()
-  const mobile = width < 532
-  const displayedCat = categories.filter((cat, i) => i < (mobile ? 2 : 3))
-  const hiddenCat = categories.filter((cat, i) => i >= (mobile ? 2 : 3))
-  const theme = useTheme(); const classicLayout = theme.layout === 'classic'
-
-  return (
-    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 1000, overflowX: 'auto', overflow: 'visible', ...theme.font.body }}>
-      <ul sx={{ display: 'flex', alignItems: 'center', justifyContent: classicLayout ? 'center' : '', mx: 'auto', maxWidth: 'body', px: 3, overflow: 'visible', '& > *': { cursor: 'pointer' } }}>
-        {displayedCat.map(category => (
-          <li
-            key={category._id}
-            sx={{ mr: 4 }}
-            className={category._id === selectedCategory ? 'isSelected' : ''}
-          >
-            <a
-              href={`#${ !classicLayout ? category._id : '' }`}
-              onClick={() => setCategory(category._id)}
-            >
-              {category.catName}
-            </a>
-            <style jsx>{`
-              .isSelected {
-                font-weight: bold;
-                position: relative
-              }
-              .isSelected::before {
-                content: "";
-                top: 25px
-                width: 110%;
-                left: -5%;
-                height: 5px;
-                background: ${ theme.colors.primary };
-                position: absolute;
-              }
-            `}</style>
-          </li>
-        ))}
-        {hiddenCat.length > 0 && <OptionsList label={'plus'} optionsList={hiddenCat}>
-          {hiddenCat.map(category => (
-            <li sx={{ whiteSpace: 'nowrap', cursor: 'pointer' }} key={category._id}>
-              <a
-                href={`#${ !classicLayout ? category._id : '' }`}
-                onClick={() => setCategory(category._id)}
-              >
-                {category.catName}
-              </a>
-            </li>
-          ))}
-        </OptionsList>}
-      </ul>
-    </div>
-  )
-}
+import CategoryNav from './CategoryNav'
+import ThemeCustomizer from './ThemeCustomizer'
 
 /**
  * Render the view of menu
@@ -80,24 +24,34 @@ const CategoryNav = ({ categories, client, setCategory, selectedCategory }) => {
 const Menu = ({ card, restaurant, client, ...props }) => {
   const [ clientView, setClientView ] = useState(client)
   const [ categoryId, setCategory ] = useState(card.categories[0]._id)
+  const resetCategory = () => setCategory(card.categories[0]._id)
+  const [ test, settest ] = useState(false)
+
+  const addCategory = async () => {
+    await props.addCategory()
+    settest(true)
+  }
+
   const theme = themes[card.theme] || themes.Qalme
   const { width } = useViewport()
   const mobile = width < 832
 
   return (
     <ThemeProvider theme={theme}>
-      <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'url(/themes/Qalme/backgrounds/1.jpg) no-repeat', backgroundSize: 'cover' }}>
+      <div sx={{ width: '100%', m: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: `url(/themes/${card.theme.name}/backgrounds/${card.theme.background || theme.backgrounds[0]}.jpg) no-repeat`, backgroundSize: 'cover', pb: clientView ? 5 : 6 }}>
         {/* Card Header (restaurant infos) */}
         <div sx={{ width: '100%', bg: 'white' }}>
-          <div sx={{ maxWidth: 'body', pl: 3, m: '0 auto' }}>
+          <div sx={{ maxWidth: 'body', pl: mobile ? 1 : 4, m: '0 auto' }}>
             <div sx={{ display: 'flex', alignItems: 'center', mt: 3, '& > *': { mr: 4 } }}>
               {!client &&
               <>
                 <PrevArrow />
+                <ThemeCustomizer cardId={card._id} theme={card.theme} updateCard={props.updateCard} />
                 <Switch
                   isOn={clientView}
                   label={'Vue client'}
                   onClick={() => setClientView(!clientView)}
+                  size={35}
                 />
               </>}
             </div>
@@ -106,7 +60,7 @@ const Menu = ({ card, restaurant, client, ...props }) => {
           </div>
         </div>
         {/* Category navigation */}
-        <CategoryNav categories={card.categories} client={client} setCategory={setCategory} selectedCategory={categoryId} />
+        <CategoryNav categories={card.categories} client={client} clientView={clientView} setCategory={setCategory} selectedCategory={categoryId} addCategory={addCategory} />
         {/* Card body */}
         {card.categories.map(category => (
           theme.layout === 'classic' && category._id === categoryId && <Category
@@ -115,9 +69,10 @@ const Menu = ({ card, restaurant, client, ...props }) => {
             cardId={card._id}
             structure={category}
             refresh={props.updateCard}
+            resetCategory={resetCategory}
           />
         ))}
-        {!clientView && <AddCategory onClick={() => props.addCategory()}>Ajouter une catégorie </AddCategory>}
+        {!clientView && theme.layout !== 'classic' && <AddCategory onClick={() => props.addCategory()}>Ajouter une catégorie </AddCategory>}
       </div>
     </ThemeProvider>
   )
@@ -131,10 +86,4 @@ Menu.propTypes = {
   client: propTypes.bool,
   restaurant: propTypes.object,
   updateCard: propTypes.func,
-}
-
-CategoryNav.propTypes = {
-  categories: propTypes.array,
-  client: propTypes.bool,
-  setCategory: propTypes.func,
 }

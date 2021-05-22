@@ -2,14 +2,16 @@
 /** @jsx jsx */
 import { useViewport } from '../../lib/hooks/useViewport'
 import { jsx } from 'theme-ui'
+import { useTheme } from '../../lib/hooks/useTheme'
 
 export const AddProduct = ({ add }) => {
+  const theme = useTheme()
   const { width } = useViewport()
   return (
     <div
       className={`addProduct addProduct--${ width < 832 ? 'mobile' : 'desktop' }`}
       onClick={add}
-      sx={{ bg: 'primary', borderColor: 'primary' }}
+      sx={{ bg: theme.colors.highlight, borderColor: 'primary' }}
     >
       <style jsx>{`
         .addProduct
@@ -17,7 +19,7 @@ export const AddProduct = ({ add }) => {
         .addProduct--mobile
           position absolute
           left calc(50% - 25px)
-          bottom -25px
+          bottom -75px
           width 50px
           height 50px
           border-radius 100px
@@ -30,6 +32,7 @@ export const AddProduct = ({ add }) => {
 
         .addProduct--desktop
           display flex
+          color white
           justify-content center
           align-items center
           border 2px solid

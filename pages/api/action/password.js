@@ -12,6 +12,7 @@ const handler = nc()
       const email = req.body
       if (!email) throw new Error('Merci de rentrer un email.')
       const user = await User.findOne({ email })
+      if (!user) throw new Error("Cette adresse email n'existe pas !")
       if (!user.status.verified) throw new Error("Merci de faire vérifier votre email d'abord !")
 
       // Change user status with new code and expiration + 1 hour

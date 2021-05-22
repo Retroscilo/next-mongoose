@@ -8,7 +8,7 @@ import fetchJson from '../../../lib/fetchJson'
 import { motion } from 'framer-motion'
 // Components
 import Input from '../../Input'
-import DragDrop from '../../DragDrop'
+import DragDrop from '../DragDrop'
 import LabelSelector from './LabelSelector'
 import { useTheme } from '../../../lib/hooks/useTheme'
 
@@ -54,10 +54,8 @@ const ProductDesktop = props => {
         overflow: 'initial',
         transform: 'scale(1)',
         display: 'grid',
-        gridTemplateColumns: '90px calc(100% - 188px) 84px',
-        gridTemplateRows: '1fr 1fr 1fr',
         alignItems: 'center',
-        gridTemplateAreas: '"prodName prodName photo" "prodDescription prodDescription photo" "prodPrice label photo"',
+        ...theme.product.layout.desktop,
         maxWidth: theme.category.layout.desktop === '1fr' ? '' : '550px',
         order,
         zIndex: 599 - order,
@@ -87,7 +85,7 @@ const ProductDesktop = props => {
         client={client}
         defaultValue={prodName}
         update={updateProduct}
-        variant="regular"
+        variant="headSmall"
         field={'prodName'}
         options={{
           max: 30,
@@ -103,17 +101,18 @@ const ProductDesktop = props => {
         client={client}
         defaultValue={prodDescription}
         update={updateProduct}
-        variant="light"
+        variant="body"
         field={'prodDescription'}
-        options={{ max: 140, gridArea: 'prodDescription', maxHeight: '62px', maxWidth: '40rem' }}
+        options={{ max: 140, gridArea: 'prodDescription', maxHeight: '62px', maxWidth: '95%' }}
       />
       <Input
         client={client}
         defaultValue={prodPrice}
         update={updateProduct}
-        variant="regular"
+        variant="highlight"
         field={'prodPrice'}
         options={{
+          justifyContent: 'flex-end',
           max: 6,
           inputMatch: /[^0-9.,]/,
           empty: {
@@ -122,6 +121,7 @@ const ProductDesktop = props => {
           },
           label: '€',
           gridArea: 'prodPrice',
+          spinner: { left: '-15px' },
         }}
       />
       <LabelSelector

@@ -32,7 +32,7 @@ const handler = nc()
       return res.status(200).send(req.query)
     } catch (err) {
       console.log(err)
-      res.status(401).json({ error: e.message })
+      res.status(401).json({ error: err.message })
     }
   })
   .put(async (req, res) => {

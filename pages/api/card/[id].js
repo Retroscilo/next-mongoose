@@ -21,6 +21,7 @@ const handler = nc()
     try {
       const { id: restaurantId } = req.query
       const card = await Card.create({ restaurantId })
+      card.categories.push({ catName: 'Viandes, poissons...' })
       const restaurant = await Restaurant.findById(restaurantId)
       const date = new Date()
 

@@ -9,12 +9,15 @@ import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motio
 // Hooks
 import { useClickOutside } from '../../../lib/hooks/useClickOutside'
 import { useTheme } from '../../../lib/hooks/useTheme'
+import { useViewport } from '../../../lib/hooks/useViewport'
 // Components
 import Input from '../../Input'
-import DragDrop from '../../DragDrop'
+import DragDrop from '../DragDrop'
 import LabelSelector from './LabelSelector'
 
 const ProductMobile = props => {
+  const theme = useTheme()
+  const { width: viewportWidth } = useViewport()
   const { client, cardId, catId, infoSet, refresh, index } = props
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc, labels } = infoSet
   const productRef = useRef(null) // used for clicked outside
@@ -60,7 +63,7 @@ const ProductMobile = props => {
   const x = useMotionValue(0)
   const xInput = [ -1000, 0 ]
   const width = useTransform(x, xInput, [ 1000, 0 ])
-  const height = useTransform(x, [ -1000, -75, 0 ], [ 0, 120, 120 ]) // height of delete button across deleting animation
+  const height = useTransform(x, [ -1000, -75, 0 ], [ 0, '100%', 120 ]) // height of delete button across deleting animation
 
   return (
     <motion.div // WRAPPER
@@ -71,28 +74,26 @@ const ProductMobile = props => {
     >
       <motion.div // DELETE
         style={{ width, height }}
-        sx={{ height: '120px', position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '0', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/dustbin.svg)', zIndex: 1 }}
+        sx={{ height: '100%', position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '0', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/dustbin.svg)', zIndex: 1 }}
         onClick={deleteProduct}
       />
       <motion.div // PRODUCT ELEMENT
         sx={{
-          height: '120px',
+          height: 'fit-content',
           bg: '#fff',
           padding: 2,
           position: 'relative',
           zIndex: 999 - order,
           display: 'grid',
-          gridTemplateColumns: '50px calc(100% - 134px) 84px',
-          gridTemplateRows: '1fr 1fr 1fr',
           alignItems: 'center',
-          gridTemplateAreas: '"prodName prodName photo" "prodDescription prodDescription photo" "prodPrice label photo"',
+          ...theme.product.layout[viewportWidth < 450 ? 'XS' : 'mobile'],
         }}
         ref={animationPadding}
         drag={client ? '' : 'x'}
         initial="hidden"
         variants={{
-          hidden: { x: 0, height: 120 },
-          visible: { x: -75, height: 120 },
+          hidden: { x: 0, height: 'fit-content' },
+          visible: { x: -75, height: 'fit-content' },
           deleting: { x: -1000, height: 0 },
         }}
         transition={{ x: { duration: 0.2 }, height: { duration: 0.2 } }}
@@ -107,7 +108,7 @@ const ProductMobile = props => {
           client={client}
           defaultValue={prodName}
           update={updateProduct}
-          variant="regular"
+          variant="headSmall"
           field={'prodName'}
           options={{
             max: 30,
@@ -117,23 +118,25 @@ const ProductMobile = props => {
             },
             gridArea: 'prodName',
             maxWidth: '40rem',
+            maxHeight: '95px',
           }}
         />
         <Input
           client={client}
           defaultValue={prodDescription}
           update={updateProduct}
-          variant="light"
+          variant="body"
           field={'prodDescription'}
-          options={{ max: 140, gridArea: 'prodDescription', maxHeight: '62px', maxWidth: '40rem' }}
+          options={{ max: 140, gridArea: 'prodDescription', maxHeight: '95px', maxWidth: '95%' }}
         />
         <Input
           client={client}
           defaultValue={prodPrice}
           update={updateProduct}
-          variant="regular"
+          variant="highlight"
           field={'prodPrice'}
           options={{
+            justifyContent: 'flex-end',
             max: 6,
             inputMatch: /[^0-9.,]/,
             empty: {
@@ -142,12 +145,14 @@ const ProductMobile = props => {
             },
             label: '€',
             gridArea: 'prodPrice',
+            spinner: { left: '-15px' },
           }}
         />
         <LabelSelector
           labels={labels} refresh={updateProduct}
           client={client} prodId={prodId}
           cardId={cardId} catId={catId}
+          mobile
         />
         <DragDrop
           client={client}

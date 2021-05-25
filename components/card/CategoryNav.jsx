@@ -8,6 +8,9 @@ import React, { useState, useRef, useEffect, useCallback, useReducer } from 'rea
 import propTypes from 'prop-types'
 import { Switch, PrevArrow, OptionsList } from '../misc/index'
 import { useViewport } from '../../lib/hooks/useViewport'
+
+// hooks
+import { useCard } from '../../lib/hooks/useCard'
 import { ThemeProvider, useTheme } from '../../lib/hooks/useTheme'
 import { motion, AnimateSharedLayout } from 'framer-motion'
 
@@ -26,12 +29,13 @@ const spring = {
   damping: 30,
 }
 
-const CategoryNav = ({ categories, client, clientView, setCategory, selectedCategory, addCategory }) => {
+const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
+  const { card, categories } = useCard()
   const [ addingCat, setAddingCat ] = useState(false)
   const pulseRef = useRef(null)
   const { width } = useViewport()
   const mobile = width < 832
-  const theme = useTheme(); const classicLayout = theme.layout === 'classic'
+  const { theme } = useTheme(); const classicLayout = theme.layout === 'classic'
   const [ displayedCat, setDisplayedCat ] = useState([])
   const [ hiddenCat, setHiddenCat ] = useState([])
 
@@ -52,7 +56,7 @@ const CategoryNav = ({ categories, client, clientView, setCategory, selectedCate
 
   async function newCategory () {
     setAddingCat(true)
-    await addCategory()
+    await card.addCategory()
     setAddingCat(false)
     pulseRef.current.classList.add('pulse')
     setTimeout(() => pulseRef.current.classList.remove('pulse'), 300)
@@ -70,7 +74,7 @@ const CategoryNav = ({ categories, client, clientView, setCategory, selectedCate
                 className={category._id === selectedCategory ? 'isSelected' : ''}
               >
                 <a
-                  href={`#${ !classicLayout ? category._id : '' }`}
+                  href={`#${ classicLayout ? category._id : '' }`}
                   onClick={() => setCategory(category._id)}
                 >
                   {category.catName}

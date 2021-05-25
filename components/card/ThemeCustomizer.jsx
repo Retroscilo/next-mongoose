@@ -8,19 +8,18 @@ import { useState, useRef } from 'react'
 import { useClickOutside } from '../../lib/hooks/useClickOutside'
 import { useTheme } from '../../lib/hooks/useTheme'
 import fetchJson from '../../lib/fetchJson'
+import { useCard } from '../../lib/hooks/useCard'
 
-/* const Miniature = props => (
-
-) */
-
-const BackgroundSelection = ({ cardId, usedBackground, close, refresh }) => {
-  const { name, backgrounds } = useTheme()
+const BackgroundSelection = ({ close }) => {
+  const { theme, backgrounds } = useTheme()
+  const { card, updateCard } = useCard()
+  const cardId = card._id
+  const name = theme.name
+  const usedBackground = card.theme.background
   const [ background, setBackground ] = useState(usedBackground || backgrounds[0])
   const [ loading, setLoading ] = useState(false)
 
-  function nameFormater (name) {
-    return name.replace('-', ' ')
-  }
+  const nameFormater = name => name.replace('-', ' ')
 
   const selectBackground = async bg => {
     setBackground(bg)
@@ -31,7 +30,7 @@ const BackgroundSelection = ({ cardId, usedBackground, close, refresh }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cardId, background: bg }),
       })
-      refresh()
+      updateCard()
       setTimeout(() => close(), 300)
     } catch (e) {
       console.log(e)
@@ -64,8 +63,7 @@ const BackgroundSelection = ({ cardId, usedBackground, close, refresh }) => {
   )
 }
 
-const ThemeCustomizer = ({ cardId, theme, updateCard }) => {
-  const { backgrounds } = useTheme() // current theme differents backgrounds
+const ThemeCustomizer = () => {
   const [ selected, setSelected ] = useState(null)
   const customizer = useRef(null)
   const closeCustomizer = () => setSelected(null)
@@ -107,8 +105,8 @@ const ThemeCustomizer = ({ cardId, theme, updateCard }) => {
         className={(selected && 'visible') + ' optionsCard'}
         sx={{ background: 'white', borderRadius: '3px', boxShadow: 'low', position: 'absolute', top: '58px', zIndex: 9000, p: 4 }}
       >
-        {selected === 'background' && 
-        <BackgroundSelection usedBackground={theme.background} close={closeCustomizer} cardId={cardId} refresh={updateCard} />}
+        {selected === 'background' &&
+        <BackgroundSelection close={closeCustomizer} />}
       </div>
       <style jsx>{`
         .optionsCard

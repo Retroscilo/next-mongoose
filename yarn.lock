@@ -123,6 +123,38 @@
     "lodash" "^4.17.13"
     "to-fast-properties" "^2.0.0"
 
+"@dnd-kit/accessibility@^3.0.0":
+  "integrity" "sha512-QwaQ1IJHQHMMuAGOOYHQSx7h7vMZPfO97aDts8t5N/MY7n2QTDSnW+kF7uRQ1tVBkr6vJ+BqHWG5dlgGvwVjow=="
+  "resolved" "https://registry.npmjs.org/@dnd-kit/accessibility/-/accessibility-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "tslib" "^2.0.0"
+
+"@dnd-kit/core@^3.0.0", "@dnd-kit/core@^3.0.3":
+  "integrity" "sha512-o3zCmlurcSUUHryfPEcMhA+Xc3MFB5ebVF4EGZ2C3IppCv1GzXfbpU3W0AqfW8l64WPn16axWTmqKQS+z48MxA=="
+  "resolved" "https://registry.npmjs.org/@dnd-kit/core/-/core-3.0.3.tgz"
+  "version" "3.0.3"
+  dependencies:
+    "@dnd-kit/accessibility" "^3.0.0"
+    "@dnd-kit/utilities" "^2.0.0"
+    "tslib" "^2.0.0"
+
+"@dnd-kit/sortable@^3.0.1":
+  "integrity" "sha512-fRflFwkj1hXkNZTy/nA6zlgLryZCDKm0OaJnzcFWu9TNZ7hZ0Ja6EMQwhOu6aGuHyCTUGTToBho9ZyyVN671qw=="
+  "resolved" "https://registry.npmjs.org/@dnd-kit/sortable/-/sortable-3.0.1.tgz"
+  "version" "3.0.1"
+  dependencies:
+    "@dnd-kit/core" "^3.0.0"
+    "@dnd-kit/utilities" "^2.0.0"
+    "tslib" "^2.0.0"
+
+"@dnd-kit/utilities@^2.0.0":
+  "integrity" "sha512-bjs49yMNzMM+BYRsBUhTqhTk6HEvhuY3leFt6Em6NaYGgygaMbtGbbXof/UXBv7rqyyi0OkmBBnrCCcxqS2t/g=="
+  "resolved" "https://registry.npmjs.org/@dnd-kit/utilities/-/utilities-2.0.0.tgz"
+  "version" "2.0.0"
+  dependencies:
+    "tslib" "^2.0.0"
+
 "@emotion/cache@^10.0.27":
   "integrity" "sha512-fU2VtSVlHiF27empSbxi1O2JFdNWZO+2NFHfwO0pxgTep6Xa3uGb+3pVKfLww2l/IBGLNEZl5Xf/++A4wAYDYQ=="
   "resolved" "https://registry.npmjs.org/@emotion/cache/-/cache-10.0.29.tgz"
@@ -3633,7 +3665,7 @@
     "minimist" "^1.2.0"
     "strip-json-comments" "~2.0.1"
 
-"react-dom@>=16.8 || ^17.0.0", "react-dom@17.0.1":
+"react-dom@>=16.8 || ^17.0.0", "react-dom@>=16.8.0", "react-dom@17.0.1":
   "integrity" "sha512-6eV150oJZ9U2t9svnsspTMrWNyHc6chX0KzDeAOXftRa8bNeOKTTfCJ7KorIwenkHd2xqVTBTCZd79yk/lx/Ug=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-17.0.1.tgz"
   "version" "17.0.1"
@@ -3657,7 +3689,7 @@
   "resolved" "https://registry.npmjs.org/react-refresh/-/react-refresh-0.8.3.tgz"
   "version" "0.8.3"
 
-"react@>=16.8 || ^17.0.0", "react@17.0.1":
+"react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@17.0.1":
   "integrity" "sha512-lG9c9UuMHdcAexXtigOZLX8exLWkW0Ku29qPRU8uhF2R9BN96dLCt0psvzPLlHc5OWkgymP3qwTRgbnw5BKx3w=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.1.tgz"
   "version" "17.0.1"
@@ -4606,6 +4638,11 @@
   "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   "version" "1.14.1"
+
+"tslib@^2.0.0":
+  "integrity" "sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w=="
+  "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.2.0.tgz"
+  "version" "2.2.0"
 
 "tty-browserify@0.0.0":
   "integrity" "sha1-oVe6QC2iTpv5V/mqadUk7tQpAaY="

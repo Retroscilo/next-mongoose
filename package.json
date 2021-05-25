@@ -8,6 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@dnd-kit/core": "^3.0.3",
+    "@dnd-kit/sortable": "^3.0.1",
+    "@dnd-kit/utilities": "^2.0.0",
     "@theme-ui/presets": "^0.3.5",
     "autosize": "^4.0.2",
     "aws-sdk": "^2.855.0",

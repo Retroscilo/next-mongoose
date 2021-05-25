@@ -12,7 +12,7 @@ const DragDrop = ({ infoSet, update, client }) => {
   const dropRef = useRef(null)
   const inputRef = useRef(null)
   const [ fillColor, setFillColor ] = useState('black')
-  const theme = useTheme()
+  const { theme } = useTheme()
 
   useEffect(() => {
     const div = dropRef.current

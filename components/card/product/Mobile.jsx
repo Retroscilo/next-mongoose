@@ -16,7 +16,7 @@ import DragDrop from '../DragDrop'
 import LabelSelector from './LabelSelector'
 
 const ProductMobile = props => {
-  const theme = useTheme()
+  const { theme } = useTheme()
   const { width: viewportWidth } = useViewport()
   const { client, cardId, catId, infoSet, refresh, index } = props
   const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc, labels } = infoSet

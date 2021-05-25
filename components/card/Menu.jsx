@@ -8,9 +8,10 @@ import Category from './Category'
 import propTypes from 'prop-types'
 import { Switch, PrevArrow, OptionsList } from '../../components/misc/index'
 import { useViewport } from '../../lib/hooks/useViewport'
+import { useCard } from '../../lib/hooks/useCard'
 import { AddCategory } from '../../components/card/addButtons'
 import * as themes from './themes/index'
-import { ThemeProvider, useTheme } from '../../lib/hooks/useTheme'
+import { ThemeProvider } from '../../lib/hooks/useTheme'
 import CategoryNav from './CategoryNav'
 import ThemeCustomizer from './ThemeCustomizer'
 
@@ -18,19 +19,14 @@ import ThemeCustomizer from './ThemeCustomizer'
  * Render the view of menu
  * @param {object} card structure of menu (categories & product)
  * @param {object} restaurant contain restaurant info (name/description/photo...)
- * @param {bool} client set true for restaurant's client render or false to activate the editor
+ * @param {bool} client set true for restaurant's client render or false to activate the editor != clientView prop
  * @returns {void}
 */
-const Menu = ({ card, restaurant, client, ...props }) => {
-  const [ clientView, setClientView ] = useState(client)
-  const [ categoryId, setCategory ] = useState(card.categories[0]._id)
-  const resetCategory = () => setCategory(card.categories[0]._id)
-  const [ test, settest ] = useState(false)
-
-  const addCategory = async () => {
-    await props.addCategory()
-    settest(true)
-  }
+const Menu = ({ restaurant, client }) => {
+  const { card, categories } = useCard()
+  const [ clientView, setClientView ] = useState(client) // client PREVIEW != client VIEW
+  const [ categoryId, setCategory ] = useState(categories[0]._id) // displayed category
+  const resetCategory = () => setCategory(categories[0]._id)
 
   const theme = themes[card.theme] || themes.Qalme
   const { width } = useViewport()
@@ -46,7 +42,7 @@ const Menu = ({ card, restaurant, client, ...props }) => {
               {!client &&
               <>
                 <PrevArrow />
-                <ThemeCustomizer cardId={card._id} theme={card.theme} updateCard={props.updateCard} />
+                <ThemeCustomizer />
                 <Switch
                   isOn={clientView}
                   label={'Vue client'}
@@ -60,19 +56,18 @@ const Menu = ({ card, restaurant, client, ...props }) => {
           </div>
         </div>
         {/* Category navigation */}
-        <CategoryNav categories={card.categories} client={client} clientView={clientView} setCategory={setCategory} selectedCategory={categoryId} addCategory={addCategory} />
+        <CategoryNav client={client} clientView={clientView} setCategory={setCategory} selectedCategory={categoryId} />
         {/* Card body */}
-        {card.categories.map(category => (
-          theme.layout === 'classic' && category._id === categoryId && <Category
+        {categories.map(category => (
+          theme.layout === 'classic' && category._id === categoryId &&
+          <Category
             client={clientView}
             key={category._id}
-            cardId={card._id}
-            structure={category}
-            refresh={props.updateCard}
+            catId={category._id}
             resetCategory={resetCategory}
           />
         ))}
-        {!clientView && theme.layout !== 'classic' && <AddCategory onClick={() => props.addCategory()}>Ajouter une catégorie </AddCategory>}
+        {!clientView && theme.layout !== 'classic' && <AddCategory onClick={card.addCategory}>Ajouter une catégorie </AddCategory>}
       </div>
     </ThemeProvider>
   )

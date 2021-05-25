@@ -14,12 +14,12 @@ import { useEffect, useState } from 'react'
 // Hooks
 import useSwr from 'swr'
 import useUser from '../../lib/hooks/useUser'
+import { CardProvider, useCard } from '../../lib/hooks/useCard'
 
 const CardEditor = () => {
   // Check if User connected, nor redirect
   useUser({ redirectTo: '/login', redirectIfFound: false })
 
-  // SG
   const router = useRouter()
   const { id } = router.query
 
@@ -28,25 +28,16 @@ const CardEditor = () => {
   const [ restaurant, setRestaurant ] = useState(null)
   useEffect(async () => card && setRestaurant(await fetchJson('/api/restaurant/' + card.restaurantId)), [ card ])
 
-  const addCategory = async () => {
-    const body = { id }
-    await fetchJson('/api/card/category', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await updateCard()
-  }
-
   if (!restaurant || !card) return <div><Spinner /></div>
   return (
-    <Menu
-      card={card}
-      restaurant={restaurant}
-      client={false}
-      updateCard={updateCard}
-      addCategory={addCategory}
-    />
+    <CardProvider>
+      <Menu
+        card={card}
+        restaurant={restaurant}
+        client={false}
+        updateCard={updateCard}
+      />
+    </CardProvider>
   )
 }
 

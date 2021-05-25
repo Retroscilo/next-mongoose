@@ -43,5 +43,8 @@ module.exports = {
     'import/no-namespace': 'off',
     'import/namespace': 'off',
     'import/extensions': 'off',
+    'react/jsx-max-props-per-line': 'off',
+    'react/prop-types': 'off',
+    'arrow-body-style': 'off',
   },
 }

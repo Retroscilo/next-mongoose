@@ -9,7 +9,7 @@ import * as Labels from '../../../public/productLabels/index'
 
 export const LabelSelector = ({ labels, client, cardId, prodId, catId, mobile }) => {
   const [ selectedLabels, setSelectedLabels ] = useState(labels)
-  const theme = useTheme()
+  const { theme } = useTheme()
 
   const handleClick = async label => {
     if (client) return

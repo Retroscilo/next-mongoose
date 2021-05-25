@@ -49,7 +49,7 @@ const ErrorInfo = ({ error }) => {
 }
 
 const Input = ({ client, defaultValue, update, variant, field, options }) => {
-  const theme = useTheme()
+  const { theme } = useTheme() || {}
   const [ error, setError ] = useState(false)
   const [ loading, setLoading ] = useState(false)
   const pulseControls = useAnimation()
@@ -122,9 +122,9 @@ const Input = ({ client, defaultValue, update, variant, field, options }) => {
         pr: options?.after || options?.label ? '18px' : 1,
         lineHeight: 1.2,
         justifyContent: options?.justifyContent || '',
-        '&::before': { content: `"${options?.label || ''}"`, ...theme?.font[variant], position: 'absolute', top: '1px', right: '0px' },
+        '&::before': { content: `"${options?.label || ''}"`, ...theme?.font?.[variant], position: 'absolute', top: '1px', right: '0px' },
         '&::after': { content: `${options?.after || '""'}`, position: 'absolute', right: 0, },
-        ...theme?.font[variant]
+        ...theme?.font?.[variant]
       }}
       onFocus={e => {
         e.preventDefault()

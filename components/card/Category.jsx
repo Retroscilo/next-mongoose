@@ -10,55 +10,40 @@ import { AddProduct } from './addButtons'
 import PropTypes from 'prop-types'
 import fetchJson from '../../lib/fetchJson'
 import { jsx, Spinner } from 'theme-ui'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, AnimateSharedLayout } from 'framer-motion'
 // Hooks
 import { useEffect, useState } from 'react'
 import { useViewport } from '../../lib/hooks/useViewport'
 import { useTheme } from '../../lib/hooks/useTheme'
+import { useCard } from '../../lib/hooks/useCard'
 
-const Category = ({ client, cardId, structure, refresh, resetCategory }) => {
-  const { _id: catId, catName, catDescription, products } = structure
-  const { width } = useViewport()
-  const mobile = width < 832
-  const theme = useTheme()
+const Category = ({ client, catId, resetCategory }) => {
+  // infos & crud
+  const { card, updateCard, useCategory } = useCard()
+  const cardId = card._id
+  const { category } = useCategory(catId)
+  const { catName, catDescription, products } = category
+  // loading & actions states
   const [ addingProduct, setAddingProduct ] = useState(false)
   const [ deletingCategory, setDeletingCategory ] = useState(false)
-
-  const [ isSure, setIsSure ] = useState(false)
   const [ isHover, setIsHover ] = useState(false)
+  const [ isSure, setIsSure ] = useState(false) // delete cat confirmation
   useEffect(() => !isHover && setIsSure(false), [ isHover ])
-
+  // styles & responsive
+  const { width } = useViewport()
+  const mobile = width < 832
+  const { theme } = useTheme()
+  // crud wrappers
   const addProduct = async () => {
-    const body = { cardId, catId }
     setAddingProduct(true)
-    await fetchJson('/api/card/product', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await refresh()
+    await category.addProduct()
     setAddingProduct(false)
   }
 
-  const updateCategory = async (field, value) => {
-    const body = { cardId, catId, field, value }
-    await fetchJson('/api/card/category', {
-      method: 'put',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await refresh()
-  }
-
-  const deleteCategory = async () => {
+  const remove = async () => {
     setDeletingCategory(true)
-    const body = { cardId, catId }
-    await fetchJson('/api/card/category', {
-      method: 'delete',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await refresh()
+    setIsSure(false);
+    await category.delete()
     setDeletingCategory(false)
     resetCategory()
   }
@@ -83,7 +68,7 @@ const Category = ({ client, cardId, structure, refresh, resetCategory }) => {
           <Input
             client={client}
             defaultValue={catName}
-            update={updateCategory}
+            update={category.update}
             variant="head"
             field={'catName'}
             options={{
@@ -99,7 +84,7 @@ const Category = ({ client, cardId, structure, refresh, resetCategory }) => {
           <Input
             client={client}
             defaultValue={catDescription}
-            update={updateCategory}
+            update={category.update}
             variant="body"
             field={'catDescription'}
             options={{
@@ -129,28 +114,34 @@ const Category = ({ client, cardId, structure, refresh, resetCategory }) => {
             onClick={() => setIsSure(true)}
           >
             <div sx={{ position: 'absolute', width: isSure ? '250px' : 0, transform: isSure ? 'translateX(0)' : 'translateX(20px)', opacity: isSure ? 1 : 0, left: '-215px', display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center', top: '25%', overflow: 'hidden', transition: 'transform 0.2s ease', transformOrigin: 'right', color: 'crimson', pointerEvents: isSure ? 'initial' : 'none' }}>Êtes-vous sûr ?
-              <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); setIsSure(false); deleteCategory()}}>Oui</span>
+              <span sx={{ color: 'crimson' }} onClick={e => {e.stopPropagation(); remove()}}>Oui</span>
               <span sx={{ variant: 'Button.primary', px: 2, bg: theme.colors.highlight }} onClick={e => {e.stopPropagation(); setIsSure(false)}}>Non</span>
             </div>
           </div>}
+          
         </div> 
-        <div sx={{ display: 'grid', gridTemplateColumns: mobile ? theme.category.layout.mobile : theme.category.layout.desktop, gridGap: mobile ? 0 : 4 }}>
-          <AnimatePresence initial={false}>
-            {products.map((product, i) => (
-              <Product
-                client={client}
-                key={product._id}
-                index={i}
-                cardId={cardId}
-                catId={catId}
-                infoSet={product}
-                refresh={refresh}
-              />
-            ))}
-          </AnimatePresence>
-          {!client && !addingProduct && <div onClick={addProduct} sx={mobile ? theme.button.mobile : theme.button.desktop}>{!mobile && 'ajouter un produit'}</div>}
-          {addingProduct && <div onClick={addProduct} sx={{ ...theme.button[mobile ? 'mobile' : 'desktop'], backgroundImage: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Spinner color={'#fff'} size={28} /></div>}
-        </div>
+        <AnimateSharedLayout>
+
+            <div sx={{ display: 'grid', gridTemplateColumns: mobile ? theme.category.layout.mobile : theme.category.layout.desktop, gridGap: mobile ? 0 : 4 }}>
+              {products.map((product, i) => (
+                <Product
+                  client={client}
+                  prodId={product._id}
+                  key={product._id}
+                  prodId={product._id}
+                  index={i}
+                  url={product._id}
+                  cardId={cardId}
+                  catId={catId}
+                  infoSet={product}
+                  refresh={updateCard}
+                />
+              ))}
+              {!client && !addingProduct && <div onClick={addProduct} sx={mobile ? theme.button.mobile : theme.button.desktop}>{!mobile && 'ajouter un produit'}</div>}
+              {addingProduct && <div onClick={addProduct} sx={{ ...theme.button[mobile ? 'mobile' : 'desktop'], backgroundImage: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Spinner color={'#fff'} size={28} /></div>}
+            </div>
+
+        </AnimateSharedLayout>
       </div>
     </motion.div>
   )
@@ -162,5 +153,4 @@ Category.propTypes = {
   cardId: PropTypes.string,
   infoSet: PropTypes.object,
   products: PropTypes.array,
-  refresh: PropTypes.func,
 }

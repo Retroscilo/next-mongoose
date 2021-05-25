@@ -2,7 +2,7 @@
 /** @jsx jsx */
 // Front
 import { jsx } from 'theme-ui'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef } from 'react'
 import PropTypes from 'prop-types'
 import fetchJson from '../../../lib/fetchJson'
 import { motion } from 'framer-motion'
@@ -11,39 +11,19 @@ import Input from '../../Input'
 import DragDrop from '../DragDrop'
 import LabelSelector from './LabelSelector'
 import { useTheme } from '../../../lib/hooks/useTheme'
+import Badge from '../../misc/Badge'
+import { useCard } from '../../../lib/hooks/useCard'
 
-const ProductDesktop = props => {
-  const { client, cardId, catId, infoSet, refresh, index } = props
-  const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc, labels } = infoSet
-  const [ order, setOrder ] = useState(index)
-  useEffect(() => setOrder(index), [ index ])
+const ProductDesktop = ({ client, catId, prodId, index }) => {
+  const { card, useProduct } = useCard()
+  const cardId = card._id
+  const product = useProduct(catId, prodId)
+
+  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   const [ isHover, setIsHover ] = useState(false)
-  const theme = useTheme()
+  const { theme } = useTheme()
 
-  const updateProduct = async (field, value) => {
-    const body = { cardId, catId, prodId, field, value }
-    try {
-      const res = await fetchJson('/api/card/product', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      await refresh()
-      return res
-    } catch (e) {
-      throw new Error(e.data)
-    }
-  }
-
-  const deleteProduct = async () => {
-    await fetchJson('/api/card/product', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cardId, catId, prodId }),
-    })
-    setIsHover(false)
-    await refresh()
-  }
+  useEffect(() => useProduct())
 
   return (
     <motion.div
@@ -57,8 +37,8 @@ const ProductDesktop = props => {
         alignItems: 'center',
         ...theme.product.layout.desktop,
         maxWidth: theme.category.layout.desktop === '1fr' ? '' : '550px',
-        order,
-        zIndex: 599 - order,
+        zIndex: 599 - index,
+        order: index,
       }}
       initial={{ transform: 'scale(0)' }}
       animate={'visible'}
@@ -71,20 +51,17 @@ const ProductDesktop = props => {
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      {!client && <motion.div // DELETE
-        sx={{ height: '25px', width: '25px', borderRadius: '100px', position: 'absolute', top: '-10px', left: '-10px', backgroundColor: 'accent', backgroundRepeat: 'no-repeat', backgroundPosition: 'center', cursor: 'pointer', backgroundImage: 'url(/x.svg)', zIndex: 1, boxShadow: 'low' }}
-        variants={{
-          hidden: { scale: 0 },
-          visible: { scale: 1 },
-        }}
-        initial={'hidden'}
-        animate={ isHover ? 'visible' : 'hidden' }
-        onClick={deleteProduct}
-      />}
+      {!client &&
+        <nav sx={{ position: 'absolute', top: '-10px', left: '-10px', display: 'flex', '& > *': { mr: 2 } }}>
+          <Badge size={25} visible={isHover} onClick={product.delete} options={{ label: 'supprimer' }} />
+          <Badge size={25} visible={isHover} options={{ label: 'monter', background: 'url(/svg/upArrow.svg)', color: theme.colors.highlight }} />
+          <Badge size={25} visible={isHover} options={{ label: 'descendre', background: 'url(/svg/downArrow.svg)', color: theme.colors.highlight }} />
+        </nav>
+      }
       <Input
         client={client}
         defaultValue={prodName}
-        update={updateProduct}
+        update={product.update}
         variant="headSmall"
         field={'prodName'}
         options={{
@@ -100,7 +77,7 @@ const ProductDesktop = props => {
       <Input
         client={client}
         defaultValue={prodDescription}
-        update={updateProduct}
+        update={product.update}
         variant="body"
         field={'prodDescription'}
         options={{ max: 140, gridArea: 'prodDescription', maxHeight: '62px', maxWidth: '95%' }}
@@ -108,7 +85,7 @@ const ProductDesktop = props => {
       <Input
         client={client}
         defaultValue={prodPrice}
-        update={updateProduct}
+        update={product.update}
         variant="highlight"
         field={'prodPrice'}
         options={{
@@ -125,14 +102,14 @@ const ProductDesktop = props => {
         }}
       />
       <LabelSelector
-        labels={labels} refresh={updateProduct}
+        labels={labels} refresh={product.update}
         client={client} prodId={prodId}
         cardId={cardId} catId={catId}
       />
       <DragDrop
         client={client}
         infoSet={{ imgSrc, cardId, prodId }}
-        update={updateProduct}
+        update={product.update}
         variant="Product.photo"
       />
     </motion.div>

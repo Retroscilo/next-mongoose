@@ -10,16 +10,20 @@ import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motio
 import { useClickOutside } from '../../../lib/hooks/useClickOutside'
 import { useTheme } from '../../../lib/hooks/useTheme'
 import { useViewport } from '../../../lib/hooks/useViewport'
+import { useCard } from '../../../lib/hooks/useCard'
 // Components
 import Input from '../../Input'
 import DragDrop from '../DragDrop'
 import LabelSelector from './LabelSelector'
 
-const ProductMobile = props => {
+const ProductMobile = ({ client, catId, prodId, index }) => {
   const { theme } = useTheme()
   const { width: viewportWidth } = useViewport()
-  const { client, cardId, catId, infoSet, refresh, index } = props
-  const { _id: prodId, prodName, prodDescription, prodPrice, photo: imgSrc, labels } = infoSet
+  const { card, useProduct } = useCard()
+  const cardId = card._id
+  const product = useProduct(catId, prodId)
+  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
+
   const productRef = useRef(null) // used for clicked outside
   const animationPadding = useRef(null)
   const controls = useAnimation() // hidden * visible * deleting
@@ -34,30 +38,9 @@ const ProductMobile = props => {
 
   useClickOutside(productRef, () => controls.start('hidden')) // close drag when clicked outside focused product
 
-  const updateProduct = async (field, value) => {
-    const body = { cardId, catId, prodId, field, value }
-    const res = await fetchJson('/api/card/product', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    await refresh()
-    return res
-  }
-
   const deleteProduct = async () => {
     animationPadding.current.style.padding = 0 // issue with framer not animating padding
-    try {
-      await fetchJson('/api/card/product', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cardId, catId, prodId }),
-      })
-      await controls.start('deleting')
-      await refresh()
-    } catch (e) {
-      console.log(e)
-    }
+    await product.delete()
   }
 
   const x = useMotionValue(0)
@@ -107,7 +90,7 @@ const ProductMobile = props => {
         <Input
           client={client}
           defaultValue={prodName}
-          update={updateProduct}
+          update={product.update}
           variant="headSmall"
           field={'prodName'}
           options={{
@@ -124,7 +107,7 @@ const ProductMobile = props => {
         <Input
           client={client}
           defaultValue={prodDescription}
-          update={updateProduct}
+          update={product.update}
           variant="body"
           field={'prodDescription'}
           options={{ max: 140, gridArea: 'prodDescription', maxHeight: '95px', maxWidth: '95%' }}
@@ -132,7 +115,7 @@ const ProductMobile = props => {
         <Input
           client={client}
           defaultValue={prodPrice}
-          update={updateProduct}
+          update={product.update}
           variant="highlight"
           field={'prodPrice'}
           options={{
@@ -149,7 +132,7 @@ const ProductMobile = props => {
           }}
         />
         <LabelSelector
-          labels={labels} refresh={updateProduct}
+          labels={labels} refresh={product.update}
           client={client} prodId={prodId}
           cardId={cardId} catId={catId}
           mobile
@@ -157,7 +140,7 @@ const ProductMobile = props => {
         <DragDrop
           client={client}
           infoSet={{ imgSrc, cardId, prodId }}
-          update={updateProduct}
+          update={product.update}
           variant="Product.photo"
         />
       </motion.div>

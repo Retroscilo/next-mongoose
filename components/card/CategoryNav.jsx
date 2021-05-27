@@ -29,9 +29,10 @@ const spring = {
   damping: 30,
 }
 
-const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
+const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLast }) => {
   const { card, categories } = useCard()
   const [ addingCat, setAddingCat ] = useState(false)
+
   const pulseRef = useRef(null)
   const { width } = useViewport()
   const mobile = width < 832
@@ -45,10 +46,11 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
     let cumulatedWidth = mobile ? 180 : 400
     const dc = [] // displayed cat
     const hc = [] // hidden cat
-    categories.forEach(cat => {
-      cumulatedWidth += (cat.catName.length * glyphAverageWidth) + 42
-      if (cumulatedWidth > width || cumulatedWidth > 1180) hc.push(cat)
-      else dc.push(cat)
+    card.catOrder.forEach(catId => {
+      const category = categories.find(cat => cat._id === catId)
+      cumulatedWidth += (category.catName.length * glyphAverageWidth) + 42
+      if (cumulatedWidth > width || cumulatedWidth > 1180) hc.push(category)
+      else dc.push(category)
     })
     setDisplayedCat(dc)
     setHiddenCat(hc)
@@ -57,6 +59,7 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
   async function newCategory () {
     setAddingCat(true)
     await card.addCategory()
+    setLast(true)
     setAddingCat(false)
     pulseRef.current.classList.add('pulse')
     setTimeout(() => pulseRef.current.classList.remove('pulse'), 300)
@@ -73,12 +76,8 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
                 sx={{ mr: 4, whiteSpace: 'nowrap', bottom: 0, transition: 'all .2s ease' }}
                 className={category._id === selectedCategory ? 'isSelected' : ''}
               >
-                <a
-                  href={`#${ classicLayout ? category._id : '' }`}
-                  onClick={() => setCategory(category._id)}
-                >
-                  {category.catName}
-                </a>
+                {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
+                {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
                 {category._id === selectedCategory && (
                   <motion.div
                     layoutId={'underline'}
@@ -103,12 +102,8 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory }) => {
               >
                 {hiddenCat.map(category => (
                   <li className={category._id === selectedCategory ? 'isSelected' : ''} sx={{ whiteSpace: 'nowrap', cursor: 'pointer', position: 'relative', width: 'fit-content' }} key={category._id}>
-                    <a
-                      href={`#${ !classicLayout ? category._id : '' }`}
-                      onClick={() => setCategory(category._id)}
-                    >
-                      {category.catName}
-                    </a>
+                    {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
+                    {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
                     {category._id === selectedCategory && (
                       <div sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }} />
                     )}

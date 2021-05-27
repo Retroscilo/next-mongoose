@@ -10,11 +10,13 @@ const handler = nc()
       const { cardId, catId } = req.body
       const card = await Card.findById(cardId).exec()
       const category = card.categories.id(catId)
-
       category.products.push({ prodName: 'Mon produit', prodDescription: 'Une description ?', prodPrice: '3' })
-      const newProduct = await card.save()
 
-      res.status(200).json(newProduct)
+      const newProdId = category.products[category.products.length - 1]._id
+      category.prodOrder.push(newProdId)
+      await card.save()
+
+      res.status(200).json(card)
     } catch (e) {
       console.log(e)
       res.status(401).json({ error: e.message })
@@ -57,6 +59,9 @@ const handler = nc()
       const card = await Card.findById(cardId)
       const category = card.categories.id(catId)
       const deletedProduct = category.products.id(prodId).remove()
+
+      const newProdOrder = category.prodOrder.filter(id => id != prodId)
+      category.prodOrder = newProdOrder
 
       await card.save()
 

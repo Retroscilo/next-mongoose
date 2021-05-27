@@ -21,12 +21,25 @@ const handler = nc()
     try {
       const { id: restaurantId } = req.query
       const card = await Card.create({ restaurantId })
-      card.categories.push({ catName: 'Viandes, poissons...' })
+      card.categories.push({
+        catName: 'Viandes, poissons...',
+        catDescription: 'Description de la catégorie',
+        products: [ {
+          prodName: 'Mon premier produit',
+          prodDescription: 'description du produit',
+          prodPrice: '3',
+          labels: [ 'homemade' ],
+        } ],
+      })
+
+      card.catOrder = card.categories.map(cat => cat._id)
+      card.categories[0].prodOrder = card.categories[0].products.map(prod => prod._id)
+
       const restaurant = await Restaurant.findById(restaurantId)
       const date = new Date()
 
       if (restaurant.cards.length === 0) restaurant.activeCard = card._id
-      restaurant.cards.push({ cardId: card._id, name: 'Menu ' + date.getFullYear() })
+      restaurant.cards.push({ cardId: card._id, name: 'Menu ' + date.getMonth + ' ' + date.getFullYear() })
 
       await card.save()
       await restaurant.save()

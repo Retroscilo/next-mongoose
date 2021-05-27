@@ -29,6 +29,7 @@ const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listen
         variant: 'Product.desktop',
         bg: theme.product.background.desktop,
         overflow: 'initial',
+        transform: 'scale(1)',
         display: 'grid',
         alignItems: 'center',
         ...theme.product.layout.desktop,
@@ -38,11 +39,18 @@ const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listen
         ...style,
       }}
       ref={ref}
+      initial={{ transform: 'scale(0)' }}
+      animate={'visible'}
+      exit={'deleted'}
+      variants={{
+        visible: { transform: 'scale(1)' },
+        deleted: { opacity: 0, transform: 'scale(0)' },
+      }}
       transition={{ opacity: { duration: 0.2 } }}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      <div {...listeners} {...attributes}  sx={{ width: '50px', height: '50px', bg: 'crimson', position: 'absolute', right: '-50px' }} />
+      <div {...listeners} {...attributes}  sx={{ width: '50px', height: '50px', bg: 'crimson', position: 'absolute', right: '10px' }} />
       {!client &&
         <nav sx={{ position: 'absolute', top: '-10px', left: '-10px', display: 'flex', '& > *': { mr: 2 } }}>
           <Badge size={25} visible={isHover} onClick={product.delete} options={{ label: 'supprimer' }} />

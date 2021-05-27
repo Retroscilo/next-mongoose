@@ -17,11 +17,11 @@ import { useViewport } from '../../lib/hooks/useViewport'
 import { useTheme } from '../../lib/hooks/useTheme'
 import { useCard } from '../../lib/hooks/useCard'
 
-const Category = ({ client, catId, resetCategory }) => {
+const Category = ({ client, catId, setCategory, items }) => {
   // infos & crud
   const { card, updateCard, useCategory } = useCard()
   const cardId = card._id
-  const { category } = useCategory(catId)
+  const category = useCategory(catId)
   const { catName, catDescription, products } = category
   // loading & actions states
   const [ addingProduct, setAddingProduct ] = useState(false)
@@ -42,10 +42,10 @@ const Category = ({ client, catId, resetCategory }) => {
 
   const remove = async () => {
     setDeletingCategory(true)
-    setIsSure(false);
+    setIsSure(false)
+    if (card.catOrder[0] === catId) setCategory(card.catOrder[1])
+    else setCategory(card.catOrder[0])
     await category.delete()
-    setDeletingCategory(false)
-    resetCategory()
   }
 
   return (
@@ -62,7 +62,6 @@ const Category = ({ client, catId, resetCategory }) => {
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
-      {deletingCategory && <div sx={{ width: '100%', height: '100%', bg: 'darkgrey', position: 'absolute', zIndex: 1000, top: 0, left: 0, opacity: 0.4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Spinner color={theme.colors.highlight} size={60} /></div>}
       <div sx={{ maxWidth: 'body', p: mobile ? 0 : 4, m: '0 auto', bg: theme.category.background[mobile ? 'mobile' : 'desktop' ] }}>
         <div sx={{ display: 'flex', position: 'relative', flexDirection: 'column', height: 'fit-content', pb: 4, '& > *': { mt: 4 }, pl: mobile ? 2 : 0, justifyContent: 'space-evenly', overflow: 'hidden', ...theme.category.head[mobile ? 'mobile' : 'desktop']}} >
           <Input
@@ -120,28 +119,21 @@ const Category = ({ client, catId, resetCategory }) => {
           </div>}
           
         </div> 
-        <AnimateSharedLayout>
-
-            <div sx={{ display: 'grid', gridTemplateColumns: mobile ? theme.category.layout.mobile : theme.category.layout.desktop, gridGap: mobile ? 0 : 4 }}>
-              {products.map((product, i) => (
+        <AnimatePresence initial={false}>
+            <div sx={{ display: 'grid', gridTemplateColumns: theme.category.layout[mobile ? 'mobile' : 'desktop'], gridGap: mobile ? 0 : 4 }}>
+              {items.map((id, i) => (
                 <Product
+                  key={id}
                   client={client}
-                  prodId={product._id}
-                  key={product._id}
-                  prodId={product._id}
+                  prodId={id}
                   index={i}
-                  url={product._id}
-                  cardId={cardId}
                   catId={catId}
-                  infoSet={product}
-                  refresh={updateCard}
                 />
               ))}
               {!client && !addingProduct && <div onClick={addProduct} sx={mobile ? theme.button.mobile : theme.button.desktop}>{!mobile && 'ajouter un produit'}</div>}
               {addingProduct && <div onClick={addProduct} sx={{ ...theme.button[mobile ? 'mobile' : 'desktop'], backgroundImage: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Spinner color={'#fff'} size={28} /></div>}
             </div>
-
-        </AnimateSharedLayout>
+        </AnimatePresence>
       </div>
     </motion.div>
   )

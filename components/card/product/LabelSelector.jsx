@@ -6,10 +6,14 @@ import { motion } from 'framer-motion'
 import { useTheme } from '../../../lib/hooks/useTheme'
 import fetchJson from '../../../lib/fetchJson'
 import * as Labels from '../../../public/productLabels/index'
+import { useCard } from '../../../lib/hooks/useCard'
 
 export const LabelSelector = ({ labels, client, cardId, prodId, catId, mobile }) => {
   const [ selectedLabels, setSelectedLabels ] = useState(labels)
   const { theme } = useTheme()
+  const { card, useCategory, useProduct } = useCard()
+  const category = useCategory(catId)
+  const product = useProduct(catId, prodId)
 
   const handleClick = async label => {
     if (client) return

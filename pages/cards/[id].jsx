@@ -10,7 +10,7 @@ import fetchJson from '../../lib/fetchJson'
 import fetchWithId from '../../lib/fetchWithId'
 import Menu from '../../components/card/Menu'
 import propTypes from 'prop-types'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // Hooks
 import useSwr from 'swr'
 import useUser from '../../lib/hooks/useUser'
@@ -27,17 +27,14 @@ const CardEditor = () => {
   const { data: card, mutate: updateCard } = useSwr(id ? [ '/api/card/', id ] : null, fetchWithId)
   const [ restaurant, setRestaurant ] = useState(null)
   useEffect(async () => card && setRestaurant(await fetchJson('/api/restaurant/' + card.restaurantId)), [ card ])
-
   if (!restaurant || !card) return <div><Spinner /></div>
+
   return (
-    <CardProvider>
-      <Menu
-        card={card}
-        restaurant={restaurant}
-        client={false}
-        updateCard={updateCard}
-      />
-    </CardProvider>
+    <React.StrictMode>
+      <CardProvider card={card} updateCard={updateCard}>
+        <Menu restaurant={restaurant} client={false} />
+      </CardProvider>
+    </React.StrictMode>
   )
 }
 

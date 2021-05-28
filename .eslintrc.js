@@ -46,5 +46,6 @@ module.exports = {
     'react/jsx-max-props-per-line': 'off',
     'react/prop-types': 'off',
     'arrow-body-style': 'off',
+    'eqeqeq': 'off',
   },
 }

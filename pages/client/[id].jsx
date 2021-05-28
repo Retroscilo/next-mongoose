@@ -51,7 +51,6 @@ export const getStaticProps = async ({ params }) => {
   await connect()
 
   const card = await Card.findById(params.id).lean()
-  console.log(card)
   const restaurant = await Restaurant.findById(card.restaurantId).lean()
 
   return {

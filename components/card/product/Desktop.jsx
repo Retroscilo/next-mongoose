@@ -14,7 +14,7 @@ import { useTheme } from '../../../lib/hooks/useTheme'
 import Badge from '../../misc/Badge'
 import { useCard } from '../../../lib/hooks/useCard'
 
-const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listeners, attributes, ...props }, ref) => {
+const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listeners, attributes, isDragging, ...props }, ref) => {
   const { card, useProduct } = useCard()
   const cardId = card._id
   const product = useProduct(catId, prodId)
@@ -26,6 +26,7 @@ const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listen
     <motion.div
       sx={{
         position: 'relative',
+        transition: 'box-shadow .3s ease',
         variant: 'Product.desktop',
         bg: theme.product.background.desktop,
         overflow: 'initial',
@@ -36,6 +37,7 @@ const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listen
         zIndex: 599 - index,
         order: index,
         ...style,
+        boxShadow: isDragging ? 'high' : 'none',
       }}
       ref={ref}
       transition={{ opacity: { duration: 0.2 } }}
@@ -46,8 +48,6 @@ const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listen
       {!client &&
         <nav sx={{ position: 'absolute', top: '-10px', left: '-10px', display: 'flex', '& > *': { mr: 2 } }}>
           <Badge size={25} visible={isHover} onClick={product.delete} options={{ label: 'supprimer' }} />
-          <Badge size={25} visible={isHover} options={{ label: 'monter', background: 'url(/svg/upArrow.svg)', color: theme.colors.highlight }} />
-          <Badge size={25} visible={isHover} options={{ label: 'descendre', background: 'url(/svg/downArrow.svg)', color: theme.colors.highlight }} />
         </nav>
       }
       <Input

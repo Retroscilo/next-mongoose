@@ -30,6 +30,7 @@ import {
   SortableContext,
   rectSortingStrategy,
 } from '@dnd-kit/sortable'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
 /**
  * Render the view of menu
@@ -39,9 +40,10 @@ import {
  * @returns {void}
 */
 const Menu = ({ restaurant, client }) => {
-  const { card, categories, updateCard } = useCard()
+  const { card, categories, useCategory } = useCard()
   const [ clientView, setClientView ] = useState(client) // client PREVIEW != client VIEW
   const [ categoryId, setCategory ] = useState(categories[0]?._id) // displayed category
+  const category = useCategory(categoryId)
   const [ last, setLast ] = useState(false) // set to the newest category when created
   const [ second, setSecond ] = useState(false) // set to the second category when the first is deleted
   useEffect(() => {
@@ -50,28 +52,23 @@ const Menu = ({ restaurant, client }) => {
       setCategory(categories[categories.length - 1]._id)
     }
     if (second) {
-      console.log(second)
       setSecond(false)
       setCategory(categories[1]?._id)
     }
   })
-
-  const resetCategory = () => {
-    setCategory(categories[0]?._id)
-  }
 
   const theme = themes[card.theme] || themes.Qalme
   const { width } = useViewport()
   const mobile = width < 832
 
   // Dnd Logic
-  const [ items, setItems ] = useState(categories.find(cat => cat._id === categoryId).prodOrder)
-  useEffect(() => {
-    setItems(categories.find(cat => cat._id === categoryId).prodOrder)
-
-  }, [card])
-  const [ activeId, setActiveId ] = useState(null)
-  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor))
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+  });
+  const sensors = useSensors(useSensor(MouseSensor), touchSensor)
 
   return (
         <ThemeProvider theme={theme}>
@@ -100,59 +97,40 @@ const Menu = ({ restaurant, client }) => {
             <CategoryNav client={client} clientView={clientView} setCategory={setCategory} selectedCategory={categoryId} setLast={setLast} />
             {/* Card body */}
             <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
-    >
-      <SortableContext items={items} strategy={rectSortingStrategy}>
-            {card.categories.length === 0 && <div sx={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Ajouter une catégorie pour commencer à éditer votre carte !</div>}
-            {categories.length > 0 && card.catOrder.map(catId => (
-              theme.layout === 'classic' && catId === categoryId &&
-              <Category
-                client={clientView}
-                key={catId}
-                catId={catId}
-                items={items}
-                setCategory={setCategory}
-              />
-            ))}
-                    <DragOverlay>
-          <div sx={{ height: '50px', width: '50px' }} />
-        </DragOverlay>
-      </SortableContext>
-    </DndContext>
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              modifiers={[restrictToVerticalAxis]}
+            >
+              <SortableContext items={category.prodOrder} strategy={rectSortingStrategy}>
+                {card.categories.length === 0 && <div sx={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Ajouter une catégorie pour commencer à éditer votre carte !</div>}
+                {categories.length > 0 && card.catOrder.map(catId => (
+                  theme.layout === 'classic' && catId === categoryId &&
+                  <Category
+                    client={clientView}
+                    key={catId}
+                    catId={catId}
+                    setCategory={setCategory}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
             {!clientView && theme.layout !== 'classic' && <AddCategory onClick={card.addCategory}>Ajouter une catégorie </AddCategory>}
             <div sx={{ width: '100px', height: '100px', bg: 'crimson' }} onClick={() => window.scrollBy(0, -100)}></div>
           </div>
         </ThemeProvider>
-
   )
 
   // DnD logic
-  function handleDragStart(event) {
-    console.log('start')
-    setActiveId(event.active.id)
-  }
-
-  function handleDragEnd(event) {
-    const {active, over} = event
-
+  async function handleDragEnd(event) {
+    const { active, over } = event
+    
     if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id)
-        const newIndex = items.indexOf(over.id)
-
-        return arrayMove(items, oldIndex, newIndex)
-      })
+      const oldIndex = category.prodOrder.indexOf(active.id)
+      const newIndex = category.prodOrder.indexOf(over.id)
+      const newOrder = arrayMove(category.prodOrder, oldIndex, newIndex)
+      category.moveProducts(newOrder)
     }
-
-    setActiveId(null)
-  }
-
-  function handleDragCancel() {
-    setActiveId(null)
   }
 }
 

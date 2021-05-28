@@ -27,7 +27,7 @@ const Product = props => {
   };
 
   if (mobile) return <ProductMobile {...props} />
-  return <ProductDesktop ref={setNodeRef} style={style} attributes={attributes} listeners={listeners} {...props} />
+  return <ProductDesktop ref={setNodeRef} style={style} attributes={attributes} listeners={listeners} isDragging={isDragging} {...props} />
 }
 
 export default Product

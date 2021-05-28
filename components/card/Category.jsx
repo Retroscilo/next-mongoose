@@ -121,7 +121,7 @@ const Category = ({ client, catId, setCategory, items }) => {
         </div> 
         <AnimatePresence initial={false}>
             <div sx={{ display: 'grid', gridTemplateColumns: theme.category.layout[mobile ? 'mobile' : 'desktop'], gridGap: mobile ? 0 : 4 }}>
-              {items.map((id, i) => (
+              {category.prodOrder.map((id, i) => (
                 <Product
                   key={id}
                   client={client}

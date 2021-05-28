@@ -10,6 +10,7 @@ import { useRouter } from 'next/router'
 // Components
 import Menu from '../../components/card/Menu'
 import propTypes from 'prop-types'
+import { CardProvider, useCard } from '../../lib/hooks/useCard'
 
 // SG
 import Card from '../../lib/models/card.model'
@@ -22,18 +23,25 @@ const CardViewer = ({ card, restaurant }) => {
     <Spinner />
   )
   return (
-    <Menu
-      card={card}
-      restaurant={restaurant}
-      client
-    />
+    <CardProvider card={card}>
+      <Menu restaurant={restaurant} client />
+    </CardProvider>
   )
 }
 
 export async function getStaticPaths () {
+  await connect()
+  const res = await Restaurant.find()
+
+  const restaurantsActiveCard = res
+    .filter(restaurant => restaurant.activeCard !== undefined)
+    .map(restaurant => {
+      return { params: { id: String(restaurant.activeCard) } }
+    })
+
   return {
     // path that need to be generated at build time
-    paths: [ { params: { id: '60732245a07d30307fcdcb9c' } } ],
+    paths: restaurantsActiveCard,
     // https://nextjs.org/docs/basic-features/data-fetching#fetching-data-on-the-client-side
     fallback: true,
   }
@@ -43,6 +51,7 @@ export const getStaticProps = async ({ params }) => {
   await connect()
 
   const card = await Card.findById(params.id).lean()
+  console.log(card)
   const restaurant = await Restaurant.findById(card.restaurantId).lean()
 
   return {

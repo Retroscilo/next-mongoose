@@ -20,7 +20,7 @@ const ProductDesktop = ({ client, catId, prodId }) => {
   const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   const [ isHover, setIsHover ] = useState(false)
   const { theme } = useTheme()
-
+  if (!product) return
   return (
     <motion.div
       sx={{

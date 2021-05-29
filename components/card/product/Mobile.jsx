@@ -47,6 +47,7 @@ const ProductMobile = ({ client, catId, prodId, index }) => {
   const width = useTransform(x, xInput, [ 1000, 0 ])
   const height = useTransform(x, [ -1000, -75, 0 ], [ 0, '100%', 120 ]) // height of delete button across deleting animation
 
+  if (!product) return
   return (
     <motion.div // WRAPPER
       sx={{

@@ -17,10 +17,11 @@ const ProductDesktop = ({ client, catId, prodId }) => {
   const { card, useProduct } = useCard()
   const cardId = card._id
   const product = useProduct(catId, prodId)
-  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   const [ isHover, setIsHover ] = useState(false)
   const { theme } = useTheme()
+  
   if (!product) return
+  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   return (
     <motion.div
       sx={{

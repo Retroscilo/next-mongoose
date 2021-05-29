@@ -19,8 +19,8 @@ const ProductDesktop = ({ client, catId, prodId }) => {
   const product = useProduct(catId, prodId)
   const [ isHover, setIsHover ] = useState(false)
   const { theme } = useTheme()
-  
-  if (!product) return
+
+  if (!product) return null
   const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   return (
     <motion.div

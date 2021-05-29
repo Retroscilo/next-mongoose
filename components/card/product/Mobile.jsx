@@ -21,7 +21,6 @@ const ProductMobile = ({ client, catId, prodId, index }) => {
   const { card, useProduct } = useCard()
   const cardId = card._id
   const product = useProduct(catId, prodId)
-  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
 
   const productRef = useRef(null) // used for clicked outside
   const animationPadding = useRef(null)
@@ -48,6 +47,7 @@ const ProductMobile = ({ client, catId, prodId, index }) => {
   const height = useTransform(x, [ -1000, -75, 0 ], [ 0, '100%', 120 ]) // height of delete button across deleting animation
 
   if (!product) return
+  const { prodName, prodDescription, prodPrice, photo: imgSrc, labels } = product
   return (
     <motion.div // WRAPPER
       sx={{

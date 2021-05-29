@@ -58,6 +58,9 @@ const Menu = ({ restaurant, client }) => {
     }
   })
 
+  const [ order, setOrder ] = useState(card.categories.find(cat => cat._id == categoryId).prodOrder)
+  useEffect(() => setOrder(card.categories.find(cat => cat._id == categoryId).prodOrder), [ category ])
+
   const theme = themes[card.theme] || themes.Qalme
   const { width } = useViewport()
   const mobile = width < 832
@@ -103,7 +106,7 @@ const Menu = ({ restaurant, client }) => {
               onDragEnd={handleDragEnd}
               modifiers={[restrictToVerticalAxis]}
             >
-              <SortableContext items={category.prodOrder} strategy={rectSortingStrategy}>
+              <SortableContext items={order} strategy={rectSortingStrategy}>
                 {card.categories.length === 0 && <div sx={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Ajouter une catégorie pour commencer à éditer votre carte !</div>}
                 {categories.length > 0 && card.catOrder.map(catId => (
                   theme.layout === 'classic' && catId === categoryId &&
@@ -112,6 +115,7 @@ const Menu = ({ restaurant, client }) => {
                     key={catId}
                     catId={catId}
                     setCategory={setCategory}
+                    order={order}
                   />
                 ))}
                 <DragOverlay dropAnimation={null} >
@@ -132,6 +136,7 @@ const Menu = ({ restaurant, client }) => {
       const oldIndex = category.prodOrder.indexOf(active.id)
       const newIndex = category.prodOrder.indexOf(over.id)
       const newOrder = arrayMove(category.prodOrder, oldIndex, newIndex)
+      setOrder(newOrder)
       category.moveProducts(newOrder)
     }
   }

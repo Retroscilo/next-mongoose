@@ -29,7 +29,7 @@ const spring = {
   damping: 30,
 }
 
-const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLast }) => {
+const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLast, order }) => {
   const { card, categories } = useCard()
   const [ addingCat, setAddingCat ] = useState(false)
 

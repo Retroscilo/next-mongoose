@@ -17,7 +17,7 @@ import { useViewport } from '../../lib/hooks/useViewport'
 import { useTheme } from '../../lib/hooks/useTheme'
 import { useCard } from '../../lib/hooks/useCard'
 
-const Category = ({ client, catId, setCategory }) => {
+const Category = ({ client, catId, setCategory, order }) => {
   // infos & crud
   const { card, useCategory } = useCard()
   const category = useCategory(catId)
@@ -120,7 +120,7 @@ const Category = ({ client, catId, setCategory }) => {
         </div> 
         <AnimatePresence initial={false}>
             <div sx={{ display: 'grid', gridTemplateColumns: theme.category.layout[mobile ? 'mobile' : 'desktop'], gridGap: mobile ? 0 : 4 }}>
-              {category.prodOrder.map((id, i) => (
+              {order.map((id, i) => (
                 <Product
                   key={id}
                   client={client}

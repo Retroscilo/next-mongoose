@@ -15,6 +15,7 @@ import { ThemeProvider } from '../../lib/hooks/useTheme'
 import CategoryNav from './CategoryNav'
 import ThemeCustomizer from './ThemeCustomizer'
 import Product from './product/index'
+import ProductDesktop from './product/Desktop'
 // Dnd
 import {
   DndContext,
@@ -49,7 +50,7 @@ const Menu = ({ restaurant, client }) => {
   useEffect(() => {
     if (last) {
       setLast(false)
-      setCategory(categories[categories.length - 1]._id)
+      setCategory(categories[categories.length - 1]?._id)
     }
     if (second) {
       setSecond(false)
@@ -113,18 +114,20 @@ const Menu = ({ restaurant, client }) => {
                     setCategory={setCategory}
                   />
                 ))}
+                <DragOverlay dropAnimation={null} >
+                  <div sx={{ width: '50px', height: '50px', bg: 'transparent' }}></div>
+                  {/* {activeId ? <ProductDesktop log client={false} catId={categoryId} prodId={activeId} index={0} /> : null} */}
+                </DragOverlay>
               </SortableContext>
             </DndContext>
             {!clientView && theme.layout !== 'classic' && <AddCategory onClick={card.addCategory}>Ajouter une catégorie </AddCategory>}
-            <div sx={{ width: '100px', height: '100px', bg: 'crimson' }} onClick={() => window.scrollBy(0, -100)}></div>
           </div>
         </ThemeProvider>
   )
 
   // DnD logic
-  async function handleDragEnd(event) {
-    const { active, over } = event
-    
+  function handleDragEnd(event) {
+    const {active, over} = event
     if (active.id !== over.id) {
       const oldIndex = category.prodOrder.indexOf(active.id)
       const newIndex = category.prodOrder.indexOf(over.id)

@@ -13,7 +13,7 @@ import { useTheme } from '../../../lib/hooks/useTheme'
 import Badge from '../../misc/Badge'
 import { useCard } from '../../../lib/hooks/useCard'
 
-const ProductDesktop = ({ client, catId, prodId }) => {
+const ProductDesktop = forwardRef(({ client, catId, prodId, index, style, listeners, attributes, isDragging }, ref) => {
   const { card, useProduct } = useCard()
   const cardId = card._id
   const product = useProduct(catId, prodId)
@@ -33,11 +33,17 @@ const ProductDesktop = ({ client, catId, prodId }) => {
         alignItems: 'center',
         ...theme.product.layout.desktop,
         maxWidth: theme.category.layout.desktop === '1fr' ? '' : '550px',
+        zIndex: isDragging ? 600 : 599 - index,
+        order: index,
+        ...style,
+        boxShadow: isDragging ? 'high' : 'none',
       }}
+      ref={ref}
       transition={{ opacity: { duration: 0.2 } }}
       onHoverStart={() => setIsHover(true)}
       onHoverEnd={() => setIsHover(false)}
     >
+      <div {...listeners} {...attributes} sx={{ width: '50px', height: '50px', bg: 'crimson', position: 'absolute', right: '-50px' }} />
       {!client &&
         <nav sx={{ position: 'absolute', top: '-10px', left: '-10px', display: 'flex', '& > *': { mr: 2 } }}>
           <Badge size={25} visible={isHover} onClick={product.delete} options={{ label: 'supprimer' }} />
@@ -99,12 +105,15 @@ const ProductDesktop = ({ client, catId, prodId }) => {
       />
     </motion.div>
   )
-}
+})
 
 export default ProductDesktop
 
 ProductDesktop.propTypes = {
+  cardId: PropTypes.string,
   catId: PropTypes.string,
   client: PropTypes.bool,
   index: PropTypes.number,
+  infoSet: PropTypes.object,
+  refresh: PropTypes.func,
 }

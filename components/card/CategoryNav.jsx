@@ -66,7 +66,7 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLas
   }
 
   return (
-    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 1000, overflowX: 'auto', overflow: 'visible', ...theme.font.body, px: mobile ? 1 : 4 }}>
+    <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 1001, overflowX: 'auto', overflow: 'visible', ...theme.font.body, px: mobile ? 1 : 4 }}>
       <nav sx={{ display: 'grid', gridTemplateAreas: '"cat addCat"', alignItems: 'center', maxWidth: 'body', mx: 'auto' }}>
         <AnimateSharedLayout>
           <ul sx={{ gridArea: 'cat', justifySelf: 'start', display: 'flex', alignItems: 'center', justifyContent: classicLayout ? 'center' : '', overflow: 'visible', '& > *': { cursor: 'pointer' }, pl: 0 }}>

@@ -2,9 +2,8 @@
 /** @jsx jsx */
 // Front
 import { jsx } from 'theme-ui'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, forwardRef } from 'react'
 import PropTypes from 'prop-types'
-import fetchJson from '../../../lib/fetchJson'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 // Hooks
 import { useClickOutside } from '../../../lib/hooks/useClickOutside'
@@ -50,8 +49,12 @@ const ProductMobile = ({ client, catId, prodId, index }) => {
 
   return (
     <motion.div // WRAPPER
-      sx={{ position: 'relative', order, mt: 4 }}
-      ref={productRef}
+      sx={{
+        position: 'relative',
+        order: index,
+        mt: 4,
+        zIndex: 599 - index,
+      }}
       initial={{ height: 0 }}
       animate={{ height: 'fit-content' }}
     >

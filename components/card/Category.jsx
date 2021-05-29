@@ -17,10 +17,9 @@ import { useViewport } from '../../lib/hooks/useViewport'
 import { useTheme } from '../../lib/hooks/useTheme'
 import { useCard } from '../../lib/hooks/useCard'
 
-const Category = ({ client, catId, setCategory, items }) => {
+const Category = ({ client, catId, setCategory }) => {
   // infos & crud
-  const { card, updateCard, useCategory } = useCard()
-  const cardId = card._id
+  const { card, useCategory } = useCard()
   const category = useCategory(catId)
   const { catName, catDescription, products } = category
   // loading & actions states

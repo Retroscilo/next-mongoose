@@ -5,12 +5,12 @@ import { useViewport } from '../../../lib/hooks/useViewport'
 import ProductMobile from './Mobile'
 import ProductDesktop from './Desktop'
 import React from 'react'
-import {useSortable} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 const Product = props => {
   const { width } = useViewport(); const mobile = width < 832
-  const sortable = useSortable({id: props.prodId});
+  const sortable = useSortable({ id: props.prodId })
 
   const {
     attributes,
@@ -19,15 +19,20 @@ const Product = props => {
     setNodeRef,
     transform,
     transition,
-  } = sortable;
+  } = sortable
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
-  if (mobile) return <ProductMobile {...props} />
-  return <ProductDesktop ref={setNodeRef} style={style} attributes={attributes} listeners={listeners} isDragging={isDragging} {...props} />
+  return (
+    <div ref={setNodeRef} sx={{ boxShadow: isDragging ? 'high' : '', transition: 'box-shadow .3s ease', position: 'relative', zIndex: 1000, ...style }}>
+      <div sx={{ position: 'absolute', right: '-50px', width: '50px', height: '50px', bg: 'gold' }} {...listeners} {...attributes} />
+      {mobile && <ProductMobile {...props} />}
+      {!mobile && <ProductDesktop {...props} />}
+    </div>
+  )
 }
 
 export default Product

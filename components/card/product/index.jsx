@@ -27,10 +27,12 @@ const Product = props => {
   }
 
   return (
-    <div ref={setNodeRef} sx={{ boxShadow: isDragging ? 'high' : '', transition: 'box-shadow .3s ease', position: 'relative', zIndex: 1000, ...style }}>
-      <div sx={{ position: 'absolute', right: '-50px', width: '50px', height: '50px', bg: 'gold' }} {...listeners} {...attributes} />
-      {mobile && <ProductMobile {...props} />}
-      {!mobile && <ProductDesktop {...props} />}
+    <div ref={setNodeRef} sx={{ position: 'relative', zIndex: 1000, ...style }}>
+      <div sx={{ boxShadow: isDragging ? 'high' : '', transform: isDragging ? 'scale(1.02)' : '', transition: 'all .2s ease' }}>
+        <div sx={{ position: 'absolute', right: '-50px', width: '50px', height: '50px', bg: 'gold' }} {...listeners} {...attributes} />
+        {mobile && <ProductMobile {...props} />}
+        {!mobile && <ProductDesktop {...props} />}
+      </div>
     </div>
   )
 }

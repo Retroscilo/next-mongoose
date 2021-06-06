@@ -106,7 +106,7 @@ const Account = ({ SSRrestaurants }) => {
         ))}
         {(user && restaurants.length < 3) &&
           <div sx={{ width: '100%m', maxWidth: '30rem', my: 3 }}>
-            <div sx={{ variant: 'Button.primary', mx: 'auto' }}onClick={addRestaurant}>Ajouter un restaurant</div>
+            <div sx={{ variant: 'Button.primary', mx: 'auto' }} onClick={addRestaurant}>Ajouter un restaurant</div>
           </div>
         }
       </section>}

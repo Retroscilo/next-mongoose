@@ -8,11 +8,28 @@ import React, { useState, useRef, useEffect, useCallback, useReducer } from 'rea
 import propTypes from 'prop-types'
 import { Switch, PrevArrow, OptionsList } from '../misc/index'
 import { useViewport } from '../../lib/hooks/useViewport'
+import SortableCategory from './SortableCategory'
 
 // hooks
 import { useCard } from '../../lib/hooks/useCard'
 import { ThemeProvider, useTheme } from '../../lib/hooks/useTheme'
 import { motion, AnimateSharedLayout } from 'framer-motion'
+
+// DnD
+import {
+  DndContext,
+  closestCenter,
+  MouseSensor,
+  TouchSensor,
+  DragOverlay,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable'
 
 function getTextWidth (text, font) {
   // re-use canvas object for better performance
@@ -29,7 +46,7 @@ const spring = {
   damping: 30,
 }
 
-const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLast, order }) => {
+const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLast }) => {
   const { card, categories } = useCard()
   const [ addingCat, setAddingCat ] = useState(false)
 
@@ -40,13 +57,16 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLas
   const [ displayedCat, setDisplayedCat ] = useState([])
   const [ hiddenCat, setHiddenCat ] = useState([])
 
+  const [ order, setOrder ] = useState(card.catOrder)
+  useEffect(() => setOrder(card.catOrder), [ card ])
+
   useEffect(() => {
     // estimate (high) width of a category, adjust displayed categories
     const glyphAverageWidth = getTextWidth('s', theme.font.body.font)
     let cumulatedWidth = mobile ? 180 : 400
     const dc = [] // displayed cat
     const hc = [] // hidden cat
-    card.catOrder.forEach(catId => {
+    order.forEach(catId => {
       const category = categories.find(cat => cat._id === catId)
       cumulatedWidth += (category.catName.length * glyphAverageWidth) + 42
       if (cumulatedWidth > width || cumulatedWidth > 1180) hc.push(category)
@@ -54,7 +74,7 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLas
     })
     setDisplayedCat(dc)
     setHiddenCat(hc)
-  }, [ width, categories ])
+  }, [ width, order ])
 
   async function newCategory () {
     setAddingCat(true)
@@ -65,20 +85,89 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLas
     setTimeout(() => pulseRef.current.classList.remove('pulse'), 300)
   }
 
+  // Dnd Logic
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+  })
+  const sensors = useSensors(useSensor(MouseSensor), touchSensor)
+
+  const handleDragStart = () => {
+    console.log('test')
+  }
+
+  const handleDragEnd = event => {
+    const { active, over } = event
+    console.log(order)
+    if (active.id !== over.id) {
+      const oldIndex = order.indexOf(active.id)
+      const newIndex = order.indexOf(over.id)
+      const newOrder = arrayMove(order, oldIndex, newIndex)
+      setOrder(newOrder)
+    }
+  }
+
   return (
     <div sx={{ bg: 'white', position: 'sticky', top: client ? 0 : '70px', width: '100%', zIndex: 1001, overflowX: 'auto', overflow: 'visible', ...theme.font.body, px: mobile ? 1 : 4 }}>
       <nav sx={{ display: 'grid', gridTemplateAreas: '"cat addCat"', alignItems: 'center', maxWidth: 'body', mx: 'auto' }}>
-        <AnimateSharedLayout>
-          <ul sx={{ gridArea: 'cat', justifySelf: 'start', display: 'flex', alignItems: 'center', justifyContent: classicLayout ? 'center' : '', overflow: 'visible', '& > *': { cursor: 'pointer' }, pl: 0 }}>
-            {displayedCat.length > 0 && displayedCat.map(category => (
-              <li
-                key={category._id}
-                sx={{ mr: 4, whiteSpace: 'nowrap', bottom: 0, transition: 'all .2s ease' }}
-                className={category._id === selectedCategory ? 'isSelected' : ''}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <AnimateSharedLayout>
+            <ul sx={{ gridArea: 'cat', justifySelf: 'start', display: 'flex', alignItems: 'center', justifyContent: classicLayout ? 'center' : '', overflow: 'visible', '& > *': { cursor: 'pointer' }, pl: 0 }}>
+              <SortableContext items={displayedCat.map(c => c._id)} strategy={rectSortingStrategy}>
+                {displayedCat.length > 0 && displayedCat.map(category => (
+                  <SortableCategory key={category._id} id={category._id} >
+                    <li
+                      sx={{ mr: 4, whiteSpace: 'nowrap', bottom: 0, transition: 'all .2s ease' }}
+                      className={category._id === selectedCategory ? 'isSelected' : ''}
+                    >
+                      {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
+                      {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
+                      {category._id === selectedCategory && (
+                        <motion.div
+                          layoutId={'underline'}
+                          sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }}
+                          initial={false}
+                          animate={{ borderColor: theme.colors.primary }}
+                          transition={spring}
+                        />
+                      )}
+                    </li>
+                  </SortableCategory>
+                ))}
+              </SortableContext>
+              <span
+                ref={pulseRef}
+                sx={{ borderRadius: '3px', position: 'relative', bottom: hiddenCat.map(hc => hc._id).includes(selectedCategory) ? '5px' : 0 }}
               >
-                {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
-                {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
-                {category._id === selectedCategory && (
+                {hiddenCat.length > 0 &&
+                <SortableContext items={hiddenCat.map(c => c._id)} strategy={rectSortingStrategy}>
+                  <OptionsList
+                    label={displayedCat.length === 0 ? 'Catégories' : 'plus'}
+                    optionsList={hiddenCat}
+                    bold={hiddenCat.map(hc => hc._id).includes(selectedCategory)}
+                    options={{ position: displayedCat.length === 0 ? 'left' : 'right' }}
+                  >
+                    {hiddenCat.map(category => (
+                      <SortableCategory key={category._id} id={category._id} >
+                        <li className={category._id === selectedCategory ? 'isSelected' : ''} sx={{ whiteSpace: 'nowrap', cursor: 'pointer', position: 'relative', width: 'fit-content' }} key={category._id}>
+                          {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
+                          {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
+                          {category._id === selectedCategory && (
+                            <div sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }} />
+                          )}
+                        </li>
+                      </SortableCategory>
+                    ))}
+                  </OptionsList>
+                </SortableContext>}
+                {hiddenCat.map(hc => hc._id).includes(selectedCategory) && (
                   <motion.div
                     layoutId={'underline'}
                     sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }}
@@ -87,41 +176,10 @@ const CategoryNav = ({ client, clientView, setCategory, selectedCategory, setLas
                     transition={spring}
                   />
                 )}
-              </li>
-            ))}
-            <span
-              ref={pulseRef}
-              sx={{ borderRadius: '3px', position: 'relative', bottom: hiddenCat.map(hc => hc._id).includes(selectedCategory) ? '5px' : 0 }}
-            >
-              {hiddenCat.length > 0 &&
-              <OptionsList
-                label={displayedCat.length === 0 ? 'Catégories' : 'plus'}
-                optionsList={hiddenCat}
-                bold={hiddenCat.map(hc => hc._id).includes(selectedCategory)}
-                options={{ position: displayedCat.length === 0 ? 'left' : 'right' }}
-              >
-                {hiddenCat.map(category => (
-                  <li className={category._id === selectedCategory ? 'isSelected' : ''} sx={{ whiteSpace: 'nowrap', cursor: 'pointer', position: 'relative', width: 'fit-content' }} key={category._id}>
-                    {!classicLayout && <a href={`#${ category._id }`}>{category.catName}</a>}
-                    {classicLayout && <a onClick={() => setCategory(category._id)}>{category.catName}</a>}
-                    {category._id === selectedCategory && (
-                      <div sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }} />
-                    )}
-                  </li>
-                ))}
-              </OptionsList>}
-              {hiddenCat.map(hc => hc._id).includes(selectedCategory) && (
-                <motion.div
-                  layoutId={'underline'}
-                  sx={{ height: '5px', width: '100%', background: theme.colors.primary, position: 'absolute' }}
-                  initial={false}
-                  animate={{ borderColor: theme.colors.primary }}
-                  transition={spring}
-                />
-              )}
-            </span>
-          </ul>
-        </AnimateSharedLayout>
+              </span>
+            </ul>
+          </AnimateSharedLayout>
+        </DndContext>
         {/* Add cat button */}
         {classicLayout && !clientView && !addingCat && <div sx={{ ...theme.button[mobile ? 'mobile' : 'desktop'], position: 'initial', gridArea: 'addCat', justifySelf: 'end', whiteSpace: 'nowrap', fontFamily: 'ubuntu', fontSize: 2 }} onClick={() => newCategory()}>{!mobile && 'ajouter une catégorie'}</div>}
         {/* & loading state */}

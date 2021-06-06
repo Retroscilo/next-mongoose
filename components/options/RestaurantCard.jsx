@@ -6,15 +6,15 @@ import Input from '../Input'
 import React, { useState, useEffect, useRef } from 'react'
 import fetchJson from '../../lib/fetchJson'
 import IconSelector from '../misc/IconSelector'
-import QRCode from 'qrcode'
 import propTypes from 'prop-types'
+import drawQR from './QR'
 
 const QR = ({ restaurant }) => {
-  const { _id: id, restaurantName: name, QR } = restaurant
+  const { _id: id, activeCard, restaurantName: name, QR } = restaurant
   const { color: defaultColor, logo, shape, frame } = QR || {}
   const canvasc = useRef(null)
   const [ canvasReady, setCanvasReady ] = useState(false)
-  const [ color, setColor ] = useState(defaultColor || '#000:#FFF')
+  const [ color ] = useState(defaultColor || '#000:#FFF')
 
   const dlCanvas = e => {
     let dt = document.querySelector('canvas').toDataURL('image/png')
@@ -23,19 +23,16 @@ const QR = ({ restaurant }) => {
     e.target.href = dt
   }
 
-  const drawCanvas = async colors => {
-    const c = colors.split(':')
-    await QRCode.toCanvas(canvasc.current, 'https://localhost:3000/cards/' + id + '?user', { color: { dark: c[0], light: c[1] }, errorCorrectionLevel: 'M' })
-    setCanvasReady(true)
-  }
-  useEffect(async () => {
-    drawCanvas(color)
+  useEffect(() => drawQR(color, canvasc.current, activeCard).then(() => setCanvasReady(true)), [])
+
+  const changeColor = async newColor => {
+    drawQR(newColor, canvasc.current, activeCard)
     await fetchJson('/api/QR', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ id, field: 'color', value: color }),
+      body: JSON.stringify({ id, field: 'color', value: newColor }),
     })
-  }, [ color ])
+  }
 
   return (
     <div className={'qrWrapper'} sx={{ display: 'grid', gridTemplateAreas: '"custom qr" "custom qr" "download qr"' }}>
@@ -50,7 +47,7 @@ const QR = ({ restaurant }) => {
               { value: '#FF8008:#FFF', url: '/selectIcons/yw.svg' },
               { value: '#FFF:#000', url: '/selectIcons/wb.svg' },
             ]}
-            options={{ iconSize: '20px', callback: value => setColor(value), default: color }}
+            options={{ iconSize: '20px', callback: value => changeColor(value), default: color }}
           />
         </span>
         <span>Logo: <span sx={{ color: 'textLight' }}>Bientôt !</span></span>

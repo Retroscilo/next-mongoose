@@ -62,7 +62,7 @@ const handler = nc({ attachParams: true })
       // clean restaurant in user's list
       const user = await User.findById(userId)
       const restaurantIndex = user.restaurants.indexOf(restaurantId)
-      if (restaurantIndex === -1) return res.status(404).send('Il y a eu un problème lors de la suppression du restaurant: il ne vous appartient pas')
+      if (restaurantIndex === -1) return res.status(404).send('Il y a eu un problème lors de la suppression du restaurant')
       user.restaurants.splice(restaurantIndex, 1)
       await user.save()
 

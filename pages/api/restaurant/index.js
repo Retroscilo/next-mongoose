@@ -25,10 +25,9 @@ const handler = nc({ attachParams: true })
     const userId = req.session.get('user').userId
     try {
       const { restaurantName } = req.body
-      console.log(restaurantName)
       const user = await User.findById(userId)
       const newRestaurant = await Restaurant.create({ restaurantName: restaurantName || 'Nouveau restaurant', owner: user._id })
-
+      console.log(user.restaurants)
       if (user.restaurants.length > 2) return res.status(401).json({ err: 'Vous ne pouvez pas enregistrer plus de 3 restaurants !' })
 
       user.restaurants.push(newRestaurant._id)

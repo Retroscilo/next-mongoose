@@ -3,8 +3,8 @@
 // Components & front
 import { jsx } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
-import Card from '../../components/card/Card'
-import Link from 'next/link'
+import RestaurantCard from '../../components/cardHUB/RestaurantCard'
+import Canvas from '../../components/homepage/Canvas'
 // Static Gen
 import fetchJSON from '../../lib/fetchJson'
 import useUser from '../../lib/hooks/useUser'
@@ -14,23 +14,27 @@ import User from '../../lib/models/user.model'
 import Restaurant from '../../lib/models/restaurant.model'
 import withSession from '../../lib/session'
 import connect from '../../lib/middlewares/mongodb'
+// Hooks
+import { RestaurantsProvider } from '../../lib/hooks/useRestaurants'
+import { useViewport } from '../../lib/hooks/useViewport'
 
 /** Futur implements:
  * -> micro-animation when a card is set as activeCard
  * -> micro-animation when adding a card
  */
 
-const Cards = ({ restaurants }) => {
+const Cards = () => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
+  const { data: restaurants, mutate: mutateRestaurant } = useSWR('/api/restaurant', fetchJSON)
 
   // use first restaurant in list (data already here with ssr)
-  const [ restaurant, setRestaurant ] = useState(restaurants[0] || false)
+  // const [ restaurant, setRestaurant ] = useState(restaurants[0] || false)
 
   // then subscribe to given restaurant data (e.g. first in list on request)
-  const { data: freshRestaurant, mutate } = useSWR(`/api/restaurant/${ restaurant._id }`, fetchJSON)
+  // const { data: freshRestaurant, mutate } = useSWR(`/api/restaurant/${ restaurant._id }`, fetchJSON)
 
   // update stale data with SWR
-  useEffect(() => freshRestaurant && setRestaurant(freshRestaurant), [ freshRestaurant ])
+  // useEffect(() => freshRestaurant && setRestaurant(freshRestaurant), [ freshRestaurant ])
 
   const addCart = async () => {
     // do a post request
@@ -75,8 +79,33 @@ const Cards = ({ restaurants }) => {
     mutate()
   }
 
+  if (!restaurants) return null
   return (
-    <>
+    <RestaurantsProvider restaurants={restaurants} mutate={mutateRestaurant}>
+      <Canvas color={'#5879CC'} height={300} />
+      <div sx={{ position: 'relative', display: 'grid', gridTemplateColumns: '1.3fr .7fr', gridTemplateRows: '1.2fr .8fr', gridGap: '70px', height: 'min', maxWidth: 'body', mx: 'auto', py: '80px' }}>
+        <RestaurantCard />
+        <div sx={{ bg: 'gold', gridRow: '1 / 3', gridColumn: 2 }}></div>
+        <div sx={{ bg: 'pink' }}></div>
+      </div>
+    </RestaurantsProvider>
+  )
+}
+
+export const getServerSideProps = connect(withSession(async ({ req, res }) => {
+  const session = req.session.get('user')
+  if (!session) return { props: { restaurants: [] } }
+  const user = await User.findById(session.userId)
+  const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
+
+  return {
+    props: { restaurants: JSON.parse(JSON.stringify(restaurants)) },
+  }
+}))
+
+export default Cards
+
+/* <>
       {restaurant &&
       <div sx={{ width: '100%', bg: 'white' }}>
         <ul sx={{ display: 'flex', maxWidth: 'body', mx: 'auto', my: 0, height: '50px', alignItems: 'center', justifyContent: 'space-evenly' }}>
@@ -115,19 +144,4 @@ const Cards = ({ restaurants }) => {
           <div sx={{ variant: 'Add.product.desktop', position: 'initial', border: 'none' }} />
         </div>}
       </div>
-    </>
-  )
-}
-
-export const getServerSideProps = connect(withSession(async ({ req, res }) => {
-  const session = req.session.get('user')
-  if (!session) return { props: { restaurants: [] } }
-  const user = await User.findById(session.userId)
-  const restaurants = await Restaurant.find({ _id: { $in: user.restaurants } })
-
-  return {
-    props: { restaurants: JSON.parse(JSON.stringify(restaurants)) },
-  }
-}))
-
-export default Cards
+    </> */

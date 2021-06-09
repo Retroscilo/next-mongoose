@@ -3,7 +3,7 @@
 import { jsx } from 'theme-ui'
 import { useRestaurants } from '../../lib/hooks/useRestaurants'
 import { motion, AnimateSharedLayout } from 'framer-motion'
-import { useState, useEffect, useRef, forwardRef } from 'react'
+import { useState, useEffect, useRef, forwardRef, useCallback } from 'react'
 
 const spring = {
   type: 'spring',
@@ -11,24 +11,22 @@ const spring = {
   damping: 30,
 }
 
-const Tooltip = forwardRef(({ text, color }, ref) => {
-  const [ position, setPosition ] = useState(null)
+const Tooltip = ({ text, color, pos, node }) => {
   const [ visible, setVisible ] = useState(false)
   const handleMouseLeave = () => setVisible(false)
   const handleMouseOver = () => setVisible(true)
 
   useEffect(() => {
-    setPosition(ref.current.getBoundingClientRect())
-    ref.current.addEventListener('mouseover', handleMouseOver)
-    ref.current.addEventListener('mouseleave', handleMouseLeave)
+    node.current.addEventListener('mouseover', handleMouseOver)
+    node.current.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
-      ref.current.removeEventListener('mousover', handleMouseOver)
-      ref.current.removeEventListener('mouseleave', handleMouseLeave)
+      node.current.removeEventListener('mousover', handleMouseOver)
+      node.current.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [ ref ])
+  }, [ pos ])
 
-  if (!position) return null
+  if (!pos) return null
   return (
     <div
       sx={{
@@ -40,14 +38,13 @@ const Tooltip = forwardRef(({ text, color }, ref) => {
         textAlign: 'center',
         opacity: visible ? 1 : 0,
         transform: `translateY(${visible ? '-10px' : 0})`,
-        top: `${position.top - position.height/2}px`,
-        left: `calc(${position.left - 250 + position.width/2}px)`,
-        transition: 'all .2s ease',
+        top: `${pos.top - pos.height/2}px`,
+        left: `calc(${pos.left - 250 + pos.width/2}px)`,
         pointerEvents: 'none',
       }}
     >{text}</div>
   )
-})
+}
 
 const Add = forwardRef(({ active, ...props }, ref) => (
   <div
@@ -64,7 +61,7 @@ const Add = forwardRef(({ active, ...props }, ref) => (
 
 const Item = ({ item, setItem, active }) => (
   <li
-    sx={{ position: 'relative', opacity: '.75', cursor: 'pointer', mr: 4 }}
+    sx={{ position: 'relative', opacity: '.75', cursor: 'pointer', mr: 4, whiteSpace: 'nowrap' }}
     className={active ? 'activeTab' : ''}
     onClick={() => setItem(item)}
   >
@@ -93,15 +90,17 @@ const Item = ({ item, setItem, active }) => (
 )
 
 const Tabs = ({ active, items, setItem, action, activeAction }) => {
-  const [ visibleTooltip, setVisibleTooltip ] = useState(false)
   const [ last, setLast ] = useState(false)
+  const [ position, setPosition ] = useState(null)
   const tooltipRef = useRef(null)
-  
+
   useEffect(() => {
+    if (tooltipRef) setPosition(tooltipRef.current.getBoundingClientRect())
     if (!last) return
     setItem(items[items.length - 1])
     setLast(false)
   }, [ items ])
+
   const handleAction = () => {
     if (!activeAction) return
     action()
@@ -113,26 +112,28 @@ const Tabs = ({ active, items, setItem, action, activeAction }) => {
       sx={{
         position: 'relative',
         width: 'calc(100% + 2px)',
+        maxWidth: 'calc(100% + 2px)',
         bg: 'royalblue',
         height: '45px',
         m: '-1px',
         borderTopLeftRadius: '3px',
         borderTopRightRadius: '3Px',
+        overflow: 'scroll'
       }}
     >
-      <ul sx={{ m: 0, color: 'white', display: 'flex', alignItems: 'center', height: '100%' }}>
+      <ul sx={{ m: 0, color: 'white', display: 'flex', alignItems: 'center', height: '100%', width: '1500px' }}>
         <AnimateSharedLayout>
           {items.map(item => (
             <Item key={item._id} item={item} setItem={setItem} active={item._id === active._id} />
           ))}
-          <Add 
+          <Add
             onClick={handleAction}
             active={activeAction}
             ref={tooltipRef}
           />
         </AnimateSharedLayout>
       </ul>
-      <Tooltip ref={tooltipRef} visible={visibleTooltip} text={activeAction ? 'ajouter un restaurant' : '3 restaurants maximum'} color={'white'} />
+      <Tooltip node={tooltipRef} pos={position} text={activeAction ? 'ajouter un restaurant' : '3 restaurants maximum'} color={'white'} />
     </div>
   )
 }

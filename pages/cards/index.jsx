@@ -83,7 +83,7 @@ const Cards = () => {
   return (
     <RestaurantsProvider restaurants={restaurants} mutate={mutateRestaurant}>
       <Canvas color={'#5879CC'} height={300} />
-      <div sx={{ position: 'relative', display: 'grid', gridTemplateColumns: '1.3fr .7fr', gridTemplateRows: '1.2fr .8fr', gridGap: '70px', height: 'min', maxWidth: 'body', mx: 'auto', py: '80px' }}>
+      <div sx={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(300px, 700px) .7fr', gridTemplateRows: '1.2fr .8fr', gridGap: '70px', height: 'min', maxWidth: 'body', mx: 'auto', py: '80px' }}>
         <RestaurantCard />
         <div sx={{ bg: 'gold', gridRow: '1 / 3', gridColumn: 2 }}></div>
         <div sx={{ bg: 'pink' }}></div>

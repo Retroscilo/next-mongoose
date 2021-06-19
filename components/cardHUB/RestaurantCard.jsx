@@ -1,55 +1,95 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Card from './Card'
-import Tabs from './Tabs'
+import Tabs from './Tabs/Tabs'
 import { useRestaurants } from '../../lib/hooks/useRestaurants'
-import fetchJson from '../../lib/fetchJson'
 import Button from '../misc/Button'
-import Input from '../Input'
+import Input from './Input/Input'
+import Tooltip from '../misc/Tooltip'
+import { FileInput } from '../FileInput'
 
-const RestaurantCard = () => {
-  const { restaurants } = useRestaurants()
-  const [ active, setActive ] = useState(restaurants[0])
-  const [ reset, setReset ] = useState(false)
+const RestaurantCard = ({ setActiveRestaurantId }) => {
+  const { restaurants, useRestaurant } = useRestaurants()
 
-  const handleRemove = () => {
-    restaurants.remove(active._id)
-    setReset(true)
-  }
+  const [ active, setActive ] = useState(restaurants[0]._id)
+  const [ restaurant, setRestaurant ] = useState(useRestaurant(active))
 
   useEffect(() => {
+    setRestaurant(useRestaurant(active))
+    setActiveRestaurantId(active) // context state
+  }, [ active ])
+
+  const [ reset, setReset ] = useState(false)
+  const [ last, setLast ] = useState(false)
+
+  useEffect(() => {
+    if (last) {
+      setActive(restaurants[restaurants.length - 1]._id)
+      setLast(false)
+    }
     if (!reset) return
-    setActive(restaurants[0])
+    setActive(restaurants[0]._id)
     setReset(false)
   }, [ restaurants ])
 
+  const handleRemove = () => {
+    restaurant.remove()
+    setReset(true)
+  }
+
+  const handleAdd = () => {
+    restaurants.add()
+    setLast(true)
+  }
+
+  const FileInputRef = useRef(null)
+
+  const handlePhotoUpload = e => {
+    console.log(FileInputRef.current.files)
+  }
+
   return (
     <Card>
-      <h1 sx={{ position: 'absolute', color: 'white', top: '-70px', fontWeight: 'normal' }}>Restaurants</h1>
-      <Tabs active={active} items={restaurants} setItem={setActive} action={restaurants.add} activeAction={!(restaurants.length > 2)} />
-      <div sx={{ px: 4, display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: 'calc(100% - 60px)' }}>
-        <span>
-          <h1 sx={{ fontWeight: 'normal' }}>{active.restaurantName}</h1>
-          {active.restaurantDescription &&
+      <Card.Title>Restaurants</Card.Title>
+      <Tabs defaultSelection={active} onSelection={setActive}>
+        {restaurants.map(r => (
+          <Tabs.Item key={r._id} id={r._id}>{r.restaurantName}</Tabs.Item>
+        ))}
+        <Tooltip tip={'ajouter un restaurant'} >
+          <Tabs.Action onClick={handleAdd} />
+        </Tooltip>
+      </Tabs>
+      <div sx={{ px: 4, display: 'flex', justifyContent: 'space-between', flexDirection: 'column', height: 'calc(100% - 60px)', py: 3 }}>
+        <Input
+          maxChar={30}
+          modifiers={[ 'preventChariot', 'empty' ]}
+          callback={restaurant.changeName}
+          ariaLabel="Nom du restaurant"
+          size="L"
+        >
+          {restaurant.restaurantName}
+        </Input>
+        {restaurant.restaurantDescription ?
           <Input
-            client={false}
-            defaultValue={active.restaurantDescription}
             // update={product.update}
             variant="body"
             field={'prodDescription'}
             options={{ max: 140, gridArea: 'prodDescription', maxHeight: '95px', maxWidth: '95%' }}
-          />
-          }
-          {!active.restaurantDescription && <Button>Ajouter une description</Button>}
-          {!active.adress && <Button>Ajouter une adresse</Button>}
-        </span>
+          >
+            {restaurant.restaurantDescription}
+          </Input>
+          :
+          <Button onClick={() => restaurant.changeDescription('Description du restaurant')}>Ajouter une description</Button>
+        }
+        {!restaurant.adress && <Button>Ajouter une adresse</Button>}
         <span sx={{ display: 'inline-flex', justifyContent: 'space-between', width: 'fit-content', minWidth: '300px' }}>
-          <Button>ajouter une photo</Button>
-          <Button color={'crimson'} onClick={handleRemove} >supprimer</Button>
+          <Button onClick={() => FileInputRef.current.click()} >ajouter une photo</Button>
+          <Button color={'crimson'} onClick={handleRemove}>supprimer</Button>
         </span>
       </div>
+      <FileInput onChange={handlePhotoUpload} ref={FileInputRef} />
     </Card>
   )
 }

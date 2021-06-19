@@ -1,0 +1,35 @@
+.default {
+  width: 'fit-content';
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: all .2s ease;
+  min-width: 200px;
+}
+
+.default:hover {
+  border: 1px solid lightgrey;
+}
+
+.default:focus {
+  border: 1px solid rgb(89, 130, 235);
+}
+
+.L {
+  font-size: 2.5rem;
+}
+
+.M {
+  font-size: 1.5rem;
+}
+
+.success {
+  border: 1px solid limegreen;
+}
+
+.error {
+  border: 1px solid #FF4D4D !important;
+}

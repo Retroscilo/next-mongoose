@@ -48,5 +48,8 @@ module.exports = {
     'arrow-body-style': 'off',
     eqeqeq: 'off',
     'react-native/no-inline-styles': 'off',
+    'import/prefer-default-export': 'off',
+    'react-native/no-color-literals': 'off',
+    'template-curly-spacing': 'off',
   },
 }

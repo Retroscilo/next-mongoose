@@ -1,0 +1,15 @@
+.tooltip {
+  position: fixed;
+  white-space: nowrap;
+  width: fit-content;
+  opacity: 0;
+  transform: translateY(0);
+  font-size: .9rem;
+  pointer-events: none;
+  background: white;
+  box-shadow: 0 0 0 1px rgb(136 152 170 / 10%), 0 10px 20px 0 rgb(49 49 93 / 8%), 0 3px 10px 0 rgb(0 0 0 / 5%);
+  padding: 4px 8px;
+  margin: -8px;
+  display: flex;
+  align-items: center;
+}

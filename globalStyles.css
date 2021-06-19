@@ -1,0 +1,15 @@
+@import 'normalize.css';
+
+* {
+  scroll-behavior: smooth;
+  list-style: none;
+}
+
+*:focus-visible {
+  outline: none;
+}
+
+a, a:visited {
+  text-decoration: none;
+  color: inherit;
+}

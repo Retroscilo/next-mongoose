@@ -120,7 +120,6 @@ const Menu = ({ restaurant, client }) => {
                 ))}
                 <DragOverlay dropAnimation={{ duration: 500 }}>
                   <div sx={{ width: '50px', height: '50px', pointerEvents: 'none' }}></div>
-                  {/* {activeId ? <ProductDesktop log client={false} catId={categoryId} prodId={activeId} index={0} /> : null} */}
                 </DragOverlay>
               </SortableContext>
             </DndContext>

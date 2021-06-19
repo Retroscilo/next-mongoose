@@ -4,6 +4,7 @@
 import { jsx } from 'theme-ui'
 import React, { useState, useEffect } from 'react'
 import RestaurantCard from '../../components/cardHUB/RestaurantCard'
+import CardsCard from '../../components/cardHUB/CardsCard'
 import Canvas from '../../components/homepage/Canvas'
 // Static Gen
 import fetchJSON from '../../lib/fetchJson'
@@ -26,6 +27,8 @@ import { useViewport } from '../../lib/hooks/useViewport'
 const Cards = () => {
   useUser({ redirectTo: '/login', redirectIfFound: false })
   const { data: restaurants, mutate: mutateRestaurant } = useSWR('/api/restaurant', fetchJSON)
+  const [ activeRestaurantId, setActiveRestaurantId ] = useState(null)
+  useEffect(() => restaurants && setActiveRestaurantId(restaurants[0]._id), [ restaurants ])
 
   // use first restaurant in list (data already here with ssr)
   // const [ restaurant, setRestaurant ] = useState(restaurants[0] || false)
@@ -79,14 +82,17 @@ const Cards = () => {
     mutate()
   }
 
-  if (!restaurants) return null
+  if (!activeRestaurantId) return null
   return (
-    <RestaurantsProvider restaurants={restaurants} mutate={mutateRestaurant}>
+    <RestaurantsProvider
+      restaurants={restaurants}
+      mutate={mutateRestaurant}
+    >
       <Canvas color={'#5879CC'} height={300} />
-      <div sx={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(300px, 700px) .7fr', gridTemplateRows: '1.2fr .8fr', gridGap: '70px', height: 'min', maxWidth: 'body', mx: 'auto', py: '80px' }}>
-        <RestaurantCard />
-        <div sx={{ bg: 'gold', gridRow: '1 / 3', gridColumn: 2 }}></div>
-        <div sx={{ bg: 'pink' }}></div>
+      <div sx={{ position: 'relative', display: 'grid', gridTemplateColumns: 'minmax(300px, 700px) minmax(300px, 1fr)', gridTemplateRows: '1.2fr .8fr', gridGap: '70px', minHeight: 'min', maxWidth: 'body', mx: 'auto', py: '80px', px: 2 }}>
+        <RestaurantCard setActiveRestaurantId={setActiveRestaurantId} />
+        <div sx={{ bg: 'pink' }} style={{ gridRow: '1 / 3', gridColumn: 2 }} />
+        <CardsCard activeRestaurantId={activeRestaurantId} />
       </div>
     </RestaurantsProvider>
   )

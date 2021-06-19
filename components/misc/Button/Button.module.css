@@ -1,0 +1,31 @@
+.default {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  background: transparent;
+  width: fit-content;
+  border: none;
+}
+
+.default:hover {
+  background: white;
+  filter: brightness(90%);
+}
+  
+.default:hover div {
+  transform: translateX(5px);
+}
+
+.ternary {
+  background: transparent;
+}
+
+.primary {
+  border-radius: 3px;
+  background: rgb(89, 130, 235);
+  color: white !important;
+}
+
+.primary:hover {
+  background: rgb(89, 130, 235);
+}

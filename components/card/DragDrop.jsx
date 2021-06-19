@@ -56,7 +56,7 @@ const DragDrop = ({ infoSet, update, client }) => {
     }
   })
 
-  const uploadAndRefresh = async (fileSet) => {
+  const uploadAndRefresh = async fileSet => {
     if(fileSet && fileSet.length > 0) {
       const file = fileSet[0]
       const filename = prodId + file.type.replace('image/', '.')

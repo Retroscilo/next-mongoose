@@ -12,6 +12,7 @@ import Head from 'next/head'
 import { Global } from '@emotion/core'
 import { useRouter } from 'next/router'
 import { ViewportProvider } from '../lib/hooks/useViewport'
+import '../globalStyles.css'
 
 function MyApp ({ Component, pageProps }) {
   const router = useRouter()
@@ -25,7 +26,6 @@ function MyApp ({ Component, pageProps }) {
     >
       <ThemeProvider theme={ theme } component={ Component }>
         <div sx={{ minHeight: 'minGlobal' }}>
-          <Global styles={theme => ({ '*': { scrollBehavior: 'smooth', listStyle: 'none' }, a: { textDecoration: 'none', color: 'inherit' } })} />
           <Head>
             <title>Qarte</title>
             <link rel="stylesheet" href="/fonts/fonts.css" />
